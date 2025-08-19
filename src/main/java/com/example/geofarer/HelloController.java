@@ -9,6 +9,6 @@ public class HelloController {
 
     @FXML
     protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to our geography application");
+        welcomeText.setText("Welcome to our geography application, main branch is development");
     }
 }
