@@ -20,8 +20,57 @@ public class GeofarerApp extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
 
+        // Set initial size with some buffer for Windows decorations
         primaryStage.setWidth(1024);
         primaryStage.setHeight(768);
+
+        // Switch to landing page
+        SceneManager.switchToScene(new LandingPageView());
+
+        primaryStage.show();
+        
+        // Force proper layout calculation on Windows after showing
+        Platform.runLater(() -> {
+            // More aggressive layout forcing for Windows
+            if (primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                // Force multiple layout passes
+                for (int i = 0; i < 3; i++) {
+                    primaryStage.getScene().getRoot().applyCss();
+                    primaryStage.getScene().getRoot().autosize();
+                    primaryStage.getScene().getRoot().requestLayout();
+                }
+                
+                // Force a window resize to trigger proper container sizing
+                double currentWidth = primaryStage.getWidth();
+                double currentHeight = primaryStage.getHeight();
+                
+                // More dramatic resize to force layout
+                primaryStage.setWidth(currentWidth + 10);
+                primaryStage.setHeight(currentHeight + 10);
+                
+                Platform.runLater(() -> {
+                    primaryStage.setWidth(currentWidth);
+                    primaryStage.setHeight(currentHeight);
+                    
+                    // Force another layout pass after resize with delay
+                    Platform.runLater(() -> {
+                        // Multiple layout passes again
+                        for (int i = 0; i < 3; i++) {
+                            primaryStage.getScene().getRoot().applyCss();
+                            primaryStage.getScene().getRoot().autosize();
+                            primaryStage.getScene().getRoot().requestLayout();
+                        }
+                        
+                        // Final positioning
+                        Platform.runLater(() -> {
+                            primaryStage.centerOnScreen();
+                            // One final layout pass
+                            primaryStage.getScene().getRoot().requestLayout();
+                        });
+                    });
+                });
+            }
+        });
 
         // listener for maximized property changes and screen size
         primaryStage.maximizedProperty().addListener((obs, wasMaximized, isMaximized) -> {
@@ -38,13 +87,6 @@ public class GeofarerApp extends Application {
                 }
             }
         });
-
-        // Switch to landing page
-        SceneManager.switchToScene(new LandingPageView());
-
-
-        primaryStage.show();
-        Platform.runLater(() -> primaryStage.setMaximized(true));
 
         // Preload resources in background
         SceneManager.preloadResources();

@@ -19,6 +19,12 @@ public class LandingPageView extends StackPane {
         this.mapService = new MapService();
         this.controller = new LandingPageController();
 
+        // Set size constraints to prevent oversizing
+        this.setMaxWidth(Double.MAX_VALUE);
+        this.setMaxHeight(Double.MAX_VALUE);
+        this.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        this.setPrefHeight(Region.USE_COMPUTED_SIZE);
+
         initialiseView();
     }
 
@@ -32,12 +38,20 @@ public class LandingPageView extends StackPane {
         //Load and set the map image
         backgroundMap.setImage(mapService.loadRasterImage());
 
-        //Semi-transparent overlay
-
+        //Semi-transparent overlay with responsive padding
         VBox overlay = new VBox(20);
-
         overlay.setAlignment(Pos.CENTER);
-        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 50;"); //50 padding, 50% opacity
+        
+        // Use percentage-based padding instead of fixed padding
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+        
+        // Bind padding to window size to make it responsive
+        overlay.paddingProperty().bind(javafx.beans.binding.Bindings.createObjectBinding(() -> {
+            double width = this.getWidth();
+            double height = this.getHeight();
+            double padding = Math.min(width * 0.05, height * 0.05); // 5% of smaller dimension
+            return new javafx.geometry.Insets(Math.max(20, padding)); // Minimum 20px padding
+        }, this.widthProperty(), this.heightProperty()));
 
         //Welcome text
         Label welcomeLabel = new Label("Welcome to Geofarer");
