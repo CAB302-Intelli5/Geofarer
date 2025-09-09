@@ -16,13 +16,24 @@ public class LandingPageController {
         System.out.println("Switching to game scene");
         SceneManager.switchToScene(gameView);
         
-        // Then trigger map initialization after scene is fully rendered
+        // Wait for the scene to be properly laid out before initializing map
         System.out.println("Setting up map initialization delay");
-        PauseTransition delay = new PauseTransition(Duration.millis(1000));
-            delay.setOnFinished(e -> {
-        System.out.println("Initializing map");
-        gameView.initializeMap();
-    });
+        PauseTransition delay = new PauseTransition(Duration.millis(2000)); // Increased delay
+        delay.setOnFinished(e -> {
+            System.out.println("Initializing map");
+            // Force layout update before map initialization
+            gameView.applyCss();
+            gameView.autosize();
+            gameView.requestLayout();
+            
+            // Additional delay to ensure layout is complete
+            PauseTransition layoutDelay = new PauseTransition(Duration.millis(500));
+            layoutDelay.setOnFinished(event -> {
+                System.out.println("Layout complete, starting map initialization");
+                gameView.initializeMap();
+            });
+            layoutDelay.play();
+        });
         delay.play();
     }
     public void showLogin() {

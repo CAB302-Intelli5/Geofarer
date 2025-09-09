@@ -190,19 +190,49 @@ public class GameView extends BorderPane {
         // Calculate available space for the map
         DoubleBinding availableWidth = Bindings.createDoubleBinding(
                 () -> {
-                    double sceneWidth = this.getScene() != null ? this.getScene().getWidth() : this.getWidth();
-                    return Math.max(Constants.MIN_MAP_WIDTH, sceneWidth * Constants.MAP_AREA_FACTOR);
+                    double sceneWidth = 0;
+                    if (this.getScene() != null && this.getScene().getWindow() != null) {
+                        sceneWidth = this.getScene().getWidth();
+                    } else {
+                        sceneWidth = this.getWidth();
+                    }
+                    
+                    // Add safety bounds to prevent massive initial sizes
+                    if (sceneWidth <= 0 || sceneWidth > 2000) {
+                        sceneWidth = Constants.DEFAULT_WINDOW_WIDTH;
+                    }
+                    
+                    // Account for window padding and UI chrome from the start
+                    double effectiveWidth = sceneWidth - 40; // Account for window padding/borders
+                    
+                    return Math.max(Constants.MIN_MAP_WIDTH, 
+                                  Math.min(effectiveWidth * Constants.MAP_AREA_FACTOR, Constants.MAX_MAP_WIDTH));
                 },
                 this.widthProperty(), this.sceneProperty()
         );
 
         DoubleBinding availableHeight = Bindings.createDoubleBinding(
                 () -> {
-                    double sceneHeight = this.getScene() != null ? this.getScene().getHeight() : this.getHeight();
+                    double sceneHeight = 0;
+                    if (this.getScene() != null && this.getScene().getWindow() != null) {
+                        sceneHeight = this.getScene().getHeight();
+                    } else {
+                        sceneHeight = this.getHeight();
+                    }
+                    
+                    // Add safety bounds to prevent massive initial sizes
+                    if (sceneHeight <= 0 || sceneHeight > 1500) {
+                        sceneHeight = Constants.DEFAULT_WINDOW_HEIGHT;
+                    }
+                    
                     double topHeight = topBar.getHeight() > 0 ? topBar.getHeight() : 60;
                     double bottomHeight = bottomBar.getHeight() > 0 ? bottomBar.getHeight() : 40;
+                    
+                    // Account for window padding and UI chrome from the start
+                    double effectiveHeight = sceneHeight - topHeight - bottomHeight - 60; // Extra padding for window chrome
+                    
                     return Math.max(Constants.MIN_MAP_HEIGHT,
-                            sceneHeight - topHeight - bottomHeight - 40); // 40px for padding
+                            Math.min(effectiveHeight, Constants.MAX_MAP_HEIGHT));
                 },
                 this.heightProperty(), this.sceneProperty(),
                 topBar.heightProperty(), bottomBar.heightProperty()

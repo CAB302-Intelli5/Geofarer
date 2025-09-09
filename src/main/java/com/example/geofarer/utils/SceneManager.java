@@ -55,12 +55,7 @@ public class SceneManager {
                 finalRoot = wrapperPane;
             }
             
-            // Make sure content fills available space
-            finalRoot.setPrefWidth(Double.MAX_VALUE);
-            finalRoot.setPrefHeight(Double.MAX_VALUE);
-            finalRoot.setMaxWidth(Double.MAX_VALUE);
-            finalRoot.setMaxHeight(Double.MAX_VALUE);
-            
+            // Let content size dynamically based on the stage size
             Scene scene = new Scene(finalRoot);
             System.out.println("SceneManager: New scene created");
             
@@ -70,14 +65,15 @@ public class SceneManager {
                 primaryStage.setScene(scene);
                 primaryStage.centerOnScreen();
 
-                // Remove loading overlay after the window is properly sized
+                // Remove loading overlay after a short delay and force layout
                 Platform.runLater(() -> {
-                    primaryStage.setMaximized(true);
-                    
-                    Timeline layoutDelay = new Timeline(new KeyFrame(Duration.millis(1000), evt -> {
+                    Timeline layoutDelay = new Timeline(new KeyFrame(Duration.millis(500), evt -> {
                         if (finalRoot instanceof StackPane) {
                             ((StackPane) finalRoot).getChildren().remove(loadingOverlay);
                         }
+                        // Force complete layout recalculation
+                        finalRoot.applyCss();
+                        finalRoot.autosize();
                         finalRoot.requestLayout();
                     }));
                     layoutDelay.play();
@@ -104,6 +100,9 @@ public class SceneManager {
                     if (finalRoot instanceof StackPane) {
                         ((StackPane) finalRoot).getChildren().remove(loadingOverlay);
                     }
+                    // Force complete layout recalculation
+                    finalRoot.applyCss();
+                    finalRoot.autosize();
                     finalRoot.requestLayout();
                     System.out.println("SceneManager: Loading overlay removed and layout requested");
                 }));
