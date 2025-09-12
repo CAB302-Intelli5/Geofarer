@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.geofarer.MainController"
+            fx:id="rootPane"
+            style="-fx-background-image: url('/images/Map.png');
+                   -fx-background-size: cover;
+                   -fx-background-repeat: no-repeat;
+                   -fx-background-position: center;"
+            prefWidth="800" prefHeight="600">
+
+    <center>
+        <VBox spacing="20" alignment="CENTER">
+            <!-- Login Page button -->
+            <Button text="Login" onAction="#openLoginPage" prefWidth="150"/>
+            <!-- Sign Up Page button -->
+            <Button text="Sign Up" onAction="#openSignUpPage" prefWidth="150"/>
+        </VBox>
+    </center>
+</BorderPane>
