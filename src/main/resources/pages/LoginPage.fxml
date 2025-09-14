@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<!-- Border around the outside -->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.geofarer.LoginController"
+            prefWidth="800" prefHeight="500"
+            style="-fx-border-color: #0D1A26; -fx-border-width: 20;">
+
+    <top>
+        <!-- User icon in top right corner -->
+        <HBox alignment="TOP_RIGHT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <StackPane fx:id="userCirclePane" onMouseClicked="#onUserCircleClick">
+                <Circle fx:id="userCircle" radius="20" fill="lightgray" stroke="white" strokeWidth="2"/>
+            </StackPane>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane>
+            <VBox alignment="TOP_CENTER" spacing="20">
+                <!-- GEOFARER title -->
+                <Label text="GEOFARER"
+                       style="-fx-font-family: 'Inika'; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #0D1A26;"/>
+                <!-- Inner box that contains logging in details for user to enter -->
+                <VBox alignment="CENTER" spacing="15"
+                      maxWidth="400" prefWidth="400"
+                      style="-fx-background-color: #731A12BF; -fx-padding: 20; -fx-border-color: #FFFFFF; -fx-border-width: 2;">
+                    <!-- Label for logging into their account -->
+                    <Label text="Please enter your email and password to login and continue your journey!"
+                           wrapText="true" maxWidth="360" textAlignment="CENTER"
+                           style="-fx-font-family: 'TASA Explorer'; -fx-font-size: 16px; -fx-text-fill: #FFFFFF;"/>
+                    <!-- Enter email text box -->
+                    <TextField fx:id="emailField" promptText="Enter your email here..." maxWidth="Infinity"/>
+                    <StackPane maxWidth="Infinity">
+                        <!-- Enter password text box (with hidden and viewable) -->
+                        <PasswordField fx:id="passwordField" promptText="Enter your password here..." maxWidth="Infinity"/>
+                        <TextField fx:id="passwordVisibleField" promptText="Enter your password here..." maxWidth="Infinity" visible="false"/>
+                    </StackPane>
+                    <!-- Show/Hide password checkbox; Save details checkbox -->
+                    <HBox alignment="CENTER_LEFT" spacing="10" maxWidth="Infinity">
+                        <CheckBox text="Save Details" style="-fx-text-fill: white;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <CheckBox fx:id="showPasswordCheckBox" text="👁" onAction="#onTogglePassword" style="-fx-text-fill: white;"/>
+                    </HBox>
+                    <!-- Buttons for logging in and going back -->
+                    <HBox alignment="CENTER" spacing="20" maxWidth="Infinity">
+                        <Button text="Go Back" onAction="#onGoBackClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
+                        <Button text="Login" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>
