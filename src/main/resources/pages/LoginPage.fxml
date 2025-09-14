@@ -7,7 +7,7 @@
 
 <!-- Border around the outside -->
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.geofarer.LoginController"
+            fx:controller="com.example.geofarer.controllers.LoginController"
             prefWidth="800" prefHeight="500"
             style="-fx-border-color: #0D1A26; -fx-border-width: 20;">
 
@@ -55,6 +55,16 @@
                         <Button text="Go Back" onAction="#onGoBackClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
                         <Button text="Login" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
                     </HBox>
+
+                    <Label text="Don't have an account? Sign up here."
+                           onMouseClicked="#onSignUpLinkClick"
+                           style="-fx-text-fill: white; -fx-underline: true; -fx-cursor: hand;"
+                           wrapText="true">
+                        <VBox.margin>
+                            <Insets top="10"/>
+                        </VBox.margin>
+                    </Label>
+
                 </VBox>
             </VBox>
         </StackPane>
