@@ -10,6 +10,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -27,89 +29,69 @@ import javafx.util.Duration;
 import org.locationtech.jts.geom.*;
 import javafx.beans.property.SimpleBooleanProperty;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameView extends BorderPane {
+public class GameView extends VBox {
     private GameController controller;
     private MapService mapService;
+
+    // FXML injected components
+    @FXML private StackPane mapContainer; // The container for the entire map area
+    @FXML private StackPane innerMapPane; // The actual pane holding imageView and overlay
+    @FXML private ImageView imageView;
+    @FXML private Pane overlay;
+    @FXML private Label countryLabel;
 
     // Map components
     private double imgWOrig = 0;
     private double imgHOrig = 0;
     private double aspectRatio = 1.0;
     private final List<MapService.FeatureInfo> featureInfos = new ArrayList<>();
-    private Label countryLabel;
-    private Pane innerPane;
-    private ImageView imageView;
-    private Pane overlay;
-    
+
     // Add retry tracking
     private int renderRetryCount = 0;
     private static final int MAX_RENDER_RETRIES = 20;
 
     public GameView() {
-    this(false); // Default to immediate initialization
-}
+        this(false); // Default to immediate initialization
+    }
 
     public GameView(boolean delayInitialization) {
         this.mapService = new MapService();
         this.controller = new GameController();
 
-        initialiseView();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/pages/gameview.fxml"));
+        fxmlLoader.setRoot(this);      // Set this instance as the root
+        fxmlLoader.setController(this); // Set this instance as the controller
+
+        try {
+            fxmlLoader.load(); // Load the FXML content into this object
+        } catch (IOException exception) {
+            // provides an exception if the fxml file cannot be loaded
+            throw new RuntimeException("Failed to load gameview.fxml", exception);
+        }
+
         if (!delayInitialization) {
             loadMapData();
         }
     }
 
-    private void initialiseView() {
-        // Top bar with back button and title
-        HBox topBar = new HBox(10);
-        topBar.setAlignment(Pos.CENTER_LEFT);
-        topBar.setPadding(new Insets(12, 12, 8, 12));
-        topBar.setMinHeight(60);
+    private void loadFXML() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/pages/gameview.fxml"));
+            fxmlLoader.setRoot(this); // Set THIS GameView instance as the root
+            fxmlLoader.setController(this); // Set THIS GameView instance as the controller
+            fxmlLoader.load(); // Load the FXML content into 'this'
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to load gameview.fxml", exception);
+        }
+    }
 
-        Label title = new Label("Geofarer - Geography Game");
-        title.setFont(Font.font("System", 24));
-
-        Region spacerLeft = new Region();
-        HBox.setHgrow(spacerLeft, Priority.ALWAYS);
-        Region spacerRight = new Region();
-        HBox.setHgrow(spacerRight, Priority.ALWAYS);
-
-        topBar.getChildren().addAll(spacerLeft, title, spacerRight);
-
-        // Map frame
-        StackPane mapFrame = new StackPane();
-        mapFrame.setStyle("-fx-background-color: white; -fx-border-color: #999; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6;");
-
-        innerPane = new Pane();
-        StackPane.setAlignment(innerPane, Pos.CENTER);
-
-        imageView = new ImageView();
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
-        imageView.setCache(true);
-
-        overlay = new Pane();
-        overlay.setPickOnBounds(false);
-
-        innerPane.getChildren().addAll(imageView, overlay);
-        mapFrame.getChildren().add(innerPane);
-
-        // Bottom bar
-        countryLabel = new Label("Click on a country to see its name");
-        countryLabel.setFont(Font.font(14));
-        HBox bottomBar = new HBox(countryLabel);
-        bottomBar.setAlignment(Pos.CENTER);
-        bottomBar.setPadding(new Insets(8));
-        bottomBar.setStyle("-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;");
-        bottomBar.setMinHeight(40);
-
-        // Set up the layout
-        this.setTop(topBar);
-        this.setCenter(mapFrame);
-        this.setBottom(bottomBar);
+    @FXML
+    private void initialize() {
+        // FXML components are already injected at this point
 
         // Load and set up map image
         Image raster = mapService.loadRasterImage();
@@ -124,12 +106,12 @@ public class GameView extends BorderPane {
             aspectRatio = 1.8; // Default aspect ratio for world map
         }
 
-        // Set up bindings
-        setupMapBindings(mapFrame, topBar, bottomBar);
+        // Set up bindings for the map within its container
+        setupMapBindings(mapContainer);
 
-        // Click handler
-        innerPane.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                event -> controller.handleMapClick(event, innerPane.getWidth(), innerPane.getHeight(), featureInfos, countryLabel));
+        // Click handler for the map
+        innerMapPane.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                event -> controller.handleMapClick(event, innerMapPane.getWidth(), innerMapPane.getHeight(), featureInfos, countryLabel));
     }
 
     private void loadMapData() {
@@ -138,7 +120,7 @@ public class GameView extends BorderPane {
         progress.setMaxSize(100, 100);
         StackPane loadingOverlay = new StackPane(progress);
         loadingOverlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);");
-        this.getChildren().add(loadingOverlay);
+        innerMapPane.getChildren().add(loadingOverlay); // Add to the innerMapPane
 
         // Load data in background thread
         Task<List<MapService.FeatureInfo>> loadTask = new Task<>() {
@@ -150,14 +132,14 @@ public class GameView extends BorderPane {
 
         loadTask.setOnSucceeded(event -> {
             featureInfos.addAll(loadTask.getValue());
-            this.getChildren().remove(loadingOverlay);
+            innerMapPane.getChildren().remove(loadingOverlay); // Remove from innerMapPane
             // Force redraw of map overlays
             Platform.runLater(() -> renderOverlays());
         });
 
         // Handle failure
         loadTask.setOnFailed(event -> {
-            this.getChildren().remove(loadingOverlay);
+            innerMapPane.getChildren().remove(loadingOverlay); // Remove from innerMapPane
             showError("Failed to load map data: " + loadTask.getException().getMessage());
         });
 
@@ -181,61 +163,39 @@ public class GameView extends BorderPane {
         StackPane errorOverlay = new StackPane(errorBox);
         errorOverlay.setStyle("-fx-background-color: rgba(0,0,0,0.7);");
 
-        dismissBtn.setOnAction(e -> this.getChildren().remove(errorOverlay));
+        dismissBtn.setOnAction(e -> innerMapPane.getChildren().remove(errorOverlay)); // Remove from innerMapPane
 
-        this.getChildren().add(errorOverlay);
+        innerMapPane.getChildren().add(errorOverlay); // Add to innerMapPane
     }
 
-    private void setupMapBindings(StackPane mapFrame, HBox topBar, HBox bottomBar) {
+    private void setupMapBindings(StackPane mapFrame) { // Now takes mapContainer as mapFrame
         // Calculate available space for the map
         DoubleBinding availableWidth = Bindings.createDoubleBinding(
                 () -> {
-                    double sceneWidth = 0;
-                    if (this.getScene() != null && this.getScene().getWindow() != null) {
-                        sceneWidth = this.getScene().getWidth();
-                    } else {
-                        sceneWidth = this.getWidth();
+                    double containerWidth = mapFrame.getWidth();
+                    if (containerWidth <= 0 || containerWidth > 2000) {
+                        containerWidth = Constants.DEFAULT_WINDOW_WIDTH; // Fallback
                     }
-                    
-                    // Add safety bounds to prevent massive initial sizes
-                    if (sceneWidth <= 0 || sceneWidth > 2000) {
-                        sceneWidth = Constants.DEFAULT_WINDOW_WIDTH;
-                    }
-                    
-                    // Account for window padding and UI chrome from the start
-                    double effectiveWidth = sceneWidth - 40; // Account for window padding/borders
-                    
-                    return Math.max(Constants.MIN_MAP_WIDTH, 
-                                  Math.min(effectiveWidth * Constants.MAP_AREA_FACTOR, Constants.MAX_MAP_WIDTH));
+                    // Account for mapContainer padding
+                    double effectiveWidth = containerWidth - mapFrame.getPadding().getLeft() - mapFrame.getPadding().getRight();
+                    return Math.max(Constants.MIN_MAP_WIDTH,
+                            Math.min(effectiveWidth * Constants.MAP_AREA_FACTOR, Constants.MAX_MAP_WIDTH));
                 },
-                this.widthProperty(), this.sceneProperty()
+                mapFrame.widthProperty(), mapFrame.paddingProperty()
         );
 
         DoubleBinding availableHeight = Bindings.createDoubleBinding(
                 () -> {
-                    double sceneHeight = 0;
-                    if (this.getScene() != null && this.getScene().getWindow() != null) {
-                        sceneHeight = this.getScene().getHeight();
-                    } else {
-                        sceneHeight = this.getHeight();
+                    double containerHeight = mapFrame.getHeight();
+                    if (containerHeight <= 0 || containerHeight > 1500) {
+                        containerHeight = Constants.DEFAULT_WINDOW_HEIGHT; // Fallback
                     }
-                    
-                    // Add safety bounds to prevent massive initial sizes
-                    if (sceneHeight <= 0 || sceneHeight > 1500) {
-                        sceneHeight = Constants.DEFAULT_WINDOW_HEIGHT;
-                    }
-                    
-                    double topHeight = topBar.getHeight() > 0 ? topBar.getHeight() : 60;
-                    double bottomHeight = bottomBar.getHeight() > 0 ? bottomBar.getHeight() : 40;
-                    
-                    // Account for window padding and UI chrome from the start
-                    double effectiveHeight = sceneHeight - topHeight - bottomHeight - 60; // Extra padding for window chrome
-                    
+                    // Account for mapContainer padding
+                    double effectiveHeight = containerHeight - mapFrame.getPadding().getTop() - mapFrame.getPadding().getBottom();
                     return Math.max(Constants.MIN_MAP_HEIGHT,
                             Math.min(effectiveHeight, Constants.MAX_MAP_HEIGHT));
                 },
-                this.heightProperty(), this.sceneProperty(),
-                topBar.heightProperty(), bottomBar.heightProperty()
+                mapFrame.heightProperty(), mapFrame.paddingProperty()
         );
 
         // Calculate optimal map dimensions based on aspect ratio
@@ -268,33 +228,25 @@ public class GameView extends BorderPane {
                 mapWidth
         );
 
-        // Bind map frame dimensions
-        mapFrame.prefWidthProperty().bind(mapWidth);
-        mapFrame.prefHeightProperty().bind(mapHeight);
-        mapFrame.maxWidthProperty().bind(mapWidth);
-        mapFrame.maxHeightProperty().bind(mapHeight);
-        mapFrame.minWidthProperty().set(Constants.MIN_MAP_WIDTH);
-        mapFrame.minHeightProperty().set(Constants.MIN_MAP_HEIGHT);
-
-        // Bind inner pane to match map frame exactly
-        innerPane.prefWidthProperty().bind(mapWidth);
-        innerPane.prefHeightProperty().bind(mapHeight);
-        innerPane.maxWidthProperty().bind(mapWidth);
-        innerPane.maxHeightProperty().bind(mapHeight);
-        innerPane.minWidthProperty().set(Constants.MIN_MAP_WIDTH);
-        innerPane.minHeightProperty().set(Constants.MIN_MAP_HEIGHT);
+        // Bind innerMapPane dimensions to calculated map dimensions
+        innerMapPane.prefWidthProperty().bind(mapWidth);
+        innerMapPane.prefHeightProperty().bind(mapHeight);
+        innerMapPane.maxWidthProperty().bind(mapWidth);
+        innerMapPane.maxHeightProperty().bind(mapHeight);
+        innerMapPane.minWidthProperty().set(Constants.MIN_MAP_WIDTH);
+        innerMapPane.minHeightProperty().set(Constants.MIN_MAP_HEIGHT);
 
         // Bind image view to inner pane
-        imageView.fitWidthProperty().bind(innerPane.widthProperty());
-        imageView.fitHeightProperty().bind(innerPane.heightProperty());
+        imageView.fitWidthProperty().bind(innerMapPane.widthProperty());
+        imageView.fitHeightProperty().bind(innerMapPane.heightProperty());
 
         // Bind overlay to match inner pane exactly
-        overlay.prefWidthProperty().bind(innerPane.widthProperty());
-        overlay.prefHeightProperty().bind(innerPane.heightProperty());
-        overlay.minWidthProperty().bind(innerPane.minWidthProperty());
-        overlay.minHeightProperty().bind(innerPane.minHeightProperty());
-        overlay.maxWidthProperty().bind(innerPane.maxWidthProperty());
-        overlay.maxHeightProperty().bind(innerPane.maxHeightProperty());
+        overlay.prefWidthProperty().bind(innerMapPane.widthProperty());
+        overlay.prefHeightProperty().bind(innerMapPane.heightProperty());
+        overlay.minWidthProperty().bind(innerMapPane.minWidthProperty());
+        overlay.minHeightProperty().bind(innerMapPane.minHeightProperty());
+        overlay.maxWidthProperty().bind(innerMapPane.maxWidthProperty());
+        overlay.maxHeightProperty().bind(innerMapPane.maxHeightProperty());
 
         // Redraw overlays when display size changes with debouncing
         SimpleBooleanProperty needsRedraw = new SimpleBooleanProperty(false);
@@ -330,7 +282,7 @@ public class GameView extends BorderPane {
                             layoutDelay.play();
                         });
                     });
-                    
+
                     // Add window shown listener to ensure proper initial sizing
                     if (!stage.isShowing()) {
                         stage.setOnShown(evt -> {
@@ -338,12 +290,12 @@ public class GameView extends BorderPane {
                                 this.requestLayout();
                                 // Allow more time for the initial render
                                 Timeline initialSizeDelay = new Timeline(
-                                    new KeyFrame(Duration.millis(100), e -> {
-                                        double w = this.getWidth();
-                                        double h = this.getHeight();
-                                        System.out.println("Initial layout complete: " + w + "x" + h);
-                                        renderOverlays();
-                                    })
+                                        new KeyFrame(Duration.millis(100), e -> {
+                                            double w = this.getWidth();
+                                            double h = this.getHeight();
+                                            System.out.println("Initial layout complete: " + w + "x" + h);
+                                            renderOverlays();
+                                        })
                                 );
                                 initialSizeDelay.play();
                             });
@@ -379,9 +331,9 @@ public class GameView extends BorderPane {
 
         if (displayedW <= 1 || displayedH <= 1) {
             renderRetryCount++;
-            System.out.println("Overlay dimensions not ready: " + displayedW + "x" + displayedH + 
-                             " (retry " + renderRetryCount + "/" + MAX_RENDER_RETRIES + ")");
-            
+            System.out.println("Overlay dimensions not ready: " + displayedW + "x" + displayedH +
+                    " (retry " + renderRetryCount + "/" + MAX_RENDER_RETRIES + ")");
+
             // Only retry if we haven't exceeded the limit
             if (renderRetryCount < MAX_RENDER_RETRIES) {
                 Platform.runLater(() -> {
@@ -394,7 +346,7 @@ public class GameView extends BorderPane {
                 // Force a layout update one more time
                 Platform.runLater(() -> {
                     this.requestLayout();
-                    innerPane.requestLayout();
+                    innerMapPane.requestLayout();
                     overlay.requestLayout();
                 });
             }
@@ -403,7 +355,7 @@ public class GameView extends BorderPane {
 
         // Reset retry count on successful render
         renderRetryCount = 0;
-        
+
         System.out.println("Rendering overlays: " + displayedW + "x" + displayedH +
                 " (original: " + imgWOrig + "x" + imgHOrig + ")");
 
@@ -445,7 +397,9 @@ public class GameView extends BorderPane {
         Coordinate[] coords = poly.getExteriorRing().getCoordinates();
         if (coords == null || coords.length == 0) return null;
 
-        List<Double> pts = new ArrayList<>(coords.length * 2);
+        Polyline pl = new Polyline(); // Create the Polyline first
+        List<Double> pts = pl.getPoints(); // Get the ObservableList of points
+
         for (Coordinate c : coords) {
             double lon = c.x;
             double lat = c.y;
@@ -459,8 +413,6 @@ public class GameView extends BorderPane {
             pts.add(y);
         }
 
-        Polyline pl = new Polyline();
-        pl.getPoints().addAll(pts);
         pl.setStroke(Color.rgb(0, 0, 0, 0.6));
         pl.setStrokeWidth(Math.max(Constants.MIN_STROKE_WIDTH,
                 Constants.MAP_STROKE_WIDTH_FACTOR * Math.min(scaleX, scaleY)));
@@ -469,28 +421,59 @@ public class GameView extends BorderPane {
     }
 
     public void initializeMap() {
-    if (featureInfos.isEmpty()) {
-        loadMapData();
-        
-        // Force proper layout calculation
-        this.applyCss();
-        this.layout();
-        
-        // Force a resize simulation after a short delay
-        javafx.animation.PauseTransition sizeDelay = new javafx.animation.PauseTransition(Duration.millis(500));
-        sizeDelay.setOnFinished(e -> {
-            // Simulate resize to force layout recalculation
-            if (this.getScene() != null) {
-                Stage stage = (Stage) this.getScene().getWindow();
-                if (stage != null) {
-                    // Force window to recalculate its layout
-                    double width = stage.getWidth();
-                    stage.setWidth(width + 1);
-                    stage.setWidth(width);
+        if (featureInfos.isEmpty()) {
+            loadMapData();
+
+            // Force proper layout calculation
+            this.applyCss();
+            this.layout();
+
+            // Force a resize simulation after a short delay
+            javafx.animation.PauseTransition sizeDelay = new javafx.animation.PauseTransition(Duration.millis(500));
+            sizeDelay.setOnFinished(e -> {
+                // Simulate resize to force layout recalculation
+                if (this.getScene() != null) {
+                    Stage stage = (Stage) this.getScene().getWindow();
+                    if (stage != null) {
+                        // Force window to recalculate its layout
+                        double width = stage.getWidth();
+                        stage.setWidth(width + 1);
+                        stage.setWidth(width);
+                    }
                 }
-            }
-        });
-        sizeDelay.play();
+            });
+            sizeDelay.play();
+        }
     }
-}
+
+    // FXML event handlers for navigation buttons
+    @FXML
+    private void handleLoginButton() {
+        System.out.println("Login button clicked!");
+        // Call handle for jaydens login
+    }
+
+    @FXML
+    private void handleGameModes() {
+        System.out.println("Game Modes clicked!");
+        // controller.navigateToGameModes();
+    }
+
+    @FXML
+    private void handleExplore() {
+        System.out.println("Explore clicked!");
+        // controller.navigateToExplore();
+    }
+
+    @FXML
+    private void handleLeaders() {
+        System.out.println("Leaders clicked!");
+        // controller.navigateToLeaders();
+    }
+
+    @FXML
+    private void handleMyPassport() {
+        System.out.println("My Passport clicked!");
+        // controller.navigateToMyPassport();
+    }
 }

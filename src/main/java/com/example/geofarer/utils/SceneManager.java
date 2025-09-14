@@ -1,10 +1,12 @@
 package com.example.geofarer.utils;
 
 import com.example.geofarer.services.MapService;
+import com.example.geofarer.views.GameView; // Import GameView
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader; // Import FXMLLoader
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -12,6 +14,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
 
 
 public class SceneManager {
@@ -23,12 +27,12 @@ public class SceneManager {
     }
     public static void switchToScene(Pane root) {
         System.out.println("SceneManager: switchToScene called");
-        
+
         if (primaryStage == null) {
             System.err.println("SceneManager: primaryStage is null!");
             return;
         }
-        
+
         try {
             // Create loading overlay
             ProgressIndicator progress = new ProgressIndicator();
@@ -54,11 +58,11 @@ public class SceneManager {
                 wrapperPane.setStyle("-fx-background-color: white;");
                 finalRoot = wrapperPane;
             }
-            
+
             // Let content size dynamically based on the stage size
             Scene scene = new Scene(finalRoot);
             System.out.println("SceneManager: New scene created");
-            
+
             // If this is the first scene, just set it
             if (primaryStage.getScene() == null) {
                 System.out.println("SceneManager: Setting first scene");
@@ -83,17 +87,17 @@ public class SceneManager {
 
             // For subsequent scenes, do immediate switch with debug logging
             System.out.println("SceneManager: Switching to subsequent scene");
-            
+
             // Set the new scene immediately
             primaryStage.setScene(scene);
             System.out.println("SceneManager: Scene set on primaryStage");
-            
+
             // Ensure the stage is showing
             if (!primaryStage.isShowing()) {
                 primaryStage.show();
                 System.out.println("SceneManager: Stage shown");
             }
-            
+
             // Remove loading overlay after a short delay
             Platform.runLater(() -> {
                 Timeline removeOverlayDelay = new Timeline(new KeyFrame(Duration.millis(500), evt -> {
@@ -108,12 +112,25 @@ public class SceneManager {
                 }));
                 removeOverlayDelay.play();
             });
-            
+
         } catch (Exception e) {
             System.err.println("SceneManager: Exception during scene switch: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+    // Helper to load FXML-based views
+    public static <T extends Pane> T loadFxmlView(String fxmlPath) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
+            return fxmlLoader.load();
+        } catch (IOException e) {
+            System.err.println("Error loading FXML view: " + fxmlPath);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void preloadResources() {
         Task<Void> preloadTask = new Task<>() {
             @Override
