@@ -66,6 +66,8 @@ public class GameView extends VBox {
     //Clipping rectange for boundaries of the map
     private Rectangle clipRect;
 
+    @FXML private Button loginButton;
+
     public GameView() {
         this(false); // Default to immediate initialization
     }
@@ -84,6 +86,8 @@ public class GameView extends VBox {
             // provides an exception if the fxml file cannot be loaded
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
+
+        controller.initializeController(targetCountryLabel,countryLabel,overlay,innerMapPane,mapContainer);
 
         if (!delayInitialization) {
             loadMapData();
@@ -343,7 +347,7 @@ public class GameView extends VBox {
     }
 
     // FXML event handlers - These delegate to the controller
-    @FXML private void handleLoginButton() { controller.doLogin(); }
+    @FXML private void handleLoginButton() { controller.doLogin(loginButton); }
     @FXML private void handleGameModes() { controller.showGameModes(); }
     @FXML private void handleExplore() { controller.showExplore(); }
     @FXML private void handleLeaders() { controller.showLeaders(); }
