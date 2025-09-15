@@ -1,8 +1,10 @@
 package com.example.geofarer.utils;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import com.example.geofarer.views.GameView;
 
@@ -15,8 +17,7 @@ public class PageLoader {
             FXMLLoader loader = new FXMLLoader(PageLoader.class.getResource(fxmlPath));
             Parent root = loader.load();
             stage.setTitle(title);
-            stage.setScene(new Scene(root));
-            stage.show();
+            SceneManager.switchToScene((Pane) root);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -25,8 +26,7 @@ public class PageLoader {
     public static void openGameView(String title, Stage stage) {
         GameView gameView = new GameView(); // GameView now loads its own FXML internally
         stage.setTitle(title);
-        stage.setScene(new Scene(gameView, Constants.DEFAULT_WINDOW_WIDTH, Constants.DEFAULT_WINDOW_HEIGHT)); // Set initial size
-        stage.show();
-        gameView.initializeMap(); // Call map initialization after showing the stage
+        SceneManager.switchToScene(gameView);
+        Platform.runLater(gameView::initializeMap);
     }
 }

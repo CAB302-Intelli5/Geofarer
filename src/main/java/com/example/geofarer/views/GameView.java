@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -23,9 +24,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.locationtech.jts.geom.*;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -50,9 +53,15 @@ public class GameView extends VBox {
     private double aspectRatio = 1.0;
     private final List<MapService.FeatureInfo> featureInfos = new ArrayList<>();
 
-    // Add retry tracking
+    //retry tracking
     private int renderRetryCount = 0;
     private static final int MAX_RENDER_RETRIES = 20;
+
+    private final SimpleBooleanProperty imageReady = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty shapefileReady = new SimpleBooleanProperty(false);
+
+    //Clipping rectange for boundaries of the map
+    private Rectangle clipRect;
 
     public GameView() {
         this(false); // Default to immediate initialization
@@ -72,6 +81,7 @@ public class GameView extends VBox {
             // provides an exception if the fxml file cannot be loaded
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
+        initialize();
 
         if (!delayInitialization) {
             loadMapData();
@@ -91,59 +101,64 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        // FXML components are already injected at this point
+        // Load image async
+        Task<Image> imgTask = new Task<>() {
+            @Override
+            protected Image call() {
+                return mapService.loadRasterImage();
+            }
+        };
+        imgTask.setOnSucceeded(e -> {
+            Image raster = imgTask.getValue();
+            if (raster != null) {
+                imgWOrig = raster.getWidth();
+                imgHOrig = raster.getHeight();
+                aspectRatio = imgWOrig / imgHOrig;
+                imageView.setImage(raster);
+                imageReady.set(true);
+            }
+        });
+        new Thread(imgTask).start();
 
-        // Load and set up map image
-        Image raster = mapService.loadRasterImage();
-        if (raster != null) {
-            imgWOrig = raster.getWidth();
-            imgHOrig = raster.getHeight();
-            aspectRatio = imgWOrig / imgHOrig;
-            imageView.setImage(raster);
-            System.out.println("Loaded raster: " + imgWOrig + "x" + imgHOrig + ", aspect ratio: " + aspectRatio);
-        } else {
-            System.err.println("Failed to load raster image!");
-            aspectRatio = 1.8; // Default aspect ratio for world map
+        // Trigger shapefile loading
+        loadMapData();
+
+
+        // When both ready → render overlays
+        imageReady.and(shapefileReady).addListener((obs, wasReady, nowReady) -> {
+            if (nowReady) {
+                renderOverlays();
+            }
+        });
+
+        setupMapContainer();
+        setupMapBindings();
+        overlay.setOnMouseClicked(this::onMapClicked);
+    }
+
+    private void onMapClicked(MouseEvent event) {
+        double displayedW = overlay.getWidth();
+        double displayedH = overlay.getHeight();
+
+        if (displayedW <= 0 || displayedH <= 0) {
+            System.err.println("Overlay dimensions not ready for click handling.");
+            return;
         }
 
-        // Set up bindings for the map within its container
-        setupMapBindings(mapContainer);
-
-        // Click handler for the map
-        innerMapPane.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                event -> controller.handleMapClick(event, innerMapPane.getWidth(), innerMapPane.getHeight(), featureInfos, countryLabel));
+        controller.handleMapClick(event, displayedW, displayedH, featureInfos, countryLabel);
     }
 
     private void loadMapData() {
-        // Show loading indicator
-        ProgressIndicator progress = new ProgressIndicator();
-        progress.setMaxSize(100, 100);
-        StackPane loadingOverlay = new StackPane(progress);
-        loadingOverlay.setStyle("-fx-background-color: rgba(0,0,0,0.2);");
-        innerMapPane.getChildren().add(loadingOverlay); // Add to the innerMapPane
-
-        // Load data in background thread
         Task<List<MapService.FeatureInfo>> loadTask = new Task<>() {
             @Override
             protected List<MapService.FeatureInfo> call() {
                 return mapService.loadShapefileData();
             }
         };
-
-        loadTask.setOnSucceeded(event -> {
+        loadTask.setOnSucceeded(e -> {
             featureInfos.addAll(loadTask.getValue());
-            innerMapPane.getChildren().remove(loadingOverlay); // Remove from innerMapPane
-            // Force redraw of map overlays
-            Platform.runLater(() -> renderOverlays());
+            shapefileReady.set(true);
         });
-
-        // Handle failure
-        loadTask.setOnFailed(event -> {
-            innerMapPane.getChildren().remove(loadingOverlay); // Remove from innerMapPane
-            showError("Failed to load map data: " + loadTask.getException().getMessage());
-        });
-
-        // Start loading
         new Thread(loadTask).start();
     }
 
@@ -168,149 +183,48 @@ public class GameView extends VBox {
         innerMapPane.getChildren().add(errorOverlay); // Add to innerMapPane
     }
 
-    private void setupMapBindings(StackPane mapFrame) { // Now takes mapContainer as mapFrame
-        // Calculate available space for the map
-        DoubleBinding availableWidth = Bindings.createDoubleBinding(
-                () -> {
-                    double containerWidth = mapFrame.getWidth();
-                    if (containerWidth <= 0 || containerWidth > 2000) {
-                        containerWidth = Constants.DEFAULT_WINDOW_WIDTH; // Fallback
-                    }
-                    // Account for mapContainer padding
-                    double effectiveWidth = containerWidth - mapFrame.getPadding().getLeft() - mapFrame.getPadding().getRight();
-                    return Math.max(Constants.MIN_MAP_WIDTH,
-                            Math.min(effectiveWidth * Constants.MAP_AREA_FACTOR, Constants.MAX_MAP_WIDTH));
-                },
-                mapFrame.widthProperty(), mapFrame.paddingProperty()
-        );
+    private void setupMapContainer() {
+        clipRect = new Rectangle();
+        mapContainer.setClip(clipRect);
 
-        DoubleBinding availableHeight = Bindings.createDoubleBinding(
-                () -> {
-                    double containerHeight = mapFrame.getHeight();
-                    if (containerHeight <= 0 || containerHeight > 1500) {
-                        containerHeight = Constants.DEFAULT_WINDOW_HEIGHT; // Fallback
-                    }
-                    // Account for mapContainer padding
-                    double effectiveHeight = containerHeight - mapFrame.getPadding().getTop() - mapFrame.getPadding().getBottom();
-                    return Math.max(Constants.MIN_MAP_HEIGHT,
-                            Math.min(effectiveHeight, Constants.MAX_MAP_HEIGHT));
-                },
-                mapFrame.heightProperty(), mapFrame.paddingProperty()
-        );
+        // Bind clip rectangle to container
+        clipRect.widthProperty().bind(mapContainer.widthProperty());
+        clipRect.heightProperty().bind(mapContainer.heightProperty());
 
-        // Calculate optimal map dimensions based on aspect ratio
-        DoubleBinding mapWidth = Bindings.createDoubleBinding(
-                () -> {
-                    double availW = availableWidth.get();
-                    double availH = availableHeight.get();
+        // Bind mapContainer width to 90% of scene width
+        mapContainer.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                mapContainer.prefWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
 
-                    if (availW <= 0 || availH <= 0) return Constants.MIN_MAP_WIDTH;
+                // Maintain 2:1 aspect ratio
+                mapContainer.prefHeightProperty().bind(mapContainer.prefWidthProperty().divide(2));
+            }
+        });
+    }
 
-                    // Calculate width based on height constraint
-                    double widthByHeight = availH * aspectRatio;
 
-                    // Use the more constraining dimension
-                    double finalWidth = Math.min(availW, widthByHeight);
 
-                    return Math.max(Constants.MIN_MAP_WIDTH,
-                            Math.min(finalWidth, Constants.MAX_MAP_WIDTH));
-                },
-                availableWidth, availableHeight
-        );
+    private void setupMapBindings() {
+        innerMapPane.prefWidthProperty().bind(mapContainer.widthProperty());
+        innerMapPane.prefHeightProperty().bind(mapContainer.heightProperty());
 
-        DoubleBinding mapHeight = Bindings.createDoubleBinding(
-                () -> {
-                    double width = mapWidth.get();
-                    double height = width / aspectRatio;
-                    return Math.max(Constants.MIN_MAP_HEIGHT,
-                            Math.min(height, Constants.MAX_MAP_HEIGHT));
-                },
-                mapWidth
-        );
-
-        // Bind innerMapPane dimensions to calculated map dimensions
-        innerMapPane.prefWidthProperty().bind(mapWidth);
-        innerMapPane.prefHeightProperty().bind(mapHeight);
-        innerMapPane.maxWidthProperty().bind(mapWidth);
-        innerMapPane.maxHeightProperty().bind(mapHeight);
-        innerMapPane.minWidthProperty().set(Constants.MIN_MAP_WIDTH);
-        innerMapPane.minHeightProperty().set(Constants.MIN_MAP_HEIGHT);
-
-        // Bind image view to inner pane
+        // Let the image stretch to fill box (cropping handled by clipRect)
         imageView.fitWidthProperty().bind(innerMapPane.widthProperty());
         imageView.fitHeightProperty().bind(innerMapPane.heightProperty());
 
-        // Bind overlay to match inner pane exactly
-        overlay.prefWidthProperty().bind(innerMapPane.widthProperty());
-        overlay.prefHeightProperty().bind(innerMapPane.heightProperty());
-        overlay.minWidthProperty().bind(innerMapPane.minWidthProperty());
-        overlay.minHeightProperty().bind(innerMapPane.minHeightProperty());
-        overlay.maxWidthProperty().bind(innerMapPane.maxWidthProperty());
-        overlay.maxHeightProperty().bind(innerMapPane.maxHeightProperty());
+        //For resizing
+        overlay.widthProperty().addListener((obs, oldVal, newVal) -> renderOverlays());
+        overlay.heightProperty().addListener((obs, oldVal, newVal) -> renderOverlays());
+    }
 
-        // Redraw overlays when display size changes with debouncing
-        SimpleBooleanProperty needsRedraw = new SimpleBooleanProperty(false);
-        Timeline debouncer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
-            if (needsRedraw.get()) {
-                needsRedraw.set(false);
-                Platform.runLater(this::renderOverlays);
-            }
-        }));
-        debouncer.setCycleCount(Timeline.INDEFINITE);
-        debouncer.play();
+    private void adjustContainerSize() {
+        double containerWidth = mapContainer.getWidth();
+        double calculatedHeight = containerWidth / aspectRatio;
 
-        ChangeListener<Number> sizeChangeListener = (obs, oldV, newV) -> {
-            if (newV != null && !newV.equals(oldV)) {
-                needsRedraw.set(true);
-            }
-        };
-
-        mapWidth.addListener(sizeChangeListener);
-        mapHeight.addListener(sizeChangeListener);
-
-        // Handle window state changes
-        this.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                Stage stage = (Stage) newScene.getWindow();
-                if (stage != null) {
-                    // Listen for window state changes
-                    stage.maximizedProperty().addListener((prop, wasMax, isMax) -> {
-                        Platform.runLater(() -> {
-                            this.requestLayout();
-                            Timeline layoutDelay = new Timeline(new KeyFrame(Duration.millis(200),
-                                    evt -> renderOverlays()));
-                            layoutDelay.play();
-                        });
-                    });
-
-                    // Add window shown listener to ensure proper initial sizing
-                    if (!stage.isShowing()) {
-                        stage.setOnShown(evt -> {
-                            Platform.runLater(() -> {
-                                this.requestLayout();
-                                // Allow more time for the initial render
-                                Timeline initialSizeDelay = new Timeline(
-                                        new KeyFrame(Duration.millis(100), e -> {
-                                            double w = this.getWidth();
-                                            double h = this.getHeight();
-                                            System.out.println("Initial layout complete: " + w + "x" + h);
-                                            renderOverlays();
-                                        })
-                                );
-                                initialSizeDelay.play();
-                            });
-                        });
-                    }
-                }
-            }
-        });
-
-        // Initial render after layout
-        Platform.runLater(() -> {
-            Timeline initialRender = new Timeline(new KeyFrame(Duration.millis(300),
-                    e -> renderOverlays()));
-            initialRender.play();
-        });
+        // Ensure the height is calculated to match the aspect ratio
+        if (mapContainer.getHeight() != calculatedHeight) {
+            mapContainer.setPrefHeight(calculatedHeight);
+        }
     }
 
     /** Clear and redraw overlays (polylines) to match current overlay size and scale. */
@@ -328,30 +242,6 @@ public class GameView extends VBox {
 
         double displayedW = overlay.getWidth();
         double displayedH = overlay.getHeight();
-
-        if (displayedW <= 1 || displayedH <= 1) {
-            renderRetryCount++;
-            System.out.println("Overlay dimensions not ready: " + displayedW + "x" + displayedH +
-                    " (retry " + renderRetryCount + "/" + MAX_RENDER_RETRIES + ")");
-
-            // Only retry if we haven't exceeded the limit
-            if (renderRetryCount < MAX_RENDER_RETRIES) {
-                Platform.runLater(() -> {
-                    Timeline retryRender = new Timeline(new KeyFrame(Duration.millis(500),
-                            e -> renderOverlays()));
-                    retryRender.play();
-                });
-            } else {
-                System.err.println("Failed to initialize overlay dimensions after " + MAX_RENDER_RETRIES + " retries");
-                // Force a layout update one more time
-                Platform.runLater(() -> {
-                    this.requestLayout();
-                    innerMapPane.requestLayout();
-                    overlay.requestLayout();
-                });
-            }
-            return;
-        }
 
         // Reset retry count on successful render
         renderRetryCount = 0;

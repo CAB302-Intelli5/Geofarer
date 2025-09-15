@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.Pane?>
-<fx:root type="javafx.scene.layout.VBox" alignment="CENTER" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT">
         <!-- Top Header Bar -->
         <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
                 <Region HBox.hgrow="ALWAYS" />
@@ -51,15 +51,18 @@
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport" />
         </HBox>
 
-        <!-- Map Container (Game Area) -->
-        <StackPane fx:id="mapContainer" VBox.vgrow="ALWAYS" alignment="CENTER" style="-fx-background-color: #f8f8f8; -fx-padding: 20;">
-            <!-- The map content (imageView, overlay) will be programmatically added here in the GameView java file-->
-            <!-- Initial content for mapContainer to be able to bind to it -->
-            <StackPane fx:id="innerMapPane" style="-fx-background-color: white; -fx-border-color: #999; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6;">
-                    <ImageView fx:id="imageView" preserveRatio="true" smooth="true" cache="true" />
-                    <Pane fx:id="overlay" pickOnBounds="false" />
+    <HBox alignment="CENTER">
+        <StackPane fx:id="mapContainer"
+                   maxWidth="Infinity"
+                   VBox.vgrow="ALWAYS"
+                   HBox.hgrow="NEVER"
+                   style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;">
+            <StackPane fx:id="innerMapPane">
+                <ImageView fx:id="imageView" preserveRatio="true" />
+                <Pane fx:id="overlay" />
             </StackPane>
         </StackPane>
+    </HBox>
 
         <!-- Bottom Bar for Country Label -->
         <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
