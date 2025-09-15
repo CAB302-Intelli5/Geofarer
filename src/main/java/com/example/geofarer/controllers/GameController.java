@@ -1,10 +1,11 @@
 package com.example.geofarer.controllers;
 
 import com.example.geofarer.services.MapService;
-import com.example.geofarer.utils.SceneManager;
-import com.example.geofarer.views.LandingPageView;
+import com.example.geofarer.utils.PageLoader;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -13,12 +14,12 @@ import javafx.scene.layout.Pane;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Affine;
+import javafx.stage.Stage;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-import javax.swing.text.html.ImageView;
 import java.util.List;
 import java.util.Random;
 
@@ -257,7 +258,25 @@ public class GameController {
 
 
     // Navigation Logic
-    public void doLogin() { System.out.println("Login button clicked!"); }
+    public void doLogin(Button button) {
+        if (button == null) {
+            System.out.println("Login button is null");
+            return;
+        }
+
+        Scene scene = button.getScene();
+        if (scene == null) {
+            System.out.println("Scene is null");
+            return;
+        }
+
+        System.out.println("Login button clicked");
+
+        Stage stage = (Stage) button.getScene().getWindow();
+        // Use the PageLoader to open the SignUpPage
+        PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+    }
+
     public void showGameModes() { System.out.println("Game Modes clicked!"); }
     public void showExplore() { System.out.println("Explore clicked!"); }
     public void showLeaders() { System.out.println("Leaders clicked!"); }
