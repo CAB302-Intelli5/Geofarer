@@ -35,13 +35,6 @@ public class LandingPageController {
         System.out.println("Play button clicked, initializing game view");
         GameView gameView = new GameView(true);
         SceneManager.switchToScene(gameView);
-
-        PauseTransition delay = new PauseTransition(Duration.millis(100)); // Shortened delay
-        delay.setOnFinished(e -> {
-            System.out.println("Initializing map");
-            gameView.initializeMap();
-        });
-        delay.play();
     }
 
     public void showLogin() { }

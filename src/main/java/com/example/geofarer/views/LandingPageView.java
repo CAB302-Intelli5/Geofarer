@@ -47,6 +47,8 @@ public class LandingPageView extends StackPane {
 
         Button playButton = new Button("PLAY NOW");
         playButton.setFont(Font.font("System", FontWeight.BOLD, 24));
+
+        //On button click start the game
         playButton.setOnAction(e -> controller.startGame());
 
         overlay.getChildren().addAll(welcomeLabel, playButton);
