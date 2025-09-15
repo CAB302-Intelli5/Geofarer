@@ -46,6 +46,8 @@ public class GameController {
     private boolean isPanning = false;
     private boolean dragDetected = false;
 
+    private String clickedCountryCode = "XXX";
+
 
     @FXML
     public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer) {
@@ -104,10 +106,14 @@ public class GameController {
         for (MapService.FeatureInfo fi: featureInfos) {
             if (fi.geom.contains(clickedPoint)){
                 clickedCountry = fi.name;
+                clickedCountryCode = fi.fips10;
                 System.out.println(clickedCountry);
                 break; // Found the country, stop searching
             }
         }
+        System.out.println(clickedCountryCode);
+        if (clickedCountryCode.equals("XXX")) return; // ignore unknown click
+        
         if (clickedCountry.equals("Unknown")){
             return; // ignore this click
         }

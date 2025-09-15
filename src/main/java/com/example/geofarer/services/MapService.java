@@ -30,11 +30,13 @@ public class MapService {
     public static class FeatureInfo {
         public final Geometry geom;
         public final String name;
+        public final String fips10;
         public final List<Polyline> shapes = new ArrayList<>();
 
-        public FeatureInfo(Geometry geom, String name) {
+        public FeatureInfo(Geometry geom, String name, String fips10) {
             this.geom = geom;
             this.name = name;
+            this.fips10 = fips10;
         }
     }
 
@@ -132,7 +134,15 @@ public class MapService {
                     }
 
                     String name = extractName(f);
-                    FeatureInfo fi = new FeatureInfo(simplified, name);
+
+                    String adm0A3 = "XXX"; // default unknown
+                    Object adm0Attr = f.getAttribute("FIPS_10");
+                    if (adm0Attr != null) {
+                        adm0A3 = adm0Attr.toString();
+                    }
+
+                    // Create FeatureInfo with ADM0_A3
+                    FeatureInfo fi = new FeatureInfo(simplified, name, adm0A3);
                     featureInfos.add(fi);
                     featureCount++;
                 }
