@@ -13,6 +13,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import org.geotools.geometry.jts.JTSFactoryFinder;

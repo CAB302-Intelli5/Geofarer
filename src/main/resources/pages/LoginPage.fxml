@@ -53,7 +53,7 @@
                     <!-- Buttons for logging in and going back -->
                     <HBox alignment="CENTER" spacing="20" maxWidth="Infinity">
                         <Button fx:id="goBackButton" text="Go Back" onAction="#onGoBackClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
-                        <Button text="Login" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
+                        <Button fx:id="loginButton" text="Login" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
                     </HBox>
 
                     <Label text="Don't have an account? Sign up here."
