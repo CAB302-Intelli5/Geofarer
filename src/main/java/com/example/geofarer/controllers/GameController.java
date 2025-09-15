@@ -28,8 +28,7 @@ public class GameController {
     @FXML Label countryLabel;
     private Pane overlay;
     private StackPane innerMapPane;
-
-
+    private StackPane mapContainer;
 
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
@@ -45,12 +44,13 @@ public class GameController {
     private boolean dragDetected = false;
 
     @FXML
-    public void initializeController(Label targetCountryLabel, Label countryLabel, Pane overlay, StackPane innerMapPane) {
+    public void initializeController(Label targetCountryLabel, Label countryLabel, Pane overlay, StackPane innerMapPane, StackPane mapContainer) {
         // Use "this." to refer to the instance variables of the GameController class
         this.targetCountryLabel = targetCountryLabel;
         this.countryLabel = countryLabel;
         this.overlay = overlay;
         this.innerMapPane = innerMapPane;
+        this.mapContainer = mapContainer;
 
         if (this.targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: Loading...");
@@ -150,6 +150,7 @@ public class GameController {
 
     public void handleMousePress(MouseEvent event) {
         if (event.isPrimaryButtonDown()) {
+            dragDetected = false;
             lastPanX = event.getX();
             lastPanY = event.getY();
             isPanning = true;
@@ -216,8 +217,30 @@ public class GameController {
     }
 
     private void applyTransformWithBounds(Affine transform) {
+        // Get the dimensions of the container (the viewport)
+        final double containerWidth = mapContainer.getWidth();
+        final double containerHeight = mapContainer.getHeight();
+
+        // Get the dimensions of the content (the map) at the current zoom level
+        final double contentWidth = containerWidth * zoomLevel;
+        final double contentHeight = containerHeight * zoomLevel;
+
         double translateX = transform.getTx();
         double translateY = transform.getTy();
+
+        //Lets create a bounding box
+
+        double minTranslateX = containerWidth - contentWidth;
+        double maxTranslateX = 0;
+
+        double minTranslateY = containerHeight - contentHeight;
+        double maxTranslateY = 0;
+
+        //Keep translation between the bounds
+        translateX = Math.max(minTranslateX, Math.min(maxTranslateX, translateX));
+        translateY = Math.max(minTranslateY, Math.min(maxTranslateY, translateY));
+
+
         Affine boundedTransform = new Affine();
         boundedTransform.prependScale(zoomLevel, zoomLevel);
         boundedTransform.prependTranslation(translateX, translateY);

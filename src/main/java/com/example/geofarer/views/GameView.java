@@ -103,7 +103,7 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane);
+        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane, mapContainer);
         // Load image async
         Task<Image> imgTask = new Task<>() {
             @Override
