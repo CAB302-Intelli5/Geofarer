@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.Image?>
+
+<StackPane fx:id="root"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.geofarer.controllers.LandingPageController"
+           maxWidth="Infinity"
+           maxHeight="Infinity">
+
+    <!-- Background map -->
+    <children>
+        <ImageView fx:id="backgroundMap"
+                   preserveRatio="false"
+                   fitWidth="${root.width}"
+                   fitHeight="${root.height}" />
+
+        <!-- Overlay -->
+        <VBox fx:id="overlay"
+              alignment="CENTER"
+              spacing="20"
+              style="-fx-background-color: rgba(0,0,0,0.5);"
+              StackPane.alignment="CENTER">
+            <children>
+                <Label fx:id="welcomeLabel"
+                       text="Welcome to Geofarer"
+                       textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="48"/>
+                    </font>
+                </Label>
+
+                <Button fx:id="playButton"
+                        text="PLAY NOW"
+                        onAction="#startGame">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Button>
+            </children>
+        </VBox>
+        
+        <!-- Login Icon Button -->
+        <Button fx:id="loginButton"
+                onAction="#onLoginButtonClick"
+                StackPane.alignment="TOP_RIGHT">
+            <graphic>
+                <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+                    <image>
+                        <Image url="/images/login_icon.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <StackPane.margin>
+                <Insets top="10" right="10"/>
+            </StackPane.margin>
+        </Button>
+    </children>
+</StackPane>

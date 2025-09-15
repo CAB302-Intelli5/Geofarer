@@ -1,49 +1,43 @@
 package com.example.geofarer.controllers;
 
-
+import com.example.geofarer.utils.PageLoader;
 import com.example.geofarer.utils.SceneManager;
 import com.example.geofarer.views.GameView;
-import javafx.util.Duration;
 import javafx.animation.PauseTransition;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class LandingPageController {
+
+    private Button loginButton;
+
+    // Method for the View to pass the button reference
+    public void setLoginButton(Button loginButton) {
+        this.loginButton = loginButton;
+    }
+
+    /**
+     * Handles the click event for the login button.
+     * Navigates the user to the login page.
+     */
+
+    public void onLoginButtonClick() {
+        if (loginButton != null && loginButton.getScene() != null && loginButton.getScene().getWindow() != null) {
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+        } else {
+            System.err.println("Could not get the stage from the login button.");
+        }
+    }
+
     public void startGame() {
         System.out.println("Play button clicked, initializing game view");
-        // Create game view with delayed initialization
-        GameView gameView = new GameView(true); // Use the constructor with the delay parameter
-        
-        // Switch to the scene first (only call this once)
-        System.out.println("Switching to game scene");
+        GameView gameView = new GameView(true);
         SceneManager.switchToScene(gameView);
-        
-        // Wait for the scene to be properly laid out before initializing map
-        System.out.println("Setting up map initialization delay");
-        PauseTransition delay = new PauseTransition(Duration.millis(2000)); // Increased delay
-        delay.setOnFinished(e -> {
-            System.out.println("Initializing map");
-            // Force layout update before map initialization
-            gameView.applyCss();
-            gameView.autosize();
-            gameView.requestLayout();
-            
-            // Additional delay to ensure layout is complete
-            PauseTransition layoutDelay = new PauseTransition(Duration.millis(500));
-            layoutDelay.setOnFinished(event -> {
-                System.out.println("Layout complete, starting map initialization");
-                gameView.initializeMap();
-            });
-            layoutDelay.play();
-        });
-        delay.play();
-    }
-    public void showLogin() {
-
-    }
-    public void showRegister() {
-
     }
 
-    public void showStats(){
-
-    }
+    public void showLogin() { }
+    public void showRegister() { }
+    public void showStats() { }
 }
