@@ -27,6 +27,6 @@ public class PageLoader {
         GameView gameView = new GameView(); // GameView now loads its own FXML internally
         stage.setTitle(title);
         SceneManager.switchToScene(gameView);
-        Platform.runLater(gameView::initializeMap);
+        stage.setOnShown(e -> gameView.initializeMap());
     }
 }

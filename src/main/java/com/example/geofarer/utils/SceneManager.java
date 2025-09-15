@@ -38,6 +38,7 @@ public class SceneManager {
         } else {
             primaryStage.setScene(new Scene(root, currentScene.getWidth(), currentScene.getHeight())); //Uses last scenes dimensions
         }
+        primaryStage.show();
     }
 
 
