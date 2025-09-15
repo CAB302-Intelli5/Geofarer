@@ -1,0 +1,82 @@
+package com.example.geofarer.controllers;
+
+import com.example.geofarer.services.MapService;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+class GameControllerTest {
+
+    @BeforeAll
+    static void initToolkit() {
+        // This will start JavaFX in headless mode
+        Platform.startup(() -> {});
+    }
+
+    private GameController controller;
+    private Label targetCountryLabel;
+    private Label countryLabel;
+    private Pane overlay;
+    private StackPane innerMapPane;
+    private StackPane mapContainer;
+
+    @BeforeEach
+    void setUp() {
+        controller = new GameController();
+        targetCountryLabel = mock(Label.class);
+        countryLabel = mock(Label.class);
+        overlay = mock(Pane.class);
+        innerMapPane = mock(StackPane.class);
+        mapContainer = mock(StackPane.class);
+
+        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane, mapContainer);
+    }
+
+    @Test
+    void testSetFeatureInfosSelectsTargetCountry() {
+        GeometryFactory geomFactory = new GeometryFactory();
+        MapService.FeatureInfo country = new MapService.FeatureInfo(geomFactory.createPoint(new Coordinate(0,0)), "TestLand");
+
+        controller.setFeatureInfos(Collections.singletonList(country));
+
+        // Target country should be set to "TestLand"
+        assertEquals("TestLand", controller.getTargetCountry());
+        verify(targetCountryLabel).setText("Target Country: TestLand");
+    }
+
+    @Test
+    void testProcessMapClickUpdatesLabel() {
+        GeometryFactory geomFactory = new GeometryFactory();
+        MapService.FeatureInfo country = new MapService.FeatureInfo(geomFactory.createPoint(new Coordinate(0,0)), "TestLand");
+
+        controller.setFeatureInfos(Collections.singletonList(country));
+        controller.setTargetCountry("TestLand");
+
+        // Mock overlay size
+        when(overlay.getWidth()).thenReturn(100.0);
+        when(overlay.getHeight()).thenReturn(100.0);
+
+        // Mock innerMapPane.sceneToLocal to return the center
+        when(innerMapPane.sceneToLocal(anyDouble(), anyDouble()))
+                .thenReturn(new javafx.geometry.Point2D(50, 50));
+
+        // Simulate click
+        javafx.scene.input.MouseEvent mockEvent = mock(javafx.scene.input.MouseEvent.class);
+        controller.processMapClick(mockEvent);
+
+        verify(countryLabel).setText("Success! You clicked TestLand");
+    }
+}
+
+
