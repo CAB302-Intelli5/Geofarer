@@ -52,6 +52,7 @@ public class GameView extends VBox {
     @FXML private ImageView imageView;
     @FXML private Pane overlay;
     @FXML private Label countryLabel;
+    @FXML private  Label targetCountryLabel;
 
     // Map components
     private double imgWOrig = 0;
@@ -59,26 +60,11 @@ public class GameView extends VBox {
     private double aspectRatio = 1.0;
     private final List<MapService.FeatureInfo> featureInfos = new ArrayList<>();
 
-    //retry tracking
-    private int renderRetryCount = 0;
-    private static final int MAX_RENDER_RETRIES = 20;
-
     private final SimpleBooleanProperty imageReady = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty shapefileReady = new SimpleBooleanProperty(false);
 
     //Clipping rectange for boundaries of the map
     private Rectangle clipRect;
-
-    //Zooming Fields
-    private double zoomLevel = 1.0;
-    private static final double MIN_ZOOM = 1.0;
-    private static final double MAX_ZOOM = 5.0;
-    private static final double ZOOM_FACTOR = 1.2;
-
-    //Panning fields
-    private double lastPanX = 0;
-    private double lastPanY = 0;
-    private boolean isPanning = false;
 
     public GameView() {
         this(false); // Default to immediate initialization
@@ -98,7 +84,6 @@ public class GameView extends VBox {
             // provides an exception if the fxml file cannot be loaded
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
-        initialize();
 
         if (!delayInitialization) {
             loadMapData();
@@ -118,6 +103,7 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
+        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane, mapContainer);
         // Load image async
         Task<Image> imgTask = new Task<>() {
             @Override
@@ -150,14 +136,18 @@ public class GameView extends VBox {
 
         setupMapContainer();
         setupMapBindings();
-        setupZoomAndPan();
-        overlay.setOnMouseClicked(event -> {
-            if (!isPanning && event.getButton() == MouseButton.PRIMARY) { // Ignore clicks if panning
-                controller.handleMapClick(event, overlay.getWidth(), overlay.getHeight(), featureInfos, countryLabel);
-            }
-        });
+        setupEventDelegation();
+    }
 
-        //Lets force a layout calculation after the scene is shown.
+    private void setupEventDelegation() {
+        // Delegate zoom and pan events
+        innerMapPane.setOnScroll(controller::handleScroll);
+        innerMapPane.setOnMousePressed(controller::handleMousePress);
+        innerMapPane.setOnMouseDragged(controller::handleMouseDrag);
+        innerMapPane.setOnMouseReleased(controller::handleMouseRelease);
+
+        // Delegate right-click for reset
+        innerMapPane.setOnMouseClicked(controller::handleViewClick);
     }
 
 
@@ -171,6 +161,10 @@ public class GameView extends VBox {
         loadTask.setOnSucceeded(e -> {
             featureInfos.addAll(loadTask.getValue());
             shapefileReady.set(true);
+
+            //Set up the game data
+            controller.setFeatureInfos(featureInfos);
+            controller.selectNewTarget();
         });
         new Thread(loadTask).start();
     }
@@ -257,8 +251,6 @@ public class GameView extends VBox {
         double displayedW = overlay.getWidth();
         double displayedH = overlay.getHeight();
 
-        // Reset retry count on successful render
-        renderRetryCount = 0;
 
         System.out.println("Rendering overlays: " + displayedW + "x" + displayedH +
                 " (original: " + imgWOrig + "x" + imgHOrig + ")");
@@ -350,195 +342,11 @@ public class GameView extends VBox {
         }
     }
 
-    //Setting up zoom and pan
+    // FXML event handlers - These delegate to the controller
+    @FXML private void handleLoginButton() { controller.doLogin(); }
+    @FXML private void handleGameModes() { controller.showGameModes(); }
+    @FXML private void handleExplore() { controller.showExplore(); }
+    @FXML private void handleLeaders() { controller.showLeaders(); }
+    @FXML private void handleMyPassport() { controller.showMyPassport(); }
 
-    private void setupZoomAndPan() {
-        //Using the mouse wheel for zooming
-        innerMapPane.setOnScroll(event -> {
-            //We are now scrolling
-            event.consume();
-
-            double deltaY = event.getDeltaY();
-            if (deltaY == 0) return;
-
-            double scaleFactor = (deltaY > 0) ? ZOOM_FACTOR : 1/ ZOOM_FACTOR;
-            double newZoom = zoomLevel * scaleFactor; //We can change teh scale factor if we want to make it quicker or slower
-
-            //Clamp the zoom level
-            newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom)); //Takes the new zoom if it is between the min and max
-
-            if (newZoom != zoomLevel) {
-                //Get the nouse position relative to the innerMapPane which si where we will zoom into
-                double mouseX = event.getX();
-                double mouseY = event.getY();
-
-                //Calculate that zoom
-                zoomAroundPoint(newZoom, mouseX, mouseY);
-            }
-        });
-
-        //We now have the new zoom so lets do panning, this is done while the mouse is pressed
-
-        innerMapPane.setOnMousePressed(event -> {
-            if (event.isPrimaryButtonDown()) {
-                lastPanX = event.getX();
-                lastPanY = event.getY();
-                isPanning = true;
-                innerMapPane.setCursor(Cursor.CLOSED_HAND); //This just makes a nice graphic for us to use (hopefully)
-                event.consume();;
-            }
-        });
-
-        //We now know the if mouse is pressed we now need to know if it is dragged
-        //Here there is mouse dragged exit, I think it should be live even if it is more compyutationally heavy
-        innerMapPane.setOnMouseDragged(event -> {
-            if(isPanning && event.isPrimaryButtonDown()) {
-                double deltaX = event.getX() - lastPanX;
-                double deltaY = event.getY() - lastPanY;
-
-                pan(deltaX, deltaY); //Call the pan function
-
-                lastPanX = event.getX();
-                lastPanY = event.getY();
-                event.consume();
-            }
-        });
-
-        //Stop panning on mouse release
-        innerMapPane.setOnMouseReleased(event -> {
-            if (isPanning) {
-                isPanning = false;
-                innerMapPane.setCursor(Cursor.DEFAULT);
-                event.consume();
-            }
-        });
-
-        //lets have right click resetting the zoom back to normal
-        innerMapPane.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY){
-                resetZoomAndPan();
-                event.consume();
-                System.out.println("Right click detected");
-            }
-        });
-    }
-
-
-    private void zoomAroundPoint(double newZoom, double pivotX, double pivotY) {
-        double currentTranslateX = 0;
-        double currentTranslateY = 0;
-        if (!innerMapPane.getTransforms().isEmpty()) {
-            javafx.scene.transform.Transform currentTransform = innerMapPane.getTransforms().get(0);
-            currentTranslateX = currentTransform.getTx();
-            currentTranslateY = currentTransform.getTy();
-        }
-        double scaleFactor = newZoom / zoomLevel;
-
-        double newTranslateX = pivotX - (pivotX - currentTranslateX) * scaleFactor;
-        double newTranslateY = pivotY - (pivotY - currentTranslateY) * scaleFactor;
-
-
-        zoomLevel = newZoom;
-
-        //calculate the new transform
-        javafx.scene.transform.Affine newTransform = new javafx.scene.transform.Affine();
-
-        //zoom arounnd the mouse point
-        newTransform.prependScale(zoomLevel, zoomLevel);
-        newTransform.prependTranslation(newTranslateX, newTranslateY);
-
-        //Check the bounds
-        applyTransormWithBounds(newTransform);
-    }
-
-    //Panning function that updates the view
-    private void pan(double deltaX, double deltaY) {
-        //Get current transform
-        javafx.scene.transform.Transform currentTransform = innerMapPane.getTransforms().isEmpty() ?
-                new javafx.scene.transform.Affine() :
-                innerMapPane.getTransforms().get(0);
-
-        //create a new transform
-        javafx.scene.transform.Affine newTransform = new javafx.scene.transform.Affine(currentTransform);
-        newTransform.prependTranslation(deltaX, deltaY);
-
-        applyTransormWithBounds(newTransform);
-
-    }
-
-    //Function that actually applies the transform
-    private void applyTransormWithBounds(javafx.scene.transform.Affine transform) {
-        //Get the bouynds of the content
-        // double contentWidth = mapContainer.getWidth() * zoomLevel;
-        // double contentHeight = mapContainer.getHeight() * zoomLevel;
-        // double containerWidth = mapContainer.getWidth();
-        // double containerHeight = mapContainer.getHeight();
-
-        //Get translation values
-        double translateX = transform.getTx();
-        double translateY = transform.getTy();
-
-        // //only apply the bounds if content is larger than container
-        // if (contentWidth > containerWidth) {
-        //     double maxTranslateX = 0;
-        //     double minTranslateX = (containerWidth - contentWidth) / zoomLevel;
-        //     translateX = Math.max(minTranslateX, Math.min(maxTranslateX, translateX)); //Same logic as zooming
-        // } else {
-        //     translateX = (containerWidth - contentWidth) / (2 * zoomLevel); //Center the conent
-        // }
-        // if (contentHeight > containerHeight) {
-        //     double maxTranslateY = 0;
-        //     double minTranslateY = (containerHeight - contentHeight) / zoomLevel;
-        //     translateY = Math.max(minTranslateY, Math.min(maxTranslateY, translateY));
-        // } else {
-        //     //Cennter contertn
-        //     translateY = (containerHeight - contentHeight) / (2 * zoomLevel);
-        // }
-        //Apply the transform
-        javafx.scene.transform.Affine boundedTransform = new javafx.scene.transform.Affine();
-        boundedTransform.prependScale(zoomLevel, zoomLevel);
-        boundedTransform.prependTranslation(translateX, translateY);
-
-        innerMapPane.getTransforms().clear();
-        innerMapPane.getTransforms().add(boundedTransform);
-    }
-
-    //Resets the zoom and pan back to original
-    private void resetZoomAndPan() {
-        zoomLevel = 1.0;
-        innerMapPane.getTransforms().clear();
-        innerMapPane.setTranslateX(0);
-        innerMapPane.setTranslateY(0);
-    }
-
-    // FXML event handlers for navigation buttons
-    @FXML
-    private void handleLoginButton() {
-        System.out.println("Login button clicked!");
-        // Call handle for jaydens login
-    }
-
-    @FXML
-    private void handleGameModes() {
-        System.out.println("Game Modes clicked!");
-        // controller.navigateToGameModes();
-    }
-
-    @FXML
-    private void handleExplore() {
-        System.out.println("Explore clicked!");
-        // controller.navigateToExplore();
-    }
-
-    @FXML
-    private void handleLeaders() {
-        System.out.println("Leaders clicked!");
-        // controller.navigateToLeaders();
-    }
-
-    @FXML
-    private void handleMyPassport() {
-        System.out.println("My Passport clicked!");
-        // controller.navigateToMyPassport();
-    }
 }
