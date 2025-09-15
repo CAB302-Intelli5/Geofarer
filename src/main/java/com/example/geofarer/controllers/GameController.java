@@ -1,9 +1,11 @@
 package com.example.geofarer.controllers;
 
 import com.example.geofarer.services.MapService;
-import com.example.geofarer.utils.SceneManager;
-import com.example.geofarer.views.LandingPageView;
+import hints.HintsClient;
 import javafx.fxml.FXML;
+
+import javafx.scene.control.TextArea;
+
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
@@ -18,7 +20,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-import javax.swing.text.html.ImageView;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -29,6 +31,7 @@ public class GameController {
     private Pane overlay;
     private StackPane innerMapPane;
     private StackPane mapContainer;
+    private TextArea hintsTextArea;
 
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
@@ -43,11 +46,13 @@ public class GameController {
     private boolean isPanning = false;
     private boolean dragDetected = false;
 
+
     @FXML
-    public void initializeController(Label targetCountryLabel, Label countryLabel, Pane overlay, StackPane innerMapPane, StackPane mapContainer) {
+    public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer) {
         // Use "this." to refer to the instance variables of the GameController class
         this.targetCountryLabel = targetCountryLabel;
         this.countryLabel = countryLabel;
+        this.hintsTextArea = hintsTextArea;
         this.overlay = overlay;
         this.innerMapPane = innerMapPane;
         this.mapContainer = mapContainer;
@@ -57,6 +62,10 @@ public class GameController {
         }
         if (this.countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
+        }
+
+        if(this.hintsTextArea != null) {
+            hintsTextArea.setText("Hints go here.");
         }
     }
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
@@ -108,6 +117,16 @@ public class GameController {
             countryLabel.setText("Success! You clicked " + targetCountry);
         } else {
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
+            hintsTextArea.setText("Hint:" +findHint());
+        }
+    }
+    private String findHint() {
+        try {
+            HintsClient hintsClient = new HintsClient();
+            return hintsClient.findAllGermany();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace(); // Log or show alert if needed
+            return "Error loading country data.";
         }
     }
 

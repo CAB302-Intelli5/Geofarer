@@ -17,7 +17,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 
-
 public class SceneManager {
     private static Stage primaryStage;
     private static MapService mapService;

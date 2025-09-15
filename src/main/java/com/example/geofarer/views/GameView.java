@@ -19,6 +19,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -52,7 +53,8 @@ public class GameView extends VBox {
     @FXML private ImageView imageView;
     @FXML private Pane overlay;
     @FXML private Label countryLabel;
-    @FXML private  Label targetCountryLabel;
+    @FXML private TextArea hintsTextArea;
+    @FXML private Label targetCountryLabel;
 
     // Map components
     private double imgWOrig = 0;
@@ -103,7 +105,8 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane, mapContainer);
+        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer);
+
         // Load image async
         Task<Image> imgTask = new Task<>() {
             @Override
@@ -198,12 +201,12 @@ public class GameView extends VBox {
         clipRect.widthProperty().bind(mapContainer.widthProperty());
         clipRect.heightProperty().bind(mapContainer.heightProperty());
 
-        // Bind mapContainer width to 90% of scene width
+        // Bind mapContainer width to 70% of scene width
         mapContainer.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
-                mapContainer.prefWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
-                mapContainer.maxWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
-                mapContainer.minWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
+                mapContainer.prefWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.7));
+                mapContainer.maxWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.7));
+                mapContainer.minWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.7));
 
                 // Maintain 2:1 aspect ratio
                 mapContainer.prefHeightProperty().bind(mapContainer.prefWidthProperty().divide(2));
