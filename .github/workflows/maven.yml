@@ -21,7 +21,7 @@ jobs:
 
       - name: Build project
         run: mvn clean package -B
-
+        
       - name: Run unit tests with xvfb
         run: xvfb-run mvn test -B
 
