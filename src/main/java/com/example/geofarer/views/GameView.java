@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -150,65 +151,13 @@ public class GameView extends VBox {
         setupMapContainer();
         setupMapBindings();
         setupZoomAndPan();
-        overlay.setOnMouseClicked(this::onMapClicked);
-    }
-
-    private void onMapClicked(MouseEvent event) {
-        double displayedW = overlay.getWidth();
-        double displayedH = overlay.getHeight();
-
-        if (displayedW <= 0 || displayedH <= 0) {
-            System.err.println("Overlay dimensions not ready for click handling.");
-            return;
-        }
-        if(isPanning){ //ignore clicks if panning
-            return;
-        }
-
-        // Get the raw click coordinates
-        double clickX = event.getX();
-        double clickY = event.getY();
-
-        // Transform the coordinates back to the original coordinate space
-        if (!innerMapPane.getTransforms().isEmpty()) {
-            try {
-                javafx.scene.transform.Transform transform = innerMapPane.getTransforms().get(0);
-                javafx.scene.transform.Transform inverseTransform = transform.createInverse();
-
-                javafx.geometry.Point2D originalPoint = inverseTransform.transform(clickX, clickY);
-                clickX = originalPoint.getX();
-                clickY = originalPoint.getY();
-            } catch (javafx.scene.transform.NonInvertibleTransformException e) {
-                System.err.println("Could not invert transform for click handling: " + e.getMessage());
-                return;
+        overlay.setOnMouseClicked(event -> {
+            if (!isPanning && event.getButton() == MouseButton.PRIMARY) { // Ignore clicks if panning
+                controller.handleMapClick(event, overlay.getWidth(), overlay.getHeight(), featureInfos, countryLabel);
             }
-        }
-
-        MouseEvent transformedEvent = new MouseEvent(
-                event.getSource(),
-                event.getTarget(),
-                event.getEventType(),
-                clickX,
-                clickY,
-                event.getScreenX(),
-                event.getScreenY(),
-                event.getButton(),
-                event.getClickCount(),
-                event.isShiftDown(),
-                event.isControlDown(),
-                event.isAltDown(),
-                event.isMetaDown(),
-                event.isPrimaryButtonDown(),
-                event.isMiddleButtonDown(),
-                event.isSecondaryButtonDown(),
-                event.isSynthesized(),
-                event.isPopupTrigger(),
-                event.isStillSincePress(),
-                event.getPickResult()
-        );
-
-        controller.handleMapClick(transformedEvent, displayedW, displayedH, featureInfos, countryLabel);
+        });
     }
+
 
     private void loadMapData() {
         Task<List<MapService.FeatureInfo>> loadTask = new Task<>() {
@@ -464,9 +413,10 @@ public class GameView extends VBox {
 
         //lets have right click resetting the zoom back to normal
         innerMapPane.setOnMouseClicked(event -> {
-            if (event.isSecondaryButtonDown()){
+            if (event.getButton() == MouseButton.SECONDARY){
                 resetZoomAndPan();
                 event.consume();
+                System.out.println("Right click detected");
             }
         });
     }
@@ -555,6 +505,8 @@ public class GameView extends VBox {
     private void resetZoomAndPan() {
         zoomLevel = 1.0;
         innerMapPane.getTransforms().clear();
+        innerMapPane.setTranslateX(0);
+        innerMapPane.setTranslateY(0);
     }
 
     // FXML event handlers for navigation buttons
