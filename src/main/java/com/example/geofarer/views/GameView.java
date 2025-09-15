@@ -156,6 +156,8 @@ public class GameView extends VBox {
                 controller.handleMapClick(event, overlay.getWidth(), overlay.getHeight(), featureInfos, countryLabel);
             }
         });
+
+        //Lets force a layout calculation after the scene is shown.
     }
 
 
