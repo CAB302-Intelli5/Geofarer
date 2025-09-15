@@ -74,7 +74,7 @@ public class GameController {
             return;
         }
         javafx.geometry.Point2D localCoords = innerMapPane.sceneToLocal(event.getSceneX(), event.getSceneY());
-                                
+
         //The inner pane is designed to be seperate and therefore we get the width and height
         //Get the Coords from click
         double clickX = localCoords.getX();
@@ -270,5 +270,12 @@ public class GameController {
 
     public List<MapService.FeatureInfo> getFeatureInfos() {
         return featureInfos;
+    }
+
+    void setTargetCountry(String country) {
+        this.targetCountry = country;
+        if (targetCountryLabel != null) {
+            targetCountryLabel.setText("Target Country: " + country);
+        }
     }
 }
