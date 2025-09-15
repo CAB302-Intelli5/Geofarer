@@ -195,9 +195,13 @@ public class GameView extends VBox {
         mapContainer.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 mapContainer.prefWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
+                mapContainer.maxWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
+                mapContainer.minWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
 
                 // Maintain 2:1 aspect ratio
                 mapContainer.prefHeightProperty().bind(mapContainer.prefWidthProperty().divide(2));
+                mapContainer.maxHeightProperty().bind(mapContainer.prefWidthProperty().divide(2));
+                mapContainer.minHeightProperty().bind(mapContainer.prefWidthProperty().divide(2));
             }
         });
     }
@@ -207,24 +211,21 @@ public class GameView extends VBox {
     private void setupMapBindings() {
         innerMapPane.prefWidthProperty().bind(mapContainer.widthProperty());
         innerMapPane.prefHeightProperty().bind(mapContainer.heightProperty());
+        innerMapPane.minWidthProperty().bind(mapContainer.widthProperty());
+        innerMapPane.minHeightProperty().bind(mapContainer.heightProperty());
+        innerMapPane.maxWidthProperty().bind(mapContainer.widthProperty());
+        innerMapPane.maxHeightProperty().bind(mapContainer.heightProperty());
 
         // Let the image stretch to fill box (cropping handled by clipRect)
         imageView.fitWidthProperty().bind(innerMapPane.widthProperty());
         imageView.fitHeightProperty().bind(innerMapPane.heightProperty());
 
+
         //For resizing
         overlay.widthProperty().addListener((obs, oldVal, newVal) -> renderOverlays());
         overlay.heightProperty().addListener((obs, oldVal, newVal) -> renderOverlays());
-    }
 
-    private void adjustContainerSize() {
-        double containerWidth = mapContainer.getWidth();
-        double calculatedHeight = containerWidth / aspectRatio;
 
-        // Ensure the height is calculated to match the aspect ratio
-        if (mapContainer.getHeight() != calculatedHeight) {
-            mapContainer.setPrefHeight(calculatedHeight);
-        }
     }
 
     /** Clear and redraw overlays (polylines) to match current overlay size and scale. */

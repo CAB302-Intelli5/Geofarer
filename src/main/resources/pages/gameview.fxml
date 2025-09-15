@@ -50,7 +50,7 @@
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Leaders" onAction="#handleLeaders" />
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport" />
         </HBox>
-
+<!-- Game map -->
     <HBox alignment="CENTER">
         <StackPane fx:id="mapContainer"
                    maxWidth="Infinity"
@@ -58,7 +58,7 @@
                    HBox.hgrow="NEVER"
                    style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;">
             <StackPane fx:id="innerMapPane">
-                <ImageView fx:id="imageView" preserveRatio="true" />
+                <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
                 <Pane fx:id="overlay" />
             </StackPane>
         </StackPane>
