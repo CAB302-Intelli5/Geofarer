@@ -117,7 +117,7 @@ public class GameController {
             countryLabel.setText("Success! You clicked " + targetCountry);
         } else {
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
-            hintsTextArea.setText("Hint:" +findHint());
+            hintsTextArea.setText("Hint 1: " +findHint());
         }
     }
     private String findHint() {

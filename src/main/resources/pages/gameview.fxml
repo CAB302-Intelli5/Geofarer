@@ -83,7 +83,7 @@
 
         <!-- Text Area for the country hints from the CIA Factbook api -->
         <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
-            <TextArea fx:id="hintsTextArea" text="Loading hints...">
+            <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
                 <font>
                     <Font size="14.0" />
                 </font>
