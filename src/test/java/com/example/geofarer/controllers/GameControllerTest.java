@@ -20,7 +20,12 @@ class GameControllerTest {
 
     @BeforeAll
     static void initToolkit() {
-        // This will start JavaFX in headless mode
+        // Ensure headless mode for JavaFX
+        System.setProperty("java.awt.headless", "true");
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
         Platform.startup(() -> {});
     }
 
