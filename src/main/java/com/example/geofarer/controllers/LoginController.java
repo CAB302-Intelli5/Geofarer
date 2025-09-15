@@ -1,11 +1,18 @@
 package com.example.geofarer.controllers;
 
+import com.example.geofarer.utils.SceneManager;
+import com.example.geofarer.views.LandingPageView;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import com.example.geofarer.utils.PageLoader;
+import javafx.scene.control.Button;
+
+import java.awt.*;
 
 public class LoginController extends BaseController {
 
+    @FXML
+    private Button goBackButton;
 
     @FXML
     private void onLoginClick() { // When the Login button is clicked
@@ -16,7 +23,11 @@ public class LoginController extends BaseController {
 
     @FXML
     private void onGoBackClick() { // When the Go Back button is clicked
+        LandingPageView landingView = new LandingPageView();
+        SceneManager.switchToScene(landingView);
 
+        Stage stage = SceneManager.getPrimaryStage();
+        stage.setTitle("Geofarer - Geography Learning Game");
     }
 
     /**
