@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.Pane?>
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT">
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" >
         <!-- Top Header Bar -->
         <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
                 <Region HBox.hgrow="ALWAYS" />
@@ -50,19 +50,26 @@
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Leaders" onAction="#handleLeaders" />
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport" />
         </HBox>
-<!-- Game map -->
-    <HBox alignment="CENTER">
-        <StackPane fx:id="mapContainer"
-                   maxWidth="Infinity"
-                   VBox.vgrow="ALWAYS"
-                   HBox.hgrow="NEVER"
-                   style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;">
-            <StackPane fx:id="innerMapPane">
-                <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
-                <Pane fx:id="overlay" />
-            </StackPane>
-        </StackPane>
+    <!-- Target Country label -->
+    <HBox alignment="CENTER" prefHeight="50.0"
+          style="-fx-background-color: #731A12; -fx-padding:10;">
+        <Label fx:id="targetCountryLabel"
+               text="Target Country: Loading..."
+               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;" />
     </HBox>
+    <!-- Game map -->
+        <HBox alignment="CENTER">
+            <StackPane fx:id="mapContainer"
+                       maxWidth="Infinity"
+                       VBox.vgrow="ALWAYS"
+                       HBox.hgrow="NEVER"
+                       style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;">
+                <StackPane fx:id="innerMapPane">
+                    <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
+                    <Pane fx:id="overlay" />
+                </StackPane>
+            </StackPane>
+        </HBox>
 
         <!-- Bottom Bar for Country Label -->
         <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
