@@ -28,7 +28,7 @@
                         <Image url="@../images/logo_placeholder.png" />
                     </image>
                 </ImageView>
-                <Button onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
+                <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                             <image>
