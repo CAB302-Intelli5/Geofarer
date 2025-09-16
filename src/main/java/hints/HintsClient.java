@@ -11,18 +11,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class HintsClient {
-    private final String region = "europe"; //To do: Change this into reference to a list of regions
-    private final String gecCode = "gm"; //To do: This line of code should be deleted. Just a test.
-    private final String BASE_URL = "https://raw.githubusercontent.com/factbook/factbook.json/master/"+region+"/"+gecCode+".json";
+
+    private String BASE_URL;
     // To do: Change it so the json file being parsed is different based on the target country
     // The naming structure of the json files are [region]/[GEC codes].json
     private final HttpClient client;
 
-    public HintsClient() {
+    public HintsClient(String region, String gecCode) {
+        this.BASE_URL = "https://raw.githubusercontent.com/factbook/factbook.json/master/"+region+"/"+gecCode+".json";
         client = HttpClient.newHttpClient();
     }
 
-    public String findAllGermany() throws IOException, InterruptedException { //Currently, only calls from Germany's json file.
+    public String findAll() throws IOException, InterruptedException { //Currently, only calls Germany's json file.
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .GET()
@@ -32,14 +32,26 @@ public class HintsClient {
         //return response.body();
 
 
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper(); //Using Jackson to parse JSON response body
         JsonNode root = mapper.readTree(response.body());
 
-        //String location = root
-        return root
+        String location = root
                 .path("Geography")
                 .path("Location")
                 .path("text")
                 .asText();
+        String economicOverview = root
+                .path("Economy")
+                .path("Economic overview")
+                .path("text")
+                .asText();
+
+        String climate = root
+                .path("Environment")
+                .path("Climate")
+                .path("text")
+                .asText();
+
+        return location;
     }
 }
