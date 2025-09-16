@@ -3,6 +3,7 @@ package com.example.geofarer.controllers;
 import com.example.geofarer.services.MapService;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,6 +36,10 @@ class GameControllerTest {
     private Pane overlay;
     private StackPane innerMapPane;
     private StackPane mapContainer;
+    private String region;
+    private String gec;
+    private TextArea handleHintArea;
+
 
     @BeforeEach
     void setUp() {
@@ -45,13 +50,15 @@ class GameControllerTest {
         innerMapPane = mock(StackPane.class);
         mapContainer = mock(StackPane.class);
 
-        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane, mapContainer);
+        controller.initializeController(targetCountryLabel, countryLabel, handleHintArea,  overlay, innerMapPane, mapContainer);
     }
 
     @Test
     void testSetFeatureInfosSelectsTargetCountry() {
+        String continent = "Europe";
+        String fips10 = "gm"; //germany
         GeometryFactory geomFactory = new GeometryFactory();
-        MapService.FeatureInfo country = new MapService.FeatureInfo(geomFactory.createPoint(new Coordinate(0,0)), "TestLand");
+        MapService.FeatureInfo country = new MapService.FeatureInfo(geomFactory.createPoint(new Coordinate(0,0)), "TestLand", continent, fips10);
 
         controller.setFeatureInfos(Collections.singletonList(country));
 
@@ -63,7 +70,10 @@ class GameControllerTest {
     @Test
     void testProcessMapClickUpdatesLabel() {
         GeometryFactory geomFactory = new GeometryFactory();
-        MapService.FeatureInfo country = new MapService.FeatureInfo(geomFactory.createPoint(new Coordinate(0,0)), "TestLand");
+        String continent = "Europe";
+        String fips10 = "gm"; //germany
+
+        MapService.FeatureInfo country = new MapService.FeatureInfo(geomFactory.createPoint(new Coordinate(0,0)), "TestLand", continent, fips10);
 
         controller.setFeatureInfos(Collections.singletonList(country));
         controller.setTargetCountry("TestLand");

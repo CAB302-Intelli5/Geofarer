@@ -89,7 +89,7 @@ public class GameView extends VBox {
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
 
-        controller.initializeController(targetCountryLabel,countryLabel,overlay,innerMapPane,mapContainer);
+        controller.initializeController(targetCountryLabel,countryLabel, hintsTextArea,overlay,innerMapPane,mapContainer);
 
         if (!delayInitialization) {
             loadMapData();
