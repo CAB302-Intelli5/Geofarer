@@ -52,6 +52,24 @@ public class HintsClient {
                 .path("text")
                 .asText();
 
+        String terrain = root
+                .asText();
+
+        String borderCountries = root
+                .asText();
+
+        String obesity = root
+                .asText();
+
+        String governmentType = root
+                .asText();
+
+        String currency = root
+                .asText();
+
+        String urbanization = root
+                .asText();
+
         return location;
     }
 }

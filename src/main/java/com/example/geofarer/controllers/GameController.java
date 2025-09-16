@@ -45,14 +45,15 @@ public class GameController {
     // Zoom and Pan State
     private double zoomLevel = 1.0;
     private static final double MIN_ZOOM = 1.0;
-    private static final double MAX_ZOOM = 5.0;
+    private static final double MAX_ZOOM = 10.0;
     private static final double ZOOM_FACTOR = 1.2;
     private double lastPanX = 0;
     private double lastPanY = 0;
     private boolean isPanning = false;
     private boolean dragDetected = false;
 
-    private String clickedCountryCode = "XXX";
+    private String clickedCountryCode = "XX";
+    private String targetCountryCode = "XX";
 
 
     @FXML
@@ -78,7 +79,8 @@ public class GameController {
     }
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
         this.featureInfos = featureInfos;
-        selectRandomTargetCountry(); // Call this after data is set
+        selectRandomTargetCountry("EUROPE"); // Call this after data is set
+        //To do: CURRENTLY EUROPE FOR TESTING PURPOSES
     }
 
     public void processMapClick(MouseEvent event) {
@@ -118,7 +120,7 @@ public class GameController {
             }
         }
         System.out.println(clickedCountryCode);
-        if (clickedCountryCode.equals("XXX")) return; // ignore unknown click
+        if (clickedCountryCode.equals("XX")) return; // ignore unknown click
         
         if (clickedCountry.equals("Unknown")){
             return; // ignore this click
@@ -134,15 +136,15 @@ public class GameController {
     }
     private String findHint() {
         try {
-            HintsClient hintsClient = new HintsClient();
-            return hintsClient.findAllGermany();
+            HintsClient hintsClient = new HintsClient("europe", targetCountryCode.toLowerCase());
+            return hintsClient.findAll();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace(); // Log or show alert if needed
             return "Error loading country data.";
         }
     }
 
-    private void selectRandomTargetCountry() {
+    private void selectRandomTargetCountry(String targetContinent) {
         if (featureInfos == null || featureInfos.isEmpty()) {
             targetCountry = "Unknown";
             targetCountryLabel.setText("Target Country: " + targetCountry);
@@ -150,14 +152,32 @@ public class GameController {
         }
         Random random = new Random();
         int index = random.nextInt(featureInfos.size());
+
+        try {
+            while (true) { //Compare current continent with the target continent
+                int indexSearch = random.nextInt(featureInfos.size());
+                String continent = featureInfos.get(indexSearch).continent; //Get current continent
+                System.out.println(targetCountry = featureInfos.get(indexSearch).name);
+                System.out.println(continent);
+
+                if((continent.toUpperCase()).equals(targetContinent)){
+                    index = indexSearch;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         targetCountry = featureInfos.get(index).name;
+        targetCountryCode = featureInfos.get(index).fips10;
         targetCountryLabel.setText("Target Country: " +targetCountry);
     }
 
 
     // Method to start a new round with a different target country
     public void selectNewTarget() {
-        selectRandomTargetCountry();
+        selectRandomTargetCountry("EUROPE");
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
         }
