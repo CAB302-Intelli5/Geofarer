@@ -1,24 +1,45 @@
 package com.example.geofarer.controllers;
 
+import com.example.geofarer.UserService;
 import com.example.geofarer.utils.SceneManager;
+import com.example.geofarer.views.GameView;
 import com.example.geofarer.views.LandingPageView;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import com.example.geofarer.utils.PageLoader;
 import javafx.scene.control.Button;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class LoginController extends BaseController {
 
     @FXML
     private Button goBackButton;
+    private Button loginButton;
+
+    private UserService userService = new UserService();
 
     @FXML
     private void onLoginClick() { // When the Login button is clicked
         String email = emailField.getText();
-        String password = passwordField.getText();
-        System.out.println("Logging in with: Email: " + email + ", Password: " + password);
+        String password;
+        if (passwordVisibleField.isVisible()) {
+            password = passwordVisibleField.getText();
+        } else {
+            password = passwordField.getText();
+        }
+        if(userService.validateLogin(email, password)) {
+            System.out.println("Login successful: " + email);
+
+            GameView gameView = new GameView(true);
+            SceneManager.switchToScene(gameView);
+        } else {
+            System.out.println("Invalid email or password");
+        }
     }
 
     @FXML
