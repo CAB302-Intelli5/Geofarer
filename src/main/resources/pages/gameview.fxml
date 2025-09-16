@@ -13,6 +13,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.TextArea?>
 <fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" >
         <!-- Top Header Bar -->
         <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
@@ -78,6 +79,15 @@
                         <Font size="14.0" />
                     </font>
                 </Label>
+        </HBox>
+
+        <!-- Text Area for the country hints from the CIA Factbook api -->
+        <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
+            <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </TextArea>
         </HBox>
 
 </fx:root>
