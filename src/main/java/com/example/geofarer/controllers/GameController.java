@@ -4,7 +4,10 @@ import com.example.geofarer.services.MapService;
 import hints.HintsClient;
 import com.example.geofarer.utils.PageLoader;
 import javafx.fxml.FXML;
-
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
 
 import javafx.scene.Cursor;
@@ -14,12 +17,16 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -42,6 +49,9 @@ public class GameController {
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
 
+        // Game State
+    private static int guessCount = 1;
+
     // Zoom and Pan State
     private double zoomLevel = 1.0;
     private static final double MIN_ZOOM = 1.0;
@@ -54,6 +64,8 @@ public class GameController {
 
     private String clickedCountryCode = "XX";
     private String targetCountryCode = "XX";
+
+    
 
 
     @FXML
@@ -129,9 +141,12 @@ public class GameController {
         //Update the country label
         if (clickedCountry.equals(targetCountry)) {
             countryLabel.setText("Success! You clicked " + targetCountry);
+            showSuccessPopup();
+            guessCount = 1; // reset guess count
         } else {
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
             hintsTextArea.setText("Hint 1: " +findHint());
+            guessCount++;
         }
     }
     private String findHint() {
@@ -304,6 +319,48 @@ public class GameController {
         innerMapPane.getTransforms().clear();
         innerMapPane.setTranslateX(0);
         innerMapPane.setTranslateY(0);
+    }
+
+
+    private void showSuccessPopup() {
+        try {
+            // Load the FXML file for the popup
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/SuccessPopup.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller of the popup
+            SuccessPopupController popupController = loader.getController();
+
+            //  Create the success message and pass it to the popup controller
+            String message = String.format("You found %s in %d %s.",
+                    targetCountry, guessCount, guessCount == 1 ? "guess" : "guesses");
+            popupController.setStatsMessage(message);
+
+            // Create a new stage (window) for the popup
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with the main window
+
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+            Scene popupScene = new Scene(root);
+            popupScene.setFill(Color.TRANSPARENT);
+
+            popupStage.setScene(popupScene);
+            popupStage.showAndWait(); // Show the popup and wait for it to be closed
+
+            // After the popup is closed, start a new round only if play again clicked
+            if (popupController.isPlayAgainClicked()) {
+                selectNewTarget();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Fallback in case FXML fails to load
+            System.err.println("Failed to load success popup FXML.");
+
+            //Fallback just start the new game
+            selectNewTarget();
+        }
+
     }
 
 
