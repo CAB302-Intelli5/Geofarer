@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
@@ -65,7 +66,16 @@ public class GameController {
     private String clickedCountryCode = "XX";
     private String targetCountryCode = "XX";
 
-    
+    // Reference to the GameView to allow communication
+    private com.example.geofarer.views.GameView gameView;
+
+    // Setter for GameView
+    public void setGameView(com.example.geofarer.views.GameView gameView) {
+        this.gameView = gameView;
+    }
+
+
+
 
 
     @FXML
@@ -123,10 +133,12 @@ public class GameController {
         //Now we have the point lets finds the country that contains the clicked.
 
         String clickedCountry = "Unknown";
+        Geometry clickedCountryGeometry = null; // Store the geometry
         for (MapService.FeatureInfo fi: featureInfos) {
             if (fi.geom.contains(clickedPoint)){
                 clickedCountry = fi.name;
                 clickedCountryCode = fi.fips10;
+                clickedCountryGeometry = fi.geom;
                 System.out.println(clickedCountry);
                 break; // Found the country, stop searching
             }
@@ -143,10 +155,16 @@ public class GameController {
             countryLabel.setText("Success! You clicked " + targetCountry);
             showSuccessPopup();
             guessCount = 1; // reset guess count
+            gameView.clearIncorrectGuesses(); // Clear any red fills on success
         } else {
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
             hintsTextArea.setText("Hint 1: " +findHint());
             guessCount++;
+            System.out.println(clickedCountryGeometry + "  " + gameView);
+            if (gameView != null && clickedCountryGeometry != null) {
+                gameView.highlightIncorrectGuess(clickedCountryGeometry); // Highlight the incorrect guess
+                System.out.println("clicked wrong country light it up!");
+            }
         }
     }
     private String findHint() {
