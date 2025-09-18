@@ -111,6 +111,10 @@ public class GameController {
     }
 
     public void processMapClick(MouseEvent event) {
+        if (overlay == null || innerMapPane == null) {
+            // Requires the map to process a click
+            return;
+        }
 
         double displayedW = overlay.getWidth();
         double displayedH = overlay.getHeight();
@@ -181,6 +185,9 @@ public class GameController {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace(); // Log or show alert if needed
             return "Error loading country data.";
+        } catch (Exception e) {
+        e.printStackTrace();
+        return "Error loading country data.";
         }
     }
 
@@ -193,25 +200,44 @@ public class GameController {
         Random random = new Random();
         int index = random.nextInt(featureInfos.size());
 
-        try {
-            while (true) { //Compare current continent with the target continent
-                int indexSearch = random.nextInt(featureInfos.size());
-                String continent = featureInfos.get(indexSearch).continent; //Get current continent
-                System.out.println(targetCountry = featureInfos.get(indexSearch).name);
-                System.out.println(continent);
+        int chosenIndex = -1;
+        String normalizedTarget = targetContinent == null ? "" : targetContinent.trim().toUpperCase();
 
-                if((continent.toUpperCase()).equals(targetContinent)){
-                    index = indexSearch;
-                    break;
-                }
+        int attempts = Math.max(1, featureInfos.size());
+        for (int i = 0; i < attempts; i++) {
+            int idx = random.nextInt(featureInfos.size());
+            MapService.FeatureInfo fi = featureInfos.get(idx);
+            if (fi == null) continue;
+            String continent = fi.continent == null ? "" : fi.continent.trim().toUpperCase();
+            if (!normalizedTarget.isEmpty() && continent.equals(normalizedTarget)) {
+                chosenIndex = idx;
+                break;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        targetCountry = featureInfos.get(index).name;
-        targetCountryCode = featureInfos.get(index).fips10;
-        targetCountryLabel.setText("Target Country: " +targetCountry);
+        // If no exact match found, pick a random index as fallback
+        if (chosenIndex == -1) {
+            chosenIndex = random.nextInt(featureInfos.size());
+        }
+
+        // Safeguard indexes
+        if (chosenIndex < 0 || chosenIndex >= featureInfos.size()) {
+            targetCountry = "Unknown";
+            targetCountryCode = "XX";
+            if (targetCountryLabel != null) {
+                targetCountryLabel.setText("Target Country: " + targetCountry);
+            }
+            return;
+        }
+
+        MapService.FeatureInfo chosen = featureInfos.get(chosenIndex);
+        targetCountry = chosen.name == null ? "Unknown" : chosen.name;
+        targetCountryCode = chosen.fips10 == null ? "XX" : chosen.fips10;
+
+        if (targetCountryLabel != null) {
+            targetCountryLabel.setText("Target Country: " + targetCountry);
+        }
+
     }
 
 
@@ -233,6 +259,7 @@ public class GameController {
     // --- Zoom and Pan Logic ---
 
     public void handleScroll(ScrollEvent event) {
+        if (innerMapPane == null) return; // nothing to scroll
         event.consume();
         double deltaY = event.getDeltaY();
         if (deltaY == 0) return;
@@ -247,6 +274,7 @@ public class GameController {
     }
 
     public void handleMousePress(MouseEvent event) {
+        if (innerMapPane == null) return;
         if (event.isPrimaryButtonDown()) {
             dragDetected = false;
             lastPanX = event.getX();
@@ -258,6 +286,7 @@ public class GameController {
     }
 
     public void handleMouseDrag(MouseEvent event) {
+        if (innerMapPane == null) return;
         if (isPanning && event.isPrimaryButtonDown()) {
             double deltaX = event.getX() - lastPanX;
             double deltaY = event.getY() - lastPanY;
@@ -270,6 +299,7 @@ public class GameController {
     }
 
     public void handleMouseRelease(MouseEvent event) {
+        if (innerMapPane == null) return;
         if (isPanning && !dragDetected) {
             processMapClick(event);
         }
@@ -281,6 +311,7 @@ public class GameController {
     }
 
     public void handleViewClick(MouseEvent event) {
+        if (innerMapPane == null) return;
         if (event.getButton() == MouseButton.SECONDARY) {
             resetZoomAndPan();
             event.consume();
@@ -289,6 +320,7 @@ public class GameController {
     }
 
     private void zoomAroundPoint(double newZoom, double pivotX, double pivotY) {
+        if (innerMapPane == null) return;
         double currentTranslateX = 0;
         double currentTranslateY = 0;
         if (!innerMapPane.getTransforms().isEmpty()) {
@@ -307,6 +339,7 @@ public class GameController {
     }
 
     private void pan(double deltaX, double deltaY) {
+        if (innerMapPane == null) return;
         javafx.scene.transform.Transform currentTransform = innerMapPane.getTransforms().isEmpty() ?
                 new Affine() : innerMapPane.getTransforms().get(0);
         Affine newTransform = new Affine(currentTransform);
@@ -315,6 +348,10 @@ public class GameController {
     }
 
     private void applyTransformWithBounds(Affine transform) {
+        if (innerMapPane == null || mapContainer == null) {
+            // Can't apply transform without map
+            return;
+        }
         // Get the dimensions of the container (the viewport)
         final double containerWidth = mapContainer.getWidth();
         final double containerHeight = mapContainer.getHeight();
