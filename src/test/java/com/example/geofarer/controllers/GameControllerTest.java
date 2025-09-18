@@ -28,13 +28,6 @@ class GameControllerTest {
 
 
 
-    @BeforeAll
-    static void initToolkit() {
-        Platform.startup(() -> {});
-    }
-
-
-
     @BeforeEach
     void setUp() {
         controller = new GameController();

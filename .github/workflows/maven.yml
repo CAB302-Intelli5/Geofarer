@@ -22,7 +22,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Test
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test -Djavafx.headless=true
 
       - name: Report
         uses: dorny/test-reporter@v1
