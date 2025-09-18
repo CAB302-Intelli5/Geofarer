@@ -4,6 +4,7 @@ import com.example.geofarer.utils.Constants;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Shape;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -32,7 +33,7 @@ public class MapService {
         public final String name;
         public final String fips10;
         public final String continent;
-        public final List<Polyline> shapes = new ArrayList<>();
+        public final List<Shape> shapes = new ArrayList<>();
 
         public FeatureInfo(Geometry geom, String name, String fips10, String continent) {
             this.geom = geom;
