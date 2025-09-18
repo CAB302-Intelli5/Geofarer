@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
+import java.sql.*;
 import java.util.List;
 import java.util.Random;
 
@@ -117,6 +118,7 @@ public class GameController {
         if (clickedCountry.equals("Unknown")){
             return; // ignore this click
         }
+        queryFactbook(clickedCountryCode); // get that data
 
         //Update the country label
         if (clickedCountry.equals(targetCountry)) {
@@ -124,6 +126,30 @@ public class GameController {
         } else {
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
             hintsTextArea.setText("Hint 1: " +findHint());
+        }
+    }
+
+
+    private void queryFactbook(String gecCode) {
+        String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
+        String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
+
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, gecCode); // Pass the GEC code as is
+            stmt.setString(1, gecCode.toLowerCase()); // force lower case as shape file is upper case
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String data = rs.getString("data");
+                System.out.println("Data for " + gecCode + ": " + data);
+            } else {
+                System.out.println("No data found for " + gecCode);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     private String findHint() {
