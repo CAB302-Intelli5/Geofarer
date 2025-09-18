@@ -244,9 +244,13 @@ public class GameController {
     // Method to start a new round with a different target country
     public void selectNewTarget() {
         this.roundWin = false;
-        viewSuccessButton.setVisible(roundWin);
+        if (viewSuccessButton != null) {
+            viewSuccessButton.setVisible(roundWin);
+        }
         guessCount = 1; // reset guess count
-        gameView.clearGuesses(); // Clear fills after starting a new round
+        if (gameView !=  null) {
+            gameView.clearGuesses(); // Clear fills after starting a new round
+        }
         selectRandomTargetCountry("EUROPE");
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");

@@ -1,6 +1,7 @@
 package com.example.geofarer.controllers;
 
 import com.example.geofarer.services.MapService;
+import com.example.geofarer.views.GameView;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,18 +15,19 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.mockito.Mock;
+
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+
 
 class GameControllerTest {
 
     private GameController controller;
+
 
 
     @BeforeEach
