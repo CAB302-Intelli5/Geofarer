@@ -2,9 +2,9 @@ name: Java CI with Maven and Headless Tests
 
 on:
   push:
-    branches: [ "**" ]
+    branches: [ "development", "main", "feature/**", "test/**", "testing"]
   pull_request:
-    branches: [ "**" ]
+    branches: [ "development", "testing" ]
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           name: Maven Tests
           path: target/surefire-reports/*.xml
           reporter: java-junit
