@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.*;
 
 import com.fasterxml.jackson.databind.JsonNode; //Using Jackson to parse Json
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,8 +14,6 @@ public class HintsClient {
     private final String region = "europe"; //To do: Change this into reference to a list of regions
     private final String gecCode = "gm"; //To do: This line of code should be deleted. Just a test.
     private final String BASE_URL = "https://raw.githubusercontent.com/factbook/factbook.json/master/"+region+"/"+gecCode+".json";
-    private final String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
-
     // To do: Change it so the json file being parsed is different based on the target country
     // The naming structure of the json files are [region]/[GEC codes].json
     private final HttpClient client;
@@ -44,24 +41,5 @@ public class HintsClient {
                 .path("Location")
                 .path("text")
                 .asText();
-    }
-    public String getHint(String gecCode) {
-        String query = "SELECT data FROM factbook WHERE gec = ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, gecCode);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getString("data");
-            } else {
-                return "No hint available for " + gecCode;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "Error fetching hint.";
-        }
     }
 }
