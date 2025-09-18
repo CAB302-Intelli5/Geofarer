@@ -69,6 +69,13 @@
                     <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
                     <Pane fx:id="overlay" />
                 </StackPane>
+
+                <Button fx:id="viewSuccessButton" onAction="#handleSuccessButton" text="X" styleClass="view-Success-button"
+                        StackPane.alignment="TOP_RIGHT">
+                    <StackPane.margin>
+                        <Insets top="10" right="10"/>
+                    </StackPane.margin>
+                </Button>
             </StackPane>
         </HBox>
 
@@ -81,7 +88,7 @@
                 </Label>
         </HBox>
 
-        <!-- Text Area for the country hints from the CIA Factbook api -->
+        <!-- Text Area for the country hints from the CIA Factbook database -->
         <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
             <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
                 <font>

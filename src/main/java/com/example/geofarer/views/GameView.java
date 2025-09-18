@@ -57,6 +57,7 @@ public class GameView extends VBox {
     @FXML private Label countryLabel;
     @FXML private TextArea hintsTextArea;
     @FXML private Label targetCountryLabel;
+    @FXML private Button viewSuccessButton;
 
     // Map components
     private double imgWOrig = 0;
@@ -92,7 +93,7 @@ public class GameView extends VBox {
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
 
-        controller.initializeController(targetCountryLabel,countryLabel, hintsTextArea,overlay,innerMapPane,mapContainer);
+        controller.initializeController(targetCountryLabel,countryLabel, hintsTextArea,overlay,innerMapPane,mapContainer,viewSuccessButton);
 
         if (!delayInitialization) {
             loadMapData();
@@ -112,7 +113,7 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer);
+        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer,viewSuccessButton);
 
         // Load image async
         Task<Image> imgTask = new Task<>() {
@@ -340,15 +341,20 @@ public class GameView extends VBox {
 
     /**
      * Highlights the shapes associated with an incorrectly guessed country's geometry in red.
-     * @param incorrectGeometry The JTS Geometry of the incorrectly guessed country.
+     * @param guessedGeometry The JTS Geometry of the guessed country.
      */
-    public void highlightIncorrectGuess(Geometry incorrectGeometry) {
+    public void highlightGuess(Geometry guessedGeometry, boolean correctGuess) {
         Platform.runLater(() -> {
             for (MapService.FeatureInfo fi : featureInfos) {
-                if (fi.geom != null && fi.geom.equals(incorrectGeometry)) {
+                if (fi.geom != null && fi.geom.equals(guessedGeometry)) {
                     for (Shape shape : fi.shapes) {
-                        shape.setFill(Color.RED.deriveColor(1, 1, 1, 0.5)); // Semi-transparent red
-                        shape.setStroke(Color.DARKRED);
+                        if (correctGuess != true){ //highlights as red if incorrect guess
+                            shape.setFill(Color.RED.deriveColor(1, 1, 1, 0.5)); // Semi-transparent red
+                            shape.setStroke(Color.DARKRED);
+                        }else{ //highlights as green if correct guess
+                            shape.setFill(Color.GREEN.deriveColor(1, 1, 1, 0.5));
+                            shape.setStroke(Color.DARKGREEN);
+                        }
                         shape.setStrokeWidth(Math.max(Constants.MIN_STROKE_WIDTH,
                                 Constants.MAP_STROKE_WIDTH_FACTOR * Math.min(overlay.getWidth() / imgWOrig, overlay.getHeight() / imgHOrig)) * 2); // Thicker border
                     }
@@ -361,7 +367,7 @@ public class GameView extends VBox {
     /**
      * Resets the fill and stroke of all country shapes to their default (transparent fill, black stroke).
      */
-    public void clearIncorrectGuesses() {
+    public void clearGuesses() {
         Platform.runLater(() -> {
             for (MapService.FeatureInfo fi : featureInfos) {
                 for (Shape shape : fi.shapes) {
@@ -406,5 +412,5 @@ public class GameView extends VBox {
     @FXML private void handleExplore() { controller.showExplore(); }
     @FXML private void handleLeaders() { controller.showLeaders(); }
     @FXML private void handleMyPassport() { controller.showMyPassport(); }
-
+    @FXML private void handleSuccessButton(){controller.handleSuccessButton(viewSuccessButton);}
 }

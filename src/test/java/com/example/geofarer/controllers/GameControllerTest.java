@@ -2,6 +2,7 @@ package com.example.geofarer.controllers;
 
 import com.example.geofarer.services.MapService;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
@@ -25,7 +26,6 @@ import static org.mockito.Mockito.*;
 class GameControllerTest {
 
     private GameController controller;
-
 
 
     @BeforeEach
