@@ -2,6 +2,7 @@ package com.example.geofarer.controllers;
 
 import com.example.geofarer.services.MapService;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
@@ -39,6 +40,7 @@ class GameControllerTest {
     private String region;
     private String gec;
     private TextArea handleHintArea;
+    private Button viewSuccessButton;
 
 
     @BeforeEach
@@ -50,7 +52,7 @@ class GameControllerTest {
         innerMapPane = mock(StackPane.class);
         mapContainer = mock(StackPane.class);
 
-        controller.initializeController(targetCountryLabel, countryLabel, handleHintArea,  overlay, innerMapPane, mapContainer);
+        controller.initializeController(targetCountryLabel, countryLabel, handleHintArea,  overlay, innerMapPane, mapContainer,viewSuccessButton);
     }
 
     @Test

@@ -5,8 +5,6 @@ import hints.HintsClient;
 import com.example.geofarer.utils.PageLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
 
@@ -17,11 +15,9 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.Modality;
@@ -46,17 +42,20 @@ public class GameController {
     private StackPane innerMapPane;
     private StackPane mapContainer;
     private TextArea hintsTextArea;
+    @FXML private Button viewSuccessButton;
 
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
 
         // Game State
     private static int guessCount = 1;
+    private boolean roundWin = false;
+    private final boolean correctGuess = true;
 
     // Zoom and Pan State
     private double zoomLevel = 1.0;
     private static final double MIN_ZOOM = 1.0;
-    private static final double MAX_ZOOM = 10.0;
+    private static final double MAX_ZOOM = 20.0;
     private static final double ZOOM_FACTOR = 1.2;
     private double lastPanX = 0;
     private double lastPanY = 0;
@@ -74,12 +73,15 @@ public class GameController {
         this.gameView = gameView;
     }
 
-
-
+    @FXML
+    public void handleSuccessButton(Button button){
+        System.out.println("View Success window button clicked");
+        showSuccessPopup();
+    }
 
 
     @FXML
-    public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer) {
+    public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer, Button viewSuccessButton) {
         // Use "this." to refer to the instance variables of the GameController class
         this.targetCountryLabel = targetCountryLabel;
         this.countryLabel = countryLabel;
@@ -87,6 +89,9 @@ public class GameController {
         this.overlay = overlay;
         this.innerMapPane = innerMapPane;
         this.mapContainer = mapContainer;
+        this.viewSuccessButton = viewSuccessButton;
+
+        viewSuccessButton.setVisible(roundWin); //hide the button to view success popup if the game hasn't been won yet
 
         if (this.targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: Loading...");
@@ -96,7 +101,7 @@ public class GameController {
         }
 
         if(this.hintsTextArea != null) {
-            hintsTextArea.setText("Hints go here.");
+            hintsTextArea.setText("Guess where the country is first to get a hint!");
         }
     }
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
@@ -153,16 +158,18 @@ public class GameController {
         //Update the country label
         if (clickedCountry.equals(targetCountry)) {
             countryLabel.setText("Success! You clicked " + targetCountry);
+            gameView.highlightGuess(clickedCountryGeometry, correctGuess);
+            this.roundWin = true;
+            viewSuccessButton.setVisible(roundWin);
+            viewSuccessButton.setText("View Results");
             showSuccessPopup();
-            guessCount = 1; // reset guess count
-            gameView.clearIncorrectGuesses(); // Clear any red fills on success
-        } else {
+        } else if (roundWin != true){ //only update the country label if there is a round being played
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
             hintsTextArea.setText("Hint 1: " +findHint());
             guessCount++;
             System.out.println(clickedCountryGeometry + "  " + gameView);
             if (gameView != null && clickedCountryGeometry != null) {
-                gameView.highlightIncorrectGuess(clickedCountryGeometry); // Highlight the incorrect guess
+                gameView.highlightGuess(clickedCountryGeometry, !correctGuess); // Highlight the incorrect guess
                 System.out.println("clicked wrong country light it up!");
             }
         }
@@ -210,9 +217,16 @@ public class GameController {
 
     // Method to start a new round with a different target country
     public void selectNewTarget() {
+        this.roundWin = false;
+        viewSuccessButton.setVisible(roundWin);
+        guessCount = 1; // reset guess count
+        gameView.clearGuesses(); // Clear fills after starting a new round
         selectRandomTargetCountry("EUROPE");
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
+        }
+        if (hintsTextArea != null) {
+            hintsTextArea.setText("Guess where the country is first to get a hint!");
         }
     }
 
