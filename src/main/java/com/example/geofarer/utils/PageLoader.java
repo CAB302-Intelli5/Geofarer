@@ -1,11 +1,11 @@
 package com.example.geofarer.utils;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.application.Platform;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import com.example.geofarer.views.GameView;
 
 import java.io.IOException;

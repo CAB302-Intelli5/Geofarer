@@ -21,12 +21,11 @@ public class HintsClient {
     // The naming structure of the json files are [region]/[GEC codes].json
     private final HttpClient client;
 
-    public HintsClient(String region, String gecCode) {
-        this.BASE_URL = "https://raw.githubusercontent.com/factbook/factbook.json/master/"+region+"/"+gecCode+".json";
+    public HintsClient() {
         client = HttpClient.newHttpClient();
     }
 
-    public String findAll() throws IOException, InterruptedException { //Currently, only calls Germany's json file.
+    public String findAllGermany() throws IOException, InterruptedException { //Currently, only calls from Germany's json file.
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .GET()
@@ -36,45 +35,15 @@ public class HintsClient {
         //return response.body();
 
 
-        ObjectMapper mapper = new ObjectMapper(); //Using Jackson to parse JSON response body
+        ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response.body());
 
-        String location = root
+        //String location = root
+        return root
                 .path("Geography")
                 .path("Location")
                 .path("text")
                 .asText();
-        String economicOverview = root
-                .path("Economy")
-                .path("Economic overview")
-                .path("text")
-                .asText();
-
-        String climate = root
-                .path("Environment")
-                .path("Climate")
-                .path("text")
-                .asText();
-
-        String terrain = root
-                .asText();
-
-        String borderCountries = root
-                .asText();
-
-        String obesity = root
-                .asText();
-
-        String governmentType = root
-                .asText();
-
-        String currency = root
-                .asText();
-
-        String urbanization = root
-                .asText();
-
-        return location;
     }
     public String getHint(String gecCode) {
         String query = "SELECT data FROM factbook WHERE gec = ?";

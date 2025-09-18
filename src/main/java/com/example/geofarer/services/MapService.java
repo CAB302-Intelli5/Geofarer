@@ -4,7 +4,6 @@ import com.example.geofarer.utils.Constants;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -32,13 +31,11 @@ public class MapService {
         public final Geometry geom;
         public final String name;
         public final String fips10;
-        public final String continent;
-        public final List<Shape> shapes = new ArrayList<>();
+        public final List<Polyline> shapes = new ArrayList<>();
 
-        public FeatureInfo(Geometry geom, String name, String fips10, String continent) {
+        public FeatureInfo(Geometry geom, String name, String fips10) {
             this.geom = geom;
             this.name = name;
-            this.continent = continent;
             this.fips10 = fips10;
         }
     }
@@ -138,20 +135,14 @@ public class MapService {
 
                     String name = extractName(f);
 
-                    String continent = "Unknown";
-                    Object continentAttr = f.getAttribute("CONTINENT");
-                    if (continentAttr != null) {
-                        continent = continentAttr.toString();
-                    }
-
-                    String fips10 = "XX"; // default unknown
+                    String adm0A3 = "XXX"; // default unknown
                     Object adm0Attr = f.getAttribute("FIPS_10");
                     if (adm0Attr != null) {
-                        fips10 = adm0Attr.toString();
+                        adm0A3 = adm0Attr.toString();
                     }
 
                     // Create FeatureInfo with ADM0_A3
-                    FeatureInfo fi = new FeatureInfo(simplified, name, fips10, continent);
+                    FeatureInfo fi = new FeatureInfo(simplified, name, adm0A3);
                     featureInfos.add(fi);
                     featureCount++;
                 }

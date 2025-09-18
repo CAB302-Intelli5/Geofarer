@@ -29,7 +29,7 @@
                         <Image url="@../images/logo_placeholder.png" />
                     </image>
                 </ImageView>
-                <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
+                <Button onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -69,13 +69,6 @@
                     <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
                     <Pane fx:id="overlay" />
                 </StackPane>
-
-                <Button fx:id="viewSuccessButton" onAction="#handleSuccessButton" text="X" styleClass="view-Success-button"
-                        StackPane.alignment="TOP_RIGHT">
-                    <StackPane.margin>
-                        <Insets top="10" right="10"/>
-                    </StackPane.margin>
-                </Button>
             </StackPane>
         </HBox>
 
@@ -88,7 +81,7 @@
                 </Label>
         </HBox>
 
-        <!-- Text Area for the country hints from the CIA Factbook database -->
+        <!-- Text Area for the country hints from the CIA Factbook api -->
         <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
             <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
                 <font>
@@ -96,7 +89,5 @@
                 </font>
             </TextArea>
         </HBox>
-
-
 
 </fx:root>

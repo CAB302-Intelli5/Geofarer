@@ -2,15 +2,11 @@ package com.example.geofarer.controllers;
 
 import com.example.geofarer.services.MapService;
 import hints.HintsClient;
-import com.example.geofarer.utils.PageLoader;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+
 import javafx.scene.control.TextArea;
 
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -18,20 +14,14 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
 import java.sql.*;
-
 import java.util.List;
 import java.util.Random;
 
@@ -43,46 +33,25 @@ public class GameController {
     private StackPane innerMapPane;
     private StackPane mapContainer;
     private TextArea hintsTextArea;
-    @FXML private Button viewSuccessButton;
 
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
 
-        // Game State
-    private static int guessCount = 1;
-    private boolean roundWin = false;
-    private final boolean correctGuess = true;
-
     // Zoom and Pan State
     private double zoomLevel = 1.0;
     private static final double MIN_ZOOM = 1.0;
-    private static final double MAX_ZOOM = 20.0;
+    private static final double MAX_ZOOM = 5.0;
     private static final double ZOOM_FACTOR = 1.2;
     private double lastPanX = 0;
     private double lastPanY = 0;
     private boolean isPanning = false;
     private boolean dragDetected = false;
 
-    private String clickedCountryCode = "XX";
-    private String targetCountryCode = "XX";
-
-    // Reference to the GameView to allow communication
-    private com.example.geofarer.views.GameView gameView;
-
-    // Setter for GameView
-    public void setGameView(com.example.geofarer.views.GameView gameView) {
-        this.gameView = gameView;
-    }
-
-    @FXML
-    public void handleSuccessButton(Button button){
-        System.out.println("View Success window button clicked");
-        showSuccessPopup();
-    }
+    private String clickedCountryCode = "XXX";
 
 
     @FXML
-    public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer, Button viewSuccessButton) {
+    public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer) {
         // Use "this." to refer to the instance variables of the GameController class
         this.targetCountryLabel = targetCountryLabel;
         this.countryLabel = countryLabel;
@@ -90,9 +59,6 @@ public class GameController {
         this.overlay = overlay;
         this.innerMapPane = innerMapPane;
         this.mapContainer = mapContainer;
-        this.viewSuccessButton = viewSuccessButton;
-
-        viewSuccessButton.setVisible(roundWin); //hide the button to view success popup if the game hasn't been won yet
 
         if (this.targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: Loading...");
@@ -102,13 +68,12 @@ public class GameController {
         }
 
         if(this.hintsTextArea != null) {
-            hintsTextArea.setText("Guess where the country is first to get a hint!");
+            hintsTextArea.setText("Hints go here.");
         }
     }
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
         this.featureInfos = featureInfos;
-        selectRandomTargetCountry("EUROPE"); // Call this after data is set
-        //To do: CURRENTLY EUROPE FOR TESTING PURPOSES
+        selectRandomTargetCountry(); // Call this after data is set
     }
 
     public void processMapClick(MouseEvent event) {
@@ -121,7 +86,7 @@ public class GameController {
             return;
         }
         javafx.geometry.Point2D localCoords = innerMapPane.sceneToLocal(event.getSceneX(), event.getSceneY());
-
+                                
         //The inner pane is designed to be seperate and therefore we get the width and height
         //Get the Coords from click
         double clickX = localCoords.getX();
@@ -139,18 +104,16 @@ public class GameController {
         //Now we have the point lets finds the country that contains the clicked.
 
         String clickedCountry = "Unknown";
-        Geometry clickedCountryGeometry = null; // Store the geometry
         for (MapService.FeatureInfo fi: featureInfos) {
             if (fi.geom.contains(clickedPoint)){
                 clickedCountry = fi.name;
                 clickedCountryCode = fi.fips10;
-                clickedCountryGeometry = fi.geom;
                 System.out.println(clickedCountry);
                 break; // Found the country, stop searching
             }
         }
         System.out.println(clickedCountryCode);
-        if (clickedCountryCode.equals("XX")) return; // ignore unknown click
+        if (clickedCountryCode.equals("XXX")) return; // ignore unknown click
         
         if (clickedCountry.equals("Unknown")){
             return; // ignore this click
@@ -160,20 +123,9 @@ public class GameController {
         //Update the country label
         if (clickedCountry.equals(targetCountry)) {
             countryLabel.setText("Success! You clicked " + targetCountry);
-            gameView.highlightGuess(clickedCountryGeometry, correctGuess);
-            this.roundWin = true;
-            viewSuccessButton.setVisible(roundWin);
-            viewSuccessButton.setText("View Results");
-            showSuccessPopup();
-        } else if (roundWin != true){ //only update the country label if there is a round being played
+        } else {
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
             hintsTextArea.setText("Hint 1: " +findHint());
-            guessCount++;
-            System.out.println(clickedCountryGeometry + "  " + gameView);
-            if (gameView != null && clickedCountryGeometry != null) {
-                gameView.highlightGuess(clickedCountryGeometry, !correctGuess); // Highlight the incorrect guess
-                System.out.println("clicked wrong country light it up!");
-            }
         }
     }
 
@@ -202,15 +154,15 @@ public class GameController {
     }
     private String findHint() {
         try {
-            HintsClient hintsClient = new HintsClient("europe", targetCountryCode.toLowerCase());
-            return hintsClient.findAll();
+            HintsClient hintsClient = new HintsClient();
+            return hintsClient.findAllGermany();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace(); // Log or show alert if needed
             return "Error loading country data.";
         }
     }
 
-    private void selectRandomTargetCountry(String targetContinent) {
+    private void selectRandomTargetCountry() {
         if (featureInfos == null || featureInfos.isEmpty()) {
             targetCountry = "Unknown";
             targetCountryLabel.setText("Target Country: " + targetCountry);
@@ -218,41 +170,16 @@ public class GameController {
         }
         Random random = new Random();
         int index = random.nextInt(featureInfos.size());
-
-        try {
-            while (true) { //Compare current continent with the target continent
-                int indexSearch = random.nextInt(featureInfos.size());
-                String continent = featureInfos.get(indexSearch).continent; //Get current continent
-                System.out.println(targetCountry = featureInfos.get(indexSearch).name);
-                System.out.println(continent);
-
-                if((continent.toUpperCase()).equals(targetContinent)){
-                    index = indexSearch;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         targetCountry = featureInfos.get(index).name;
-        targetCountryCode = featureInfos.get(index).fips10;
         targetCountryLabel.setText("Target Country: " +targetCountry);
     }
 
 
     // Method to start a new round with a different target country
     public void selectNewTarget() {
-        this.roundWin = false;
-        viewSuccessButton.setVisible(roundWin);
-        guessCount = 1; // reset guess count
-        gameView.clearGuesses(); // Clear fills after starting a new round
-        selectRandomTargetCountry("EUROPE");
+        selectRandomTargetCountry();
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
-        }
-        if (hintsTextArea != null) {
-            hintsTextArea.setText("Guess where the country is first to get a hint!");
         }
     }
 
@@ -380,68 +307,8 @@ public class GameController {
     }
 
 
-    private void showSuccessPopup() {
-        try {
-            // Load the FXML file for the popup
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/SuccessPopup.fxml"));
-            Parent root = loader.load();
-
-            // Get the controller of the popup
-            SuccessPopupController popupController = loader.getController();
-
-            //  Create the success message and pass it to the popup controller
-            String message = String.format("You found %s in %d %s.",
-                    targetCountry, guessCount, guessCount == 1 ? "guess" : "guesses");
-            popupController.setStatsMessage(message);
-
-            // Create a new stage (window) for the popup
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with the main window
-
-            popupStage.initStyle(StageStyle.TRANSPARENT);
-            Scene popupScene = new Scene(root);
-            popupScene.setFill(Color.TRANSPARENT);
-
-            popupStage.setScene(popupScene);
-            popupStage.showAndWait(); // Show the popup and wait for it to be closed
-
-            // After the popup is closed, start a new round only if play again clicked
-            if (popupController.isPlayAgainClicked()) {
-                selectNewTarget();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Fallback in case FXML fails to load
-            System.err.println("Failed to load success popup FXML.");
-
-            //Fallback just start the new game
-            selectNewTarget();
-        }
-
-    }
-
-
     // Navigation Logic
-    public void doLogin(Button button) {
-        if (button == null) {
-            System.out.println("Login button is null");
-            return;
-        }
-
-        Scene scene = button.getScene();
-        if (scene == null) {
-            System.out.println("Scene is null");
-            return;
-        }
-
-        System.out.println("Login button clicked");
-
-        Stage stage = (Stage) button.getScene().getWindow();
-        // Use the PageLoader to open the SignUpPage
-        PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
-    }
-
+    public void doLogin() { System.out.println("Login button clicked!"); }
     public void showGameModes() { System.out.println("Game Modes clicked!"); }
     public void showExplore() { System.out.println("Explore clicked!"); }
     public void showLeaders() { System.out.println("Leaders clicked!"); }
@@ -454,12 +321,5 @@ public class GameController {
 
     public List<MapService.FeatureInfo> getFeatureInfos() {
         return featureInfos;
-    }
-
-    void setTargetCountry(String country) {
-        this.targetCountry = country;
-        if (targetCountryLabel != null) {
-            targetCountryLabel.setText("Target Country: " + country);
-        }
     }
 }
