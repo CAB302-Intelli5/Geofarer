@@ -1,4 +1,4 @@
-package com.example.geofarer;
+package com.example.geofarer.model;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

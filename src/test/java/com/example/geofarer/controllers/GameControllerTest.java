@@ -1,6 +1,6 @@
 package com.example.geofarer.controllers;
 
-import com.example.geofarer.services.MapService;
+import com.example.geofarer.model.MapService;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

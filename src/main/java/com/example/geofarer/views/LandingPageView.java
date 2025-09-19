@@ -1,7 +1,7 @@
 package com.example.geofarer.views;
 
 import com.example.geofarer.controllers.LandingPageController;
-import com.example.geofarer.services.MapService;
+import com.example.geofarer.model.MapService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

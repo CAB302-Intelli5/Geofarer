@@ -1,21 +1,10 @@
 package com.example.geofarer.utils;
 
-import com.example.geofarer.services.MapService;
-import com.example.geofarer.views.GameView; // Import GameView
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
+import com.example.geofarer.model.MapService;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader; // Import FXMLLoader
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-
-import java.io.IOException;
 
 public class SceneManager {
     private static Stage primaryStage;

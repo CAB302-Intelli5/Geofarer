@@ -1,9 +1,8 @@
-package com.example.geofarer.services;
+package com.example.geofarer.model;
 
 import com.example.geofarer.utils.Constants;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
