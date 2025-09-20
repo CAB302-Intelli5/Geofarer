@@ -1,19 +1,13 @@
 package com.example.geofarer.controllers;
 
-import com.example.geofarer.UserService;
+import com.example.geofarer.model.UserService;
 import com.example.geofarer.utils.SceneManager;
 import com.example.geofarer.views.GameView;
 import com.example.geofarer.views.LandingPageView;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import com.example.geofarer.utils.PageLoader;
 import javafx.scene.control.Button;
-
-import java.awt.*;
-import java.io.IOException;
 
 public class LoginController extends BaseController {
 

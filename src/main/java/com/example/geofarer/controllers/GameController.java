@@ -1,8 +1,9 @@
 package com.example.geofarer.controllers;
 
-import com.example.geofarer.services.MapService;
-import hints.HintsClient;
+import com.example.geofarer.model.MapService;
+import com.example.geofarer.model.HintsManager;
 import com.example.geofarer.utils.PageLoader;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -46,8 +47,9 @@ public class GameController {
 
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
+    private HintsManager hintsManager;
 
-        // Game State
+    // Game State
     private static int guessCount = 1;
     private boolean roundWin = false;
     private final boolean correctGuess = true;
@@ -79,7 +81,6 @@ public class GameController {
         showSuccessPopup();
     }
 
-
     @FXML
     public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer, Button viewSuccessButton) {
         // Use "this." to refer to the instance variables of the GameController class
@@ -106,8 +107,7 @@ public class GameController {
     }
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
         this.featureInfos = featureInfos;
-        selectRandomTargetCountry("EUROPE"); // Call this after data is set
-        //To do: CURRENTLY EUROPE FOR TESTING PURPOSES
+        selectRandomTargetCountry(); // Call this after data is set
     }
 
     public void processMapClick(MouseEvent event) {
@@ -169,8 +169,14 @@ public class GameController {
             showSuccessPopup();
         } else if (roundWin != true){ //only update the country label if there is a round being played
             countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
-            hintsTextArea.setText("Hint 1: " +findHint());
+            try {
+                hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1) + "\n");
+            }catch (JsonProcessingException e){
+                e.printStackTrace();
+                System.out.println("Failed to load hint.");
+            }
             guessCount++;
+
             System.out.println(clickedCountryGeometry + "  " + gameView);
             if (gameView != null && clickedCountryGeometry != null) {
                 gameView.highlightGuess(clickedCountryGeometry, !correctGuess); // Highlight the incorrect guess
@@ -178,20 +184,8 @@ public class GameController {
             }
         }
     }
-    private String findHint() {
-        try {
-            HintsClient hintsClient = new HintsClient("europe", targetCountryCode.toLowerCase());
-            return hintsClient.findAll();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace(); // Log or show alert if needed
-            return "Error loading country data.";
-        } catch (Exception e) {
-        e.printStackTrace();
-        return "Error loading country data.";
-        }
-    }
 
-    private void selectRandomTargetCountry(String targetContinent) {
+    private void selectRandomTargetCountry() {
         if (featureInfos == null || featureInfos.isEmpty()) {
             targetCountry = "Unknown";
             targetCountryLabel.setText("Target Country: " + targetCountry);
@@ -200,6 +194,11 @@ public class GameController {
         Random random = new Random();
         int index = random.nextInt(featureInfos.size());
 
+        targetCountry = featureInfos.get(index).name;
+        targetCountryCode = featureInfos.get(index).fips10;
+        targetCountryLabel.setText("Target Country: " +targetCountry);
+        hintsManager = new HintsManager(targetCountryCode.toLowerCase());
+        /*
         int chosenIndex = -1;
         String normalizedTarget = targetContinent == null ? "" : targetContinent.trim().toUpperCase();
 
@@ -236,8 +235,8 @@ public class GameController {
 
         if (targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: " + targetCountry);
-        }
-
+        } 
+        */
     }
 
 
@@ -248,15 +247,17 @@ public class GameController {
             viewSuccessButton.setVisible(roundWin);
         }
         guessCount = 1; // reset guess count
+
         if (gameView !=  null) {
             gameView.clearGuesses(); // Clear fills after starting a new round
         }
-        selectRandomTargetCountry("EUROPE");
+       selectRandomTargetCountry();
+      
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
         }
         if (hintsTextArea != null) {
-            hintsTextArea.setText("Guess where the country is first to get a hint!");
+            hintsTextArea.clear();
         }
     }
 
