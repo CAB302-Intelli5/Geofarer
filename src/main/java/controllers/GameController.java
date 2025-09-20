@@ -1,8 +1,8 @@
-package com.example.geofarer.controllers;
+package controllers;
 
-import com.example.geofarer.model.MapService;
-import com.example.geofarer.model.HintsManager;
-import com.example.geofarer.utils.PageLoader;
+import model.MapService;
+import model.HintsManager;
+import utils.PageLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -68,10 +68,10 @@ public class GameController {
     private String targetCountryCode = "XX";
 
     // Reference to the GameView to allow communication
-    private com.example.geofarer.views.GameView gameView;
+    private views.GameView gameView;
 
     // Setter for GameView
-    public void setGameView(com.example.geofarer.views.GameView gameView) {
+    public void setGameView(views.GameView gameView) {
         this.gameView = gameView;
     }
 
@@ -478,5 +478,6 @@ public class GameController {
         if (targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: " + country);
         }
+        this.hintsManager = new HintsManager(country);
     }
 }

@@ -1,4 +1,4 @@
-import com.example.geofarer.model.HintsManager;
+import model.HintsManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
-package com.example.geofarer.utils;
+package utils;
 
-import com.example.geofarer.model.MapService;
+import model.MapService;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;

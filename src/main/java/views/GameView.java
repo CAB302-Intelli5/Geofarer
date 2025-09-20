@@ -1,8 +1,8 @@
-package com.example.geofarer.views;
+package views;
 
-import com.example.geofarer.controllers.GameController;
-import com.example.geofarer.model.MapService;
-import com.example.geofarer.utils.Constants;
+import controllers.GameController;
+import model.MapService;
+import utils.Constants;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;

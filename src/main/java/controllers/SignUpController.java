@@ -1,10 +1,10 @@
-package com.example.geofarer.controllers;
+package controllers;
 
-import com.example.geofarer.model.UserService;
-import com.example.geofarer.utils.PageLoader;
-import com.example.geofarer.utils.SceneManager;
-import com.example.geofarer.views.GameView;
-import com.example.geofarer.views.LandingPageView;
+import model.UserService;
+import utils.PageLoader;
+import utils.SceneManager;
+import views.GameView;
+import views.LandingPageView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;

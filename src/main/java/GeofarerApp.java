@@ -1,7 +1,5 @@
-package com.example.geofarer;
-
-import com.example.geofarer.utils.SceneManager;
-import com.example.geofarer.views.LandingPageView;
+import utils.SceneManager;
+import views.LandingPageView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;

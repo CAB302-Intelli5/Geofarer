@@ -11,7 +11,7 @@
 <!-- Use a StackPane as the root to layer the close button on top -->
 <StackPane fx:id="rootPane"
            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.geofarer.controllers.SuccessPopupController"
+           fx:controller="controllers.SuccessPopupController"
            styleClass="popup-root" stylesheets="@../styles/popup-style.css">
 
     <!-- Main content container -->

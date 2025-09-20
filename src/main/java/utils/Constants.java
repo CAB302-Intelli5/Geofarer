@@ -1,4 +1,4 @@
-package com.example.geofarer.utils;
+package utils;
 
 public class Constants {
     // Map data paths

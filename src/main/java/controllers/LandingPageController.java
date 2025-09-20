@@ -1,12 +1,10 @@
-package com.example.geofarer.controllers;
+package controllers;
 
-import com.example.geofarer.utils.PageLoader;
-import com.example.geofarer.utils.SceneManager;
-import com.example.geofarer.views.GameView;
-import javafx.animation.PauseTransition;
+import utils.PageLoader;
+import utils.SceneManager;
+import views.GameView;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class LandingPageController {
 

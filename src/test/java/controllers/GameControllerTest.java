@@ -1,15 +1,7 @@
-package com.example.geofarer.controllers;
+package controllers;
 
-import com.example.geofarer.model.MapService;
-import com.example.geofarer.views.GameView;
+import model.MapService;
 
-import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +11,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

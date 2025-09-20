@@ -1,6 +1,6 @@
-package com.example.geofarer.model;
+package model;
 
-import com.example.geofarer.utils.Constants;
+import utils.Constants;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Shape;

@@ -1,6 +1,6 @@
-package com.example.geofarer.controllers;
+package controllers;
 
-import com.example.geofarer.utils.PageLoader;
+import utils.PageLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;

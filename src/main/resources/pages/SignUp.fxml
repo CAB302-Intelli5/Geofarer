@@ -7,7 +7,7 @@
 
 <!-- Border around the outside -->
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.geofarer.controllers.SignUpController"
+            fx:controller="controllers.SignUpController"
             prefWidth="800" prefHeight="500"
             style="-fx-background-color: #E4F2F1; -fx-border-color: #0D1A26; -fx-border-width: 20;">
 
