@@ -1,8 +1,10 @@
-package com.example.geofarer.controllers;
+package controllers;
 
-import com.example.geofarer.utils.PageLoader;
-import com.example.geofarer.utils.SceneManager;
-import com.example.geofarer.views.LandingPageView;
+import model.UserService;
+import utils.PageLoader;
+import utils.SceneManager;
+import views.GameView;
+import views.LandingPageView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -11,12 +13,22 @@ public class SignUpController extends BaseController {
 
     @FXML
     private Button goBackButton;
+    private Button signupButton;
+
+    private UserService userService = new UserService();
 
     @FXML
     private void onSignUpClick() { // When the Sign Up button is clicked
         String email = emailField.getText();
         String password = passwordField.getText();
-        System.out.println("Signing up with: Email: " + email + ", Password: " + password);
+        if(userService.addUser(email, password)) {
+            System.out.println("User added successfully: " + email);
+
+            GameView gameView = new GameView(true);
+            SceneManager.switchToScene(gameView);
+        } else {
+            System.out.println("Failed to add user");
+        }
     }
 
     @FXML

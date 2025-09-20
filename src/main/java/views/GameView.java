@@ -1,44 +1,30 @@
-package com.example.geofarer.views;
+package views;
 
-import com.example.geofarer.controllers.GameController;
-import com.example.geofarer.services.MapService;
-import com.example.geofarer.utils.Constants;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import controllers.GameController;
+import model.MapService;
+import utils.Constants;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.apache.commons.lang3.ObjectUtils;
-import org.geotools.referencing.operation.transform.GeocentricTranslation;
 import org.locationtech.jts.geom.*;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.geometry.Point2D;
 
 import java.io.IOException;
-import java.net.ContentHandler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +38,9 @@ public class GameView extends VBox {
     @FXML private ImageView imageView;
     @FXML private Pane overlay;
     @FXML private Label countryLabel;
-    @FXML private  Label targetCountryLabel;
+    @FXML private TextArea hintsTextArea;
+    @FXML private Label targetCountryLabel;
+    @FXML private Button viewSuccessButton;
 
     // Map components
     private double imgWOrig = 0;
@@ -75,6 +63,7 @@ public class GameView extends VBox {
     public GameView(boolean delayInitialization) {
         this.mapService = new MapService();
         this.controller = new GameController();
+        this.controller.setGameView(this);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/pages/gameview.fxml"));
         fxmlLoader.setRoot(this);      // Set this instance as the root
@@ -87,7 +76,7 @@ public class GameView extends VBox {
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
 
-        controller.initializeController(targetCountryLabel,countryLabel,overlay,innerMapPane,mapContainer);
+        controller.initializeController(targetCountryLabel,countryLabel, hintsTextArea,overlay,innerMapPane,mapContainer,viewSuccessButton);
 
         if (!delayInitialization) {
             loadMapData();
@@ -107,7 +96,8 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        controller.initializeController(targetCountryLabel, countryLabel, overlay, innerMapPane, mapContainer);
+        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer,viewSuccessButton);
+
         // Load image async
         Task<Image> imgTask = new Task<>() {
             @Override
@@ -202,12 +192,12 @@ public class GameView extends VBox {
         clipRect.widthProperty().bind(mapContainer.widthProperty());
         clipRect.heightProperty().bind(mapContainer.heightProperty());
 
-        // Bind mapContainer width to 90% of scene width
+        // Bind mapContainer width to 70% of scene width
         mapContainer.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
-                mapContainer.prefWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
-                mapContainer.maxWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
-                mapContainer.minWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.9));
+                mapContainer.prefWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.7));
+                mapContainer.maxWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.7));
+                mapContainer.minWidthProperty().bind(mapContainer.getScene().widthProperty().multiply(0.7));
 
                 // Maintain 2:1 aspect ratio
                 mapContainer.prefHeightProperty().bind(mapContainer.prefWidthProperty().divide(2));
@@ -270,7 +260,7 @@ public class GameView extends VBox {
             if (g == null) continue;
 
             if (g instanceof Polygon) {
-                Polyline p = polylineForPolygon((Polygon) g, scaleX, scaleY);
+                Path p = pathForPolygon((Polygon) g, scaleX, scaleY); // Use Path instead of Polyline
                 if (p != null) {
                     fi.shapes.add(p);
                     overlay.getChildren().add(p);
@@ -280,7 +270,7 @@ public class GameView extends VBox {
                 for (int i = 0; i < mp.getNumGeometries(); i++) {
                     Geometry part = mp.getGeometryN(i);
                     if (part instanceof Polygon) {
-                        Polyline p = polylineForPolygon((Polygon) part, scaleX, scaleY);
+                        Path p = pathForPolygon((Polygon) part, scaleX, scaleY); // Use Path
                         if (p != null) {
                             fi.shapes.add(p);
                             overlay.getChildren().add(p);
@@ -293,31 +283,84 @@ public class GameView extends VBox {
         System.out.println("Rendered " + overlay.getChildren().size() + " polylines");
     }
 
-    private Polyline polylineForPolygon(Polygon poly, double scaleX, double scaleY) {
-        Coordinate[] coords = poly.getExteriorRing().getCoordinates();
-        if (coords == null || coords.length == 0) return null;
+    private Path pathForPolygon(Polygon poly, double scaleX, double scaleY) {
+        Path path = new Path();
+        path.setFill(Color.TRANSPARENT); // Default fill transparent
+        path.setStroke(Color.rgb(0, 0, 0, 0.6));
+        path.setStrokeWidth(Math.max(Constants.MIN_STROKE_WIDTH,
+                Constants.MAP_STROKE_WIDTH_FACTOR * Math.min(scaleX, scaleY)));
+        path.setMouseTransparent(true); // Clicks go through to the underlying image
 
-        Polyline pl = new Polyline(); // Create the Polyline first
-        List<Double> pts = pl.getPoints(); // Get the ObservableList of points
+        // Exterior ring
+        addCoordinatesToPath(path, poly.getExteriorRing().getCoordinates(), scaleX, scaleY);
 
-        for (Coordinate c : coords) {
-            double lon = c.x;
-            double lat = c.y;
-
-            // Transform geographic coordinates to image pixel coordinates
-            // Natural Earth raster is typically in geographic coordinates (-180 to 180, -90 to 90)
-            double x = ((lon + 180.0) / 360.0) * imgWOrig * scaleX;
-            double y = ((90.0 - lat) / 180.0) * imgHOrig * scaleY;
-
-            pts.add(x);
-            pts.add(y);
+        // Interior rings (holes)
+        for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+            addCoordinatesToPath(path, poly.getInteriorRingN(i).getCoordinates(), scaleX, scaleY);
         }
 
-        pl.setStroke(Color.rgb(0, 0, 0, 0.6));
-        pl.setStrokeWidth(Math.max(Constants.MIN_STROKE_WIDTH,
-                Constants.MAP_STROKE_WIDTH_FACTOR * Math.min(scaleX, scaleY)));
-        pl.setMouseTransparent(true);
-        return pl;
+        return path;
+    }
+
+    private void addCoordinatesToPath(Path path, Coordinate[] coords, double scaleX, double scaleY) {
+        if (coords == null || coords.length == 0) return;
+
+        // Move to the first point
+        Coordinate firstCoord = coords[0];
+        double firstX = ((firstCoord.x + 180.0) / 360.0) * imgWOrig * scaleX;
+        double firstY = ((90.0 - firstCoord.y) / 180.0) * imgHOrig * scaleY;
+        path.getElements().add(new javafx.scene.shape.MoveTo(firstX, firstY));
+
+        // Draw lines to subsequent points
+        for (int i = 1; i < coords.length; i++) {
+            Coordinate c = coords[i];
+            double x = ((c.x + 180.0) / 360.0) * imgWOrig * scaleX;
+            double y = ((90.0 - c.y) / 180.0) * imgHOrig * scaleY;
+            path.getElements().add(new javafx.scene.shape.LineTo(x, y));
+        }
+        path.getElements().add(new javafx.scene.shape.ClosePath());
+    }
+
+
+    /**
+     * Highlights the shapes associated with an incorrectly guessed country's geometry in red.
+     * @param guessedGeometry The JTS Geometry of the guessed country.
+     */
+    public void highlightGuess(Geometry guessedGeometry, boolean correctGuess) {
+        Platform.runLater(() -> {
+            for (MapService.FeatureInfo fi : featureInfos) {
+                if (fi.geom != null && fi.geom.equals(guessedGeometry)) {
+                    for (Shape shape : fi.shapes) {
+                        if (correctGuess != true){ //highlights as red if incorrect guess
+                            shape.setFill(Color.RED.deriveColor(1, 1, 1, 0.5)); // Semi-transparent red
+                            shape.setStroke(Color.DARKRED);
+                        }else{ //highlights as green if correct guess
+                            shape.setFill(Color.GREEN.deriveColor(1, 1, 1, 0.5));
+                            shape.setStroke(Color.DARKGREEN);
+                        }
+                        shape.setStrokeWidth(Math.max(Constants.MIN_STROKE_WIDTH,
+                                Constants.MAP_STROKE_WIDTH_FACTOR * Math.min(overlay.getWidth() / imgWOrig, overlay.getHeight() / imgHOrig)) * 2); // Thicker border
+                    }
+                    break; // Assuming one FeatureInfo per geometry
+                }
+            }
+        });
+    }
+
+    /**
+     * Resets the fill and stroke of all country shapes to their default (transparent fill, black stroke).
+     */
+    public void clearGuesses() {
+        Platform.runLater(() -> {
+            for (MapService.FeatureInfo fi : featureInfos) {
+                for (Shape shape : fi.shapes) {
+                    shape.setFill(Color.TRANSPARENT);
+                    shape.setStroke(Color.rgb(0, 0, 0, 0.6));
+                    shape.setStrokeWidth(Math.max(Constants.MIN_STROKE_WIDTH,
+                            Constants.MAP_STROKE_WIDTH_FACTOR * Math.min(overlay.getWidth() / imgWOrig, overlay.getHeight() / imgHOrig)));
+                }
+            }
+        });
     }
 
     public void initializeMap() {
@@ -352,5 +395,5 @@ public class GameView extends VBox {
     @FXML private void handleExplore() { controller.showExplore(); }
     @FXML private void handleLeaders() { controller.showLeaders(); }
     @FXML private void handleMyPassport() { controller.showMyPassport(); }
-
+    @FXML private void handleSuccessButton(){controller.handleSuccessButton(viewSuccessButton);}
 }
