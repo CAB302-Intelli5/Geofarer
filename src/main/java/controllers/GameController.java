@@ -155,36 +155,66 @@ public class GameController {
         }
         System.out.println(clickedCountryCode);
         if (clickedCountryCode.equals("XX")) return; // ignore unknown click
-        
+
         if (clickedCountry.equals("Unknown")){
             return; // ignore this click
         }
+        processCountryGuess(clickedCountry);
+    }
 
-        //Update the country label
-        if (clickedCountry.equals(targetCountry)) {
-            countryLabel.setText("Success! You clicked " + targetCountry);
-            gameView.highlightGuess(clickedCountryGeometry, correctGuess);
+    public void processCountryGuess(String guessedCountryName) {
+        if (featureInfos == null || featureInfos.isEmpty()) return;
+
+        if (guessedCountryName == null || guessedCountryName.equals("Unknown")) {
+            return; // ignore invalid guess
+        }
+
+        // Find the geometry for the guessed country
+        Geometry guessedCountryGeometry = null;
+        String guessedCountryCode = "XX";
+        for (MapService.FeatureInfo fi : featureInfos) {
+            if (fi.name.equals(guessedCountryName)) {
+                guessedCountryGeometry = fi.geom;
+                guessedCountryCode = fi.fips10;
+                break;
+            }
+        }
+
+        if (guessedCountryName.equals(targetCountry)) {
+            if (countryLabel != null) {
+                countryLabel.setText("Success! You clicked " + targetCountry);
+            }
+            if (gameView != null && guessedCountryGeometry != null) {
+                gameView.highlightGuess(guessedCountryGeometry, correctGuess);
+            }
             this.roundWin = true;
-            viewSuccessButton.setVisible(roundWin);
-            viewSuccessButton.setText("View Results");
+            if (viewSuccessButton != null) {
+                viewSuccessButton.setVisible(roundWin);
+                viewSuccessButton.setText("View Results");
+            }
             showSuccessPopup();
-        } else if (roundWin != true){ //only update the country label if there is a round being played
-            countryLabel.setText("Failed: You clicked: " +clickedCountry + ". Here is a hint!");
-            try {
-                hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1) + "\n");
-            }catch (JsonProcessingException e){
-                e.printStackTrace();
-                System.out.println("Failed to load hint.");
+        } else if (!roundWin) {
+            if (countryLabel != null) {
+                countryLabel.setText("Failed: You clicked: " + guessedCountryName + ". Here is a hint!");
+            }
+            if (hintsTextArea != null && hintsManager != null) {
+                try {
+                    hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1) + "\n");
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                    System.out.println("Failed to load hint.");
+                }
             }
             guessCount++;
 
-            System.out.println(clickedCountryGeometry + "  " + gameView);
-            if (gameView != null && clickedCountryGeometry != null) {
-                gameView.highlightGuess(clickedCountryGeometry, !correctGuess); // Highlight the incorrect guess
+            if (gameView != null && guessedCountryGeometry != null) {
+                gameView.highlightGuess(guessedCountryGeometry, !correctGuess);
                 System.out.println("clicked wrong country light it up!");
             }
         }
     }
+
+
 
     private void selectRandomTargetCountry() {
         if (featureInfos == null || featureInfos.isEmpty()) {
@@ -253,7 +283,7 @@ public class GameController {
             gameView.clearGuesses(); // Clear fills after starting a new round
         }
        selectRandomTargetCountry();
-      
+
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
         }
@@ -397,11 +427,15 @@ public class GameController {
     }
 
 
-    private void showSuccessPopup() {
+    protected void showSuccessPopup() {
         try {
             // Load the FXML file for the popup
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/SuccessPopup.fxml"));
             Parent root = loader.load();
+            if (root == null) {
+                System.out.println("Skipping popup in test mode: root is null");
+                return;
+            }
 
             // Get the controller of the popup
             SuccessPopupController popupController = loader.getController();
@@ -478,6 +512,19 @@ public class GameController {
         if (targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: " + country);
         }
-        this.hintsManager = new HintsManager(country);
+
+        if (featureInfos != null) {
+            for (MapService.FeatureInfo fi : featureInfos) {
+                if (fi.name.equals(country)) {
+                    this.targetCountryCode = fi.fips10;
+                    break;
+                }
+            }
+        }
+        this.hintsManager = new HintsManager(targetCountryCode.toLowerCase());
+    }
+
+    public boolean isRoundWin() {
+        return roundWin;
     }
 }

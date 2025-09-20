@@ -24,7 +24,16 @@ class GameControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller = new GameController();
+        controller = new GameController() {
+            @Override
+            protected void showSuccessPopup() {
+                //skips the popup for unit tests.
+            }
+
+
+        };
+
+
     }
 
     @Test
@@ -60,11 +69,12 @@ class GameControllerTest {
         String before = controller.getTargetCountry();
 
         // When
-        controller.processMapClick(null); // Simulate a click on Germany
+        controller.processCountryGuess("Germany"); // Simulate a click on Germany
 
         // Then
         assertEquals("Germany", before);
         assertEquals("Germany", controller.getTargetCountry(), "Target country should remain Germany");
+        assertTrue(controller.isRoundWin(), "Round should be won after correct guess");
     }
 
     @Test
@@ -80,10 +90,12 @@ class GameControllerTest {
         controller.setTargetCountry("Germany");
 
         // When
+        controller.processCountryGuess("France");
         String target = controller.getTargetCountry();
 
         // Then
         assertEquals("Germany", target);
+        assertFalse(controller.isRoundWin(), "Round should not be won after incorrect guess");
         assertTrue(Arrays.asList("Germany", "France").contains(target));
     }
 
