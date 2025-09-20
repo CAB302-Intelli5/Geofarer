@@ -111,6 +111,7 @@ public class GameController {
     }
 
     public void processMapClick(MouseEvent event) {
+        if (featureInfos == null || featureInfos.isEmpty()) return; // just for unit tests.
         if (overlay == null || innerMapPane == null) {
             // Requires the map to process a click
             return;
@@ -188,7 +189,9 @@ public class GameController {
     private void selectRandomTargetCountry() {
         if (featureInfos == null || featureInfos.isEmpty()) {
             targetCountry = "Unknown";
-            targetCountryLabel.setText("Target Country: " + targetCountry);
+            if (targetCountryLabel != null) {
+                targetCountryLabel.setText("Target Country: " + targetCountry);
+            }
             return;
         }
         Random random = new Random();
@@ -196,7 +199,9 @@ public class GameController {
 
         targetCountry = featureInfos.get(index).name;
         targetCountryCode = featureInfos.get(index).fips10;
-        targetCountryLabel.setText("Target Country: " +targetCountry);
+        if (targetCountryLabel != null) {
+            targetCountryLabel.setText("Target Country: " + targetCountry);
+        }
         hintsManager = new HintsManager(targetCountryCode.toLowerCase());
         /*
         int chosenIndex = -1;
@@ -232,10 +237,6 @@ public class GameController {
         MapService.FeatureInfo chosen = featureInfos.get(chosenIndex);
         targetCountry = chosen.name == null ? "Unknown" : chosen.name;
         targetCountryCode = chosen.fips10 == null ? "XX" : chosen.fips10;
-
-        if (targetCountryLabel != null) {
-            targetCountryLabel.setText("Target Country: " + targetCountry);
-        } 
         */
     }
 

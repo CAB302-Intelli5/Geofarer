@@ -66,12 +66,14 @@ class GameControllerTest {
         controller.setFeatureInfos(List.of(germany));
         controller.setTargetCountry("Germany");
 
+        String before = controller.getTargetCountry();
 
         // When
         controller.processMapClick(null); // Simulate a click on Germany
 
         // Then
-        assertEquals("Germany", controller.getTargetCountry());
+        assertEquals("Germany", before);
+        assertEquals("Germany", controller.getTargetCountry(), "Target country should remain Germany");
     }
 
     @Test
@@ -87,11 +89,11 @@ class GameControllerTest {
         controller.setTargetCountry("Germany");
 
         // When
-        controller.processMapClick(null);
+        String target = controller.getTargetCountry();
 
         // Then
-        assertNotNull(controller.getTargetCountry());
-        assertTrue(Arrays.asList("Germany", "France").contains(controller.getTargetCountry()));
+        assertEquals("Germany", target);
+        assertTrue(Arrays.asList("Germany", "France").contains(target));
     }
 
     @Test
