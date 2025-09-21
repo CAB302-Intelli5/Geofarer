@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Use a StackPane as the root to layer the close button on top -->
+<StackPane fx:id="rootPane"
+           xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.SuccessPopupController"
+           styleClass="popup-root" stylesheets="@../styles/popup-style.css">
+
+    <!-- Main content container -->
+    <VBox alignment="CENTER" spacing="10">
+        <padding>
+            <Insets top="40" right="40" bottom="30" left="40"/>
+        </padding>
+
+        <Label text="YOUR TRIP SUMMARY" styleClass="title-label"/>
+        <Label text="SUCCESS!" styleClass="subtitle-label"/>
+        <Label fx:id="statsLabel" styleClass="stats-label" text="Stats from this game"/>
+
+        <!-- Spacer to push buttons to the bottom -->
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- HBox for the bottom buttons -->
+        <HBox alignment="CENTER" spacing="10" prefHeight="50">
+            <!-- Left Button -->
+            <Button fx:id="passportButton" onAction="#handlePassportButton" text="VIEW MY PASSPORT" styleClass="passport-button"/>
+
+            <!-- Spacer to push buttons apart -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Right Button -->
+            <Button fx:id="playAgainButton" onAction="#handlePlayAgainButton" text="PLAY AGAIN" styleClass="play-again-button"/>
+        </HBox>
+    </VBox>
+
+    <!-- Close button, aligned to the top-right of the StackPane -->
+    <Button fx:id="closeButton" onAction="#handleCloseButton" text="X" styleClass="close-button"
+            StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
+            <Insets top="10" right="10"/>
+        </StackPane.margin>
+    </Button>
+
+</StackPane>

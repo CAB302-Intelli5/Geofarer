@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.TextArea?>
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" >
+        <!-- Top Header Bar -->
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Geofarer - Geography Game">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo_placeholder.png" />
+                    </image>
+                </ImageView>
+                <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+
+                                <Image url="@../images/logo_placeholder.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+        </HBox>
+
+        <!-- Navigation Menu -->
+        <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #e0e0e0; -fx-padding: 10;">
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Game Modes" onAction="#handleGameModes" />
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Explore" onAction="#handleExplore" />
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Leaders" onAction="#handleLeaders" />
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport" />
+        </HBox>
+    <!-- Target Country label -->
+    <HBox alignment="CENTER" prefHeight="50.0"
+          style="-fx-background-color: #731A12; -fx-padding:10;">
+        <Label fx:id="targetCountryLabel"
+               text="Target Country: Loading..."
+               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;" />
+    </HBox>
+    <!-- Game map -->
+        <HBox alignment="CENTER">
+            <StackPane fx:id="mapContainer"
+                       maxWidth="Infinity"
+                       VBox.vgrow="ALWAYS"
+                       HBox.hgrow="NEVER"
+                       style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;">
+                <StackPane fx:id="innerMapPane">
+                    <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
+                    <Pane fx:id="overlay" />
+                </StackPane>
+
+                <Button fx:id="viewSuccessButton" onAction="#handleSuccessButton" text="X" styleClass="view-Success-button"
+                        StackPane.alignment="TOP_RIGHT">
+                    <StackPane.margin>
+                        <Insets top="10" right="10"/>
+                    </StackPane.margin>
+                </Button>
+            </StackPane>
+        </HBox>
+
+        <!-- Bottom Bar for Country Label -->
+        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
+                <Label fx:id="countryLabel" text="Click on a country to see its name">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+        </HBox>
+
+        <!-- Text Area for the country hints from the CIA Factbook database -->
+        <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
+            <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </TextArea>
+        </HBox>
+
+
+
+</fx:root>
