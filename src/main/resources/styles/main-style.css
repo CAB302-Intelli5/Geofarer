@@ -1,0 +1,17 @@
+<style>
+  .bold-text {
+    font-weight: bold;
+  }
+  .normal-text {
+    font-weight: normal;
+  }
+</style>
+
+<script>
+  document.welcomeLabel("welcomeLabel").innerHTML = `
+    <div>
+      <span class="bold-text">This is bold text</span><br>
+      <span class="normal-text">This is normal text</span>
+    </div>
+  `;
+</script>
