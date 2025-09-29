@@ -73,7 +73,7 @@ public class LandingPageView extends StackPane {
         overlay.getChildren().addAll(welcomeLabel, playButton);
 
         // 3. Login Button (Top Right)
-        Button loginButton = new Button("Login");
+        Button loginButton = new Button();
         try {
             // Load the icon image. This path is critical.
             Image loginIcon = new Image(getClass().getResourceAsStream("/images/login_icon.png"));
@@ -82,6 +82,7 @@ public class LandingPageView extends StackPane {
             iconView.setFitHeight(40);
             iconView.setPreserveRatio(true);
             loginButton.setGraphic(iconView);
+            loginButton.setAccessibleText("login");
         } catch (Exception e) {
             System.err.println("Error loading login icon: " + e.getMessage());
             // Fallback to text if the icon fails to load
