@@ -1,6 +1,7 @@
 package views;
 
 import controllers.LandingPageController;
+import javafx.scene.AccessibleRole;
 import javafx.scene.text.Text;
 import model.MapService;
 import javafx.geometry.Insets;
@@ -38,6 +39,7 @@ public class LandingPageView extends StackPane {
         backgroundMap.fitWidthProperty().bind(this.widthProperty());
 
         // 2. Center Overlay
+        //with functional screen reader set up
         VBox overlay = new VBox(20);
         overlay.setAlignment(Pos.CENTER);
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
@@ -50,25 +52,28 @@ public class LandingPageView extends StackPane {
         welcomeText2.setFont(Font.font("Inika", FontWeight.BOLD, 68));
         welcomeText2.setFill(Color.WHITE);
 
-        VBox welcomeTextBox = new VBox(5);
-        welcomeTextBox.getChildren().addAll(welcomeText1, welcomeText2);
+        VBox welcomeTextBox = new VBox(5, welcomeText1, welcomeText2);
         welcomeTextBox.setAlignment(Pos.CENTER);
 
-        //Label welcomeLabel = new Label();
-        //welcomeLabel.setGraphic(welcomeTextBox);
+        Label welcomeLabel = new Label();
+        welcomeLabel.setGraphic(welcomeTextBox);
 
-        welcomeTextBox.setAccessibleText("Welcome to Geofarer");
+        //for pronunciation purposes, spelled as such
+        welcomeLabel.setAccessibleText("welcome to geo farer");
+        welcomeLabel.setFocusTraversable(true);
 
         Button playButton = new Button("PLAY NOW");
-        playButton.setFont(Font.font("System", FontWeight.BOLD, 24));
+        playButton.setFont(Font.font("TASA Explorer", FontWeight.BOLD, 24));
+        playButton.setAccessibleText("Click to start the game");
+        playButton.setFocusTraversable(true);
 
         //On button click start the game
         playButton.setOnAction(e -> controller.startGame());
 
-        overlay.getChildren().addAll(welcomeTextBox, playButton);
+        overlay.getChildren().addAll(welcomeLabel, playButton);
 
         // 3. Login Button (Top Right)
-        Button loginButton = new Button();
+        Button loginButton = new Button("Login");
         try {
             // Load the icon image. This path is critical.
             Image loginIcon = new Image(getClass().getResourceAsStream("/images/login_icon.png"));
