@@ -1,6 +1,7 @@
 package views;
 
 import controllers.LandingPageController;
+import javafx.scene.text.Text;
 import model.MapService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -41,14 +42,22 @@ public class LandingPageView extends StackPane {
         overlay.setAlignment(Pos.CENTER);
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
 
-        Label welcomeLabel1 = new Label("Welcome to");
-        welcomeLabel1.setFont(Font.font("Inika", 48));
-        welcomeLabel1.setTextFill(Color.WHITE);
+        Text welcomeText1 = new Text("WELCOME TO ");
+        welcomeText1.setFont(Font.font("Inika", FontWeight.NORMAL, 48));
+        welcomeText1.setFill(Color.WHITE);
 
-        Label welcomeLabel2 = new Label("Geofarer");
-        welcomeLabel2.setFont(Font.font("Inika", FontWeight.BOLD, 52));
-        welcomeLabel2.setTextFill(Color.WHITE);
+        Text welcomeText2 = new Text("GEOFARER");
+        welcomeText2.setFont(Font.font("Inika", FontWeight.BOLD, 68));
+        welcomeText2.setFill(Color.WHITE);
 
+        VBox welcomeTextBox = new VBox(5);
+        welcomeTextBox.getChildren().addAll(welcomeText1, welcomeText2);
+        welcomeTextBox.setAlignment(Pos.CENTER);
+
+        //Label welcomeLabel = new Label();
+        //welcomeLabel.setGraphic(welcomeTextBox);
+
+        welcomeTextBox.setAccessibleText("Welcome to Geofarer");
 
         Button playButton = new Button("PLAY NOW");
         playButton.setFont(Font.font("System", FontWeight.BOLD, 24));
@@ -56,7 +65,7 @@ public class LandingPageView extends StackPane {
         //On button click start the game
         playButton.setOnAction(e -> controller.startGame());
 
-        overlay.getChildren().addAll(welcomeLabel1, welcomeLabel2, playButton);
+        overlay.getChildren().addAll(welcomeTextBox, playButton);
 
         // 3. Login Button (Top Right)
         Button loginButton = new Button();
