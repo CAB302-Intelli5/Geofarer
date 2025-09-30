@@ -9,6 +9,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+/**
+ * Sign up controller
+ * Handles the signup  and navigation on the sign up page
+ * Inherits from {@link BaseController} to access common UI elements like email and password fields.
+ */
 public class SignUpController extends BaseController {
 
     @FXML
