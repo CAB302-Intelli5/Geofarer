@@ -1,5 +1,7 @@
 package controllers;
 
+import javafx.fxml.FXML;
+import javafx.scene.text.Font;
 import utils.PageLoader;
 import utils.SceneManager;
 import views.GameView;
@@ -8,8 +10,14 @@ import javafx.stage.Stage;
 
 public class LandingPageController {
 
+    @FXML
     private Button loginButton;
 
+    @FXML
+    public void initialise() {
+        Font.loadFont(getClass().getResource("/fonts/Inika-Regular.ttf").toExternalForm(), 72);
+        Font.loadFont(getClass().getResource("/fonts/Inika-Bold.ttf").toExternalForm(), 72);
+    }
     // Method for the View to pass the button reference
     public void setLoginButton(Button loginButton) {
         this.loginButton = loginButton;

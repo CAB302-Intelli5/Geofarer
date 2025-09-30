@@ -1,5 +1,7 @@
 package controllers;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import model.UserService;
 import utils.PageLoader;
 import utils.SceneManager;
@@ -9,11 +11,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class SignUpController extends BaseController {
 
     @FXML
     private Button goBackButton;
     private Button signupButton;
+
+    @FXML
+    private ImageView userImageView;
 
     private UserService userService = new UserService();
 
@@ -33,11 +40,8 @@ public class SignUpController extends BaseController {
 
     @FXML
     private void onGoBackClick() { // When the Go Back button is clicked
-        LandingPageView landingView = new LandingPageView();
-        SceneManager.switchToScene(landingView);
-
         Stage stage = SceneManager.getPrimaryStage();
-        stage.setTitle("Geofarer - Geography Learning Game");
+        PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", stage);
     }
 
     @FXML
@@ -45,5 +49,15 @@ public class SignUpController extends BaseController {
         Stage stage = (Stage) emailField.getScene().getWindow();
         // Use the PageLoader to open the SignUpPage
         PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+    }
+
+    @FXML
+    public void initialize() {
+        setupUserMenu();
+        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/userIcon.png")));
+        userImageView.setImage(img);
+
+        userImageView.setPreserveRatio(true);
+        userImageView.setSmooth(true);
     }
 }

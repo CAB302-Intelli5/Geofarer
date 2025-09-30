@@ -1,3 +1,4 @@
+import utils.PageLoader;
 import utils.SceneManager;
 import views.LandingPageView;
 import javafx.application.Application;
@@ -23,7 +24,7 @@ public class GeofarerApp extends Application {
         primaryStage.setHeight(768);
 
         // Switch to landing page
-        SceneManager.switchToScene(new LandingPageView());
+        PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", primaryStage);
 
         primaryStage.show();
         
