@@ -55,6 +55,7 @@ public class PassportController {
         //Set the view to have the stats showing first
         statsContainer.setVisible(true);
         mapViewContainer.setVisible(false);
+        loadUserStats();
     }
 
     private void setupViewToggle() {
@@ -276,8 +277,7 @@ public class PassportController {
         infoBox.setMinWidth(200);
 
         Label countryName = new Label(country.getCountryName());
-        countryName.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; " +
-                "-fx-text-fill: " + PASSPORT_DARK + ";");
+        countryName.setStyle("-fx-background-color: red; -fx-text-fill: white;");
 
         // Mastery level indicator (stars)
         Label masteryStars = new Label(country.getMasteryStars());

@@ -30,23 +30,29 @@ public class UserStatsDAO {
     public Map<String, List<CountryStats>> getCountriesGroupedByContinent() {
         Map<String, List<CountryStats>> result = new LinkedHashMap<String, List<CountryStats>>(); //Create a hashmap
         String query = """
-            SELECT 
-                c.country,
-                c.name,
-                c.region,
-                COALESCE(cm.mastery_level, 0) as mastery_level,
-                COALESCE(cm.correct_guesses, 0) as correct_guesses,
-                COALESCE(cm.last_played, '') as last_played
-            FROM countries c
-            LEFT JOIN country_mastery cm ON c.country = cm.country_id AND cm.user_id = ?
+        SELECT
+            c.country_id,
+            c.name,
+            c.region,
+            COALESCE(cm.mastery_level, 0) as mastery_level,
+            COALESCE(cm.correct_guesses, 0) as correct_guesses
+        FROM
+            countries c
+        LEFT JOIN
+            country_mastery cm ON c.country_id = cm.country_id AND cm.user_id = ?
             ORDER BY c.region, c.name
         """;
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-
+            System.out.println("DAO: Executing query for user ID: " + currentUserId);
             stmt.setInt(1, currentUserId);
             ResultSet rs = stmt.executeQuery();
+
+            //Check if the ResultSet has any data at all.
+            if (!rs.isBeforeFirst()) {
+                System.out.println("DAO: The query returned no rows.");
+            }
 
             while (rs.next()) {
                 String region = rs.getString("region");
@@ -54,10 +60,16 @@ public class UserStatsDAO {
                     region = "Unknown";
                 }
 
-                String countryCode = rs.getString("country");
+                String countryCode = rs.getString("country_id");
                 String countryName = rs.getString("name");
                 int masteryLevel = rs.getInt("mastery_level");
                 int correctGuesses = rs.getInt("correct_guesses");
+
+                // We can use a boolean flag to ensure it only prints once.
+                if (result.isEmpty()) { // Only print for the first country found
+                    System.out.println("DAO: Processing first row -> Country: " + countryName +
+                            ", Region: " + region + ", Mastery: " + masteryLevel);
+                }
 
                 // Calculate progress: 33.33% per mastery level, max 100%
                 double progress = Math.min(100.0, (masteryLevel * 100.0) / 3.0);
