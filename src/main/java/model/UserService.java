@@ -55,6 +55,34 @@ public class UserService {
         }
     }
 
+
+    /**
+     * Gets the user ID for a given email and password
+     * @param email users email as a string
+     * @param password users password
+     * @return returns null if credentials are invalid
+     */
+    public static Integer getUserId(String email, String password) {
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            System.out.println("Email or password field is empty");
+            return null;
+        }
+        String sql = "SELECT user_id FROM users WHERE email = ? AND password_hash = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, hashPassword(password));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("user_id");
+            }
+        } catch (SQLException e) {
+            System.out.println("Get user ID error: " + e.getMessage());
+        }
+        return null;
+    }
+
+
     public static boolean validateLogin(String email, String password) {
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
             System.out.println("Email or password field is empty");
@@ -72,6 +100,8 @@ public class UserService {
             return false;
         }
     }
+
+
 
     public static boolean deleteUser(String email) {
         String sql = "DELETE FROM users WHERE email = ?";

@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.scene.layout.Pane;
 import views.GameView;
+import views.PassportView;
 
 import java.io.IOException;
 
@@ -26,5 +27,12 @@ public class PageLoader {
         stage.setTitle(title);
         SceneManager.switchToScene(gameView);
         stage.setOnShown(e -> gameView.initializeMap());
+    }
+
+    public static void openPassportView(String title, Stage stage) {
+        PassportView passportView = new PassportView();
+        stage.setTitle(title);
+        SceneManager.switchToScene(passportView);
+        stage.setOnShown(e -> passportView.initializePassport());
     }
 }

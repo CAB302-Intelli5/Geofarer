@@ -2,6 +2,7 @@ package controllers;
 
 import model.UserService;
 import utils.SceneManager;
+import utils.SessionManager;
 import views.GameView;
 import views.LandingPageView;
 import javafx.fxml.FXML;
@@ -15,7 +16,6 @@ public class LoginController extends BaseController {
     private Button goBackButton;
     private Button loginButton;
 
-    private UserService userService = new UserService();
 
     @FXML
     private void onLoginClick() { // When the Login button is clicked
@@ -26,9 +26,12 @@ public class LoginController extends BaseController {
         } else {
             password = passwordField.getText();
         }
-        if(userService.validateLogin(email, password)) {
-            System.out.println("Login successful: " + email);
 
+        //Gets the user ID if credentials are valid
+        Integer userId = UserService.getUserId(email, password);
+        if(userId != null) {
+            System.out.println("Login successful: " + email);
+            SessionManager.getInstance().login(userId, email); //Store the user to the session ID
             GameView gameView = new GameView(true);
             SceneManager.switchToScene(gameView);
         } else {

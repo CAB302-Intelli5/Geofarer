@@ -35,15 +35,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import model.UserStatsDAO;
+import utils.SessionManager;
+
 public class GameController {
     @FXML
     private Label targetCountryLabel;
-    @FXML Label countryLabel;
+    @FXML
+    Label countryLabel;
     private Pane overlay;
     private StackPane innerMapPane;
     private StackPane mapContainer;
     private TextArea hintsTextArea;
-    @FXML private Button viewSuccessButton;
+    @FXML
+    private Button viewSuccessButton;
 
     private String targetCountry = "Unknown";
     private List<MapService.FeatureInfo> featureInfos;
@@ -70,13 +75,17 @@ public class GameController {
     // Reference to the GameView to allow communication
     private views.GameView gameView;
 
+    //For passport
+    private UserStatsDAO userStatsDAO;
+    private boolean hintsUsedThisRound = false;
+
     // Setter for GameView
     public void setGameView(views.GameView gameView) {
         this.gameView = gameView;
     }
 
     @FXML
-    public void handleSuccessButton(Button button){
+    public void handleSuccessButton(Button button) {
         System.out.println("View Success window button clicked");
         showSuccessPopup();
     }
@@ -101,10 +110,14 @@ public class GameController {
             countryLabel.setText("Click on a country to see its name");
         }
 
-        if(this.hintsTextArea != null) {
+        if (this.hintsTextArea != null) {
             hintsTextArea.setText("Guess where the country is first to get a hint!");
         }
+
+        //Initialize the stat tracking for user passport
+        initializeStatsTracking();
     }
+
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
         this.featureInfos = featureInfos;
         selectRandomTargetCountry(); // Call this after data is set
@@ -144,8 +157,8 @@ public class GameController {
 
         String clickedCountry = "Unknown";
         Geometry clickedCountryGeometry = null; // Store the geometry
-        for (MapService.FeatureInfo fi: featureInfos) {
-            if (fi.geom.contains(clickedPoint)){
+        for (MapService.FeatureInfo fi : featureInfos) {
+            if (fi.geom.contains(clickedPoint)) {
                 clickedCountry = fi.name;
                 clickedCountryCode = fi.fips10;
                 clickedCountryGeometry = fi.geom;
@@ -156,7 +169,7 @@ public class GameController {
         System.out.println(clickedCountryCode);
         if (clickedCountryCode.equals("XX")) return; // ignore unknown click
 
-        if (clickedCountry.equals("Unknown")){
+        if (clickedCountry.equals("Unknown")) {
             return; // ignore this click
         }
         processCountryGuess(clickedCountry);
@@ -187,6 +200,12 @@ public class GameController {
             if (gameView != null && guessedCountryGeometry != null) {
                 gameView.highlightGuess(guessedCountryGeometry, correctGuess);
             }
+
+            // Record the successful guess in database
+            if (userStatsDAO != null) {
+                userStatsDAO.recordCorrectGuess(targetCountryCode, hintsUsedThisRound);
+            }
+
             this.roundWin = true;
             if (viewSuccessButton != null) {
                 viewSuccessButton.setVisible(roundWin);
@@ -197,9 +216,16 @@ public class GameController {
             if (countryLabel != null) {
                 countryLabel.setText("Failed: You clicked: " + guessedCountryName + ". Here is a hint!");
             }
+
+            hintsUsedThisRound = true; //Hints have been used this round reset db
+
             if (hintsTextArea != null && hintsManager != null) {
                 try {
                     hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1) + "\n");
+                    // Record hint usage in database
+                    if (userStatsDAO != null) {
+                        userStatsDAO.recordHintViewed(targetCountryCode, guessCount - 1);
+                    }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                     System.out.println("Failed to load hint.");
@@ -213,7 +239,6 @@ public class GameController {
             }
         }
     }
-
 
 
     private void selectRandomTargetCountry() {
@@ -274,21 +299,40 @@ public class GameController {
     // Method to start a new round with a different target country
     public void selectNewTarget() {
         this.roundWin = false;
+        this.hintsUsedThisRound = false; //New round no hints used
         if (viewSuccessButton != null) {
             viewSuccessButton.setVisible(roundWin);
         }
         guessCount = 1; // reset guess count
 
-        if (gameView !=  null) {
+        if (gameView != null) {
             gameView.clearGuesses(); // Clear fills after starting a new round
         }
-       selectRandomTargetCountry();
+        selectRandomTargetCountry();
 
         if (countryLabel != null) {
             countryLabel.setText("Click on a country to see its name");
         }
         if (hintsTextArea != null) {
             hintsTextArea.clear();
+        }
+    }
+
+    /**
+     * Initializes the stat tracking. Checks to see iof the user is logged in.
+     */
+    public void initializeStatsTracking() {
+        this.userStatsDAO = new UserStatsDAO();
+
+        // Set the current user ID from session if logged in
+        if (SessionManager.getInstance().isLoggedIn()) {
+            Integer userId = SessionManager.getInstance().getCurrentUserId();
+            if (userId != null) {
+                userStatsDAO.setCurrentUserId(userId);
+                System.out.println("GameController: Initialized stats tracking for user ID: " + userId);
+            }
+        } else {
+            System.out.println("GameController: No user logged in, stats will not be tracked");
         }
     }
 
@@ -488,15 +532,63 @@ public class GameController {
 
         System.out.println("Login button clicked");
 
+        // Clear any existing session
+        SessionManager.getInstance().logout();
+
         Stage stage = (Stage) button.getScene().getWindow();
         // Use the PageLoader to open the SignUpPage
         PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
     }
 
-    public void showGameModes() { System.out.println("Game Modes clicked!"); }
-    public void showExplore() { System.out.println("Explore clicked!"); }
-    public void showLeaders() { System.out.println("Leaders clicked!"); }
-    public void showMyPassport() { System.out.println("My Passport clicked!"); }
+    public void showGameModes() {
+        System.out.println("Game Modes clicked!");
+    }
+
+    public void showExplore() {
+        System.out.println("Explore clicked!");
+    }
+
+    public void showLeaders() {
+        System.out.println("Leaders clicked!");
+    }
+
+    /**
+     * Opens up the passport page if user is logged in otherwise goes to the login page
+     */
+    public void showMyPassport() {
+        System.out.println("My Passport clicked!");
+
+        // Check if user is logged in
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            System.out.println("User not logged in, redirecting to login page");
+
+            // Get the stage from any available component
+            Stage stage = null;
+            if (viewSuccessButton != null) {
+                stage = (Stage) viewSuccessButton.getScene().getWindow();
+            } else if (targetCountryLabel != null) {
+                stage = (Stage) targetCountryLabel.getScene().getWindow();
+            }
+
+            if (stage != null) {
+                PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+            }
+            return;
+        }
+
+        // User is logged in, proceed to passport
+        Stage stage = null;
+        if (viewSuccessButton != null) {
+            stage = (Stage) viewSuccessButton.getScene().getWindow();
+        } else if (targetCountryLabel != null) {
+            stage = (Stage) targetCountryLabel.getScene().getWindow();
+        }
+
+        if (stage != null) {
+            PageLoader.openPassportView("My Passport", stage);
+        }
+
+    }
 
     // Getter methods for accessing current game state
     public String getTargetCountry() {
@@ -527,4 +619,6 @@ public class GameController {
     public boolean isRoundWin() {
         return roundWin;
     }
+
+
 }
