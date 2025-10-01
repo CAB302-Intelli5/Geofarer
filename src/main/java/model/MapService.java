@@ -149,6 +149,12 @@ public class MapService {
                         fips10 = adm0Attr.toString();
                     }
 
+                    // If the FIPS code is the invalid placeholder, skip this feature entirely.
+                    if ("-99".equals(fips10)) {
+                        System.out.println("Skipping feature with invalid FIPS code: " + extractName(f));
+                        continue; // Jumps to the next iteration of the loop
+                    }
+
                     // Create FeatureInfo with ADM0_A3
                     FeatureInfo fi = new FeatureInfo(simplified, name, fips10, continent);
                     featureInfos.add(fi);

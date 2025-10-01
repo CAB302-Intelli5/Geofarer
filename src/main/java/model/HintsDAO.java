@@ -43,6 +43,13 @@ public class HintsDAO {
     public List<String> getCountryHints() throws JsonProcessingException {
         List<String> countryHints = new ArrayList<>();
         queryFactbook();
+
+        // If no data was found, return an empty list to prevent a crash.
+        if (countryData == null || countryData.isEmpty()) {
+            System.err.println("Could not generate hints for " + gecCode + " as no data was found.");
+            return new ArrayList<>(); // Return an empty list
+        }
+
         ObjectMapper mapper = new ObjectMapper(); //Using Jackson to parse JSON response body
         JsonNode root = mapper.readTree(countryData); //Read JSON file tree
 

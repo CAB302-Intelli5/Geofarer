@@ -258,41 +258,6 @@ public class GameController {
             targetCountryLabel.setText("Target Country: " + targetCountry);
         }
         hintsManager = new HintsManager(targetCountryCode.toLowerCase());
-        /*
-        int chosenIndex = -1;
-        String normalizedTarget = targetContinent == null ? "" : targetContinent.trim().toUpperCase();
-
-        int attempts = Math.max(1, featureInfos.size());
-        for (int i = 0; i < attempts; i++) {
-            int idx = random.nextInt(featureInfos.size());
-            MapService.FeatureInfo fi = featureInfos.get(idx);
-            if (fi == null) continue;
-            String continent = fi.continent == null ? "" : fi.continent.trim().toUpperCase();
-            if (!normalizedTarget.isEmpty() && continent.equals(normalizedTarget)) {
-                chosenIndex = idx;
-                break;
-            }
-        }
-
-        // If no exact match found, pick a random index as fallback
-        if (chosenIndex == -1) {
-            chosenIndex = random.nextInt(featureInfos.size());
-        }
-
-        // Safeguard indexes
-        if (chosenIndex < 0 || chosenIndex >= featureInfos.size()) {
-            targetCountry = "Unknown";
-            targetCountryCode = "XX";
-            if (targetCountryLabel != null) {
-                targetCountryLabel.setText("Target Country: " + targetCountry);
-            }
-            return;
-        }
-
-        MapService.FeatureInfo chosen = featureInfos.get(chosenIndex);
-        targetCountry = chosen.name == null ? "Unknown" : chosen.name;
-        targetCountryCode = chosen.fips10 == null ? "XX" : chosen.fips10;
-        */
     }
 
 
