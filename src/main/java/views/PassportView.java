@@ -16,8 +16,6 @@ public class PassportView extends VBox {
 
         loader.setRoot(this);
 
-        this.controller = new PassportController();
-        loader.setController(this.controller);
 
         try {
             loader.load();

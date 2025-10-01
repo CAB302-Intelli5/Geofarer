@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;">
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" fx:controller="controllers.PassportController">
 
     <!-- Top Header Bar -->
     <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #E4F2F1; -fx-padding: 10;">
@@ -82,13 +82,10 @@
     </HBox>
 
     <!-- Main Content Area -->
-    <HBox VBox.vgrow="ALWAYS" style="-fx-background-color: #0D1A26;">
+
         <!-- Stats View -->
         <ScrollPane fitToWidth="true" style="-fx-background: #0D1A26; -fx-background-color: #0D1A26;" HBox.hgrow="ALWAYS">
             <VBox fx:id="statsContainer" spacing="0" style="-fx-background-color: #0D1A26;">
-                <padding>
-                    <Insets top="20" right="20" bottom="20" left="20" />
-                </padding>
             </VBox>
         </ScrollPane>
 
@@ -96,7 +93,6 @@
         <VBox fx:id="mapViewContainer" HBox.hgrow="ALWAYS" style="-fx-background-color: #0D1A26;" visible="false" managed="false">
             <!-- Map view content will be added here -->
         </VBox>
-    </HBox>
 
     <!-- Footer -->
     <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">

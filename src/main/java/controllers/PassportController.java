@@ -86,6 +86,7 @@ public class PassportController {
             selectedContinent = continentFilter.getValue();
             refreshStatsView();
         });
+
     }
 
     /**
@@ -95,6 +96,7 @@ public class PassportController {
         // Verify user is still logged in
         if (!SessionManager.getInstance().isLoggedIn()) {
             System.out.println("User not logged in, cannot load stats");
+            System.out.println("CONTROLLER: loadUserStats() called, but SessionManager reports user is NOT logged in. Aborting database call.");
 
             // Show message in stats container
             if (statsContainer != null) {
@@ -106,6 +108,8 @@ public class PassportController {
             }
             return;
         }
+
+        System.out.println("CONTROLLER: SessionManager reports user is logged in. Proceeding to call DAO.");
 
         // Load user statistics from database
         countriesByContinent = userStatsDAO.getCountriesGroupedByContinent();
@@ -133,6 +137,7 @@ public class PassportController {
 
     private void refreshStatsView() {
         statsContainer.getChildren().clear();
+        statsContainer.setFillWidth(true);
 
         if (countriesByContinent == null || countriesByContinent.isEmpty()) {
             Label noDataLabel = new Label("No statistics yet. Play some games to see your progress!");
@@ -140,6 +145,8 @@ public class PassportController {
             statsContainer.getChildren().add(noDataLabel);
             return;
         }
+
+        System.out.println("CONTROLLER: Found data for continents: " + countriesByContinent.keySet());
 
         List<String> continentsToShow = new ArrayList<>();
         if (selectedContinent.equals("All")) {
@@ -156,6 +163,7 @@ public class PassportController {
 
             VBox continentSection = createContinentSection(continent, countries);
             statsContainer.getChildren().add(continentSection);
+            System.out.println("CONTROLLER: Successfully created and added UI section for continent: " + continent);
         }
     }
 
@@ -277,7 +285,7 @@ public class PassportController {
         infoBox.setMinWidth(200);
 
         Label countryName = new Label(country.getCountryName());
-        countryName.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+        countryName.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + PASSPORT_DARK + ";");
 
         // Mastery level indicator (stars)
         Label masteryStars = new Label(country.getMasteryStars());
