@@ -133,8 +133,11 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.11.2</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -185,6 +188,15 @@
                     <reuseForks>true</reuseForks>
                     <reportFormat>brief</reportFormat>
                     <trimStackTrace>true</trimStackTrace>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <destDir>javadoc</destDir>
+                    <reportOutputDirectory>${project.build.directory}/docs</reportOutputDirectory>
                 </configuration>
             </plugin>
         </plugins>
