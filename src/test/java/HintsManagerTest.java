@@ -42,7 +42,7 @@ public class HintsManagerTest {
     @Test
     public void testHint3(){
         try {
-            assertEquals(COASTLINE_HINT, austriaHints.showNextHint(3));
+            assertEquals(COASTLINE_HINT, austriaHints.showNextHint(2));
         }catch(JsonProcessingException e){
             e.printStackTrace();
         }
