@@ -15,15 +15,20 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.shape.Circle?>
 <fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" >
         <!-- Top Header Bar -->
         <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #0D1A26; -fx-padding: 10;">
 
-            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../images/logo_placeholder.png" />
-                </image>
-            </ImageView>
+            <StackPane alignment="CENTER">
+                <Circle radius="20" fill="white" />
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/Logo.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
 
                 <Region HBox.hgrow="ALWAYS" />
 
@@ -114,7 +119,9 @@
         </HBox>
 
         <!-- Text Area for the country hints from the CIA Factbook database -->
-        <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: #0D1A26;">
+    <HBox alignment="BOTTOM_RIGHT" maxWidth="Infinity" style="-fx-background-color: #0D1A26;">
+        <Region HBox.hgrow="ALWAYS"/>
+        <VBox>
             <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
                 <font>
                     <Font size="14.0" />
@@ -124,8 +131,15 @@
                     -fx-font-family: 'TASA Explorer';
                 </style>
             </TextArea>
-        </HBox>
-
-
-
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <!-- Go Back button -->
+        <Button fx:id="goBackButton"
+                text="Go Back"
+                style="-fx-background-color: #731A12; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 6 14;">
+            <HBox.margin>
+                <Insets right="15" bottom="15"/>
+            </HBox.margin>
+        </Button>
+    </HBox>
 </fx:root>
