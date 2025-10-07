@@ -264,7 +264,7 @@ public class GameController {
         if (targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: " + targetCountry);
         }
-        hintsManager = new HintsManager(targetCountryCode.toLowerCase());
+        hintsManager = new HintsManager(targetCountryCode.toLowerCase(), targetCountry);
         /*
         int chosenIndex = -1;
         String normalizedTarget = targetContinent == null ? "" : targetContinent.trim().toUpperCase();
@@ -583,7 +583,7 @@ public class GameController {
                 }
             }
         }
-        this.hintsManager = new HintsManager(targetCountryCode.toLowerCase());
+        this.hintsManager = new HintsManager(targetCountryCode.toLowerCase(), targetCountry);
     }
 
     /**
