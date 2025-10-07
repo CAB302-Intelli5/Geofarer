@@ -8,12 +8,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       checks: write
       pull-requests: write
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -38,5 +37,10 @@ jobs:
           reporter: java-junit
           fail-on-error: true
 
+      - name: Generate Javadoc
+        run: mvn javadoc:javadoc
 
-
+      - name: Publish Javadoc
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+            folder: target/docs/javadoc
