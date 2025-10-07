@@ -12,9 +12,8 @@ public class HintsManager {
     List<String> countryHints;
 
     /**
-     * Constructs a hints manager for a given country
-     * fetches the country hints using {@link HintsDAO}
-     * @param gecCode the GEC / FIPS10 code of the country
+     * Constructs a new HintsManager that holds a list of hints for a country.
+     * @param gecCode 2 character code used by the US government to represent Geopolitical Entities and Codes
      */
     public HintsManager(String gecCode) {
         HintsDAO hintsDAO = new HintsDAO(gecCode);
@@ -26,11 +25,10 @@ public class HintsManager {
     }
 
     /**
-     * Shows the next hint in the stored list based on the hints already shown.
-     * If all the hints have been shown return the message indicating no more hints
-     * @param hintsShown the number of hints already shown
-     * @return a string of the next hint in the list
-     * @throws JsonProcessingException an exception if there is an error actually receiving the hints
+     * Shows the next hint category depending on how many hints have been shown so far.
+     * @param hintsShown How many hints have been shown so far. hintsShown = guessCount - 1
+     * @return a string of the next hint for a given country
+     * @throws JsonProcessingException if there is an issue with parsing JSON
      */
     public String showNextHint(int hintsShown) throws JsonProcessingException {
         String nextHint;
@@ -39,7 +37,8 @@ public class HintsManager {
         }else{
             nextHint = "No more hints left!";
         }
-        System.out.println("Hint" + hintsShown + ": " +nextHint);
+        String hint = ("Hint" + hintsShown + ": " +nextHint);
+        System.out.println(hint);
         return nextHint;
     }
 }
