@@ -8,8 +8,17 @@ import views.GameView;
 
 import java.io.IOException;
 
+/**
+ * Designed to open a new page and load all the fxml file data
+ */
 public class PageLoader {
 
+    /**
+     * Opens the given page applying all fxml data to the stage
+     * @param fxmlPath FXML file taht is being accessed
+     * @param title Title of that page that is being accessed
+     * @param stage The stage that will be displayed on the screen
+     */
     public static void openPage(String fxmlPath, String title, Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(PageLoader.class.getResource(fxmlPath));
@@ -21,10 +30,4 @@ public class PageLoader {
         }
     }
 
-    public static void openGameView(String title, Stage stage) {
-        GameView gameView = new GameView(); // GameView now loads its own FXML internally
-        stage.setTitle(title);
-        SceneManager.switchToScene(gameView);
-        stage.setOnShown(e -> gameView.initializeMap());
-    }
 }

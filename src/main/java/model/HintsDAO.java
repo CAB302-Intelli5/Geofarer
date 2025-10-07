@@ -8,13 +8,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode; //Using Jackson to parse Json
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
+/**
+ * DATA ACCESS OBJECT
+ * retrieves country hints from the Factbook database, uses the countries GEC to quert an SQLite database
+ * containing the JSON-formatted country info then parses relevant hints
+ */
 public class HintsDAO {
     private String countryData;
     private String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
     private String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
     private String gecCode;
 
+    /**
+     * Constructs a HintsDAO for a specific country
+     * @param gecCode
+     */
     public HintsDAO(String gecCode) {
         this.gecCode = gecCode;
     }
@@ -40,6 +48,12 @@ public class HintsDAO {
             e.printStackTrace();}
     }
 
+    /**
+     * Parses the json country data and extract hints about the country
+     * Extracts location, climate, continent, areaa, coastline and land boundaries
+     * @return a list of the formatted country hints as strings
+     * @throws JsonProcessingException if the JSON parsing fails
+     */
     public List<String> getCountryHints() throws JsonProcessingException {
         List<String> countryHints = new ArrayList<>();
         queryFactbook();
