@@ -490,7 +490,7 @@ public class GameController {
 
         Stage stage = (Stage) button.getScene().getWindow();
         // Use the PageLoader to open the SignUpPage
-        PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+        PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
     }
 
     public void showGameModes() { System.out.println("Game Modes clicked!"); }

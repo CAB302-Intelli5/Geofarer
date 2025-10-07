@@ -51,9 +51,24 @@
                         <PasswordField fx:id="passwordField" promptText="Enter your password here..." maxWidth="Infinity"/>
                         <TextField fx:id="passwordVisibleField" promptText="Enter your password here..." maxWidth="Infinity" visible="false"/>
                     </StackPane>
+
+                    <!-- Incorrect Password -->
+                    <Label fx:id="incorrectPasswordLabel"
+                           text="Invalid email and/or password"
+                           wrapText="true"
+                           maxWidth="360"
+                           style="-fx-font-family: 'TASA Explorer'; -fx-font-size: 12px; -fx-text-fill: white;"
+                           textAlignment="LEFT"
+                           alignment="TOP_LEFT"
+                           visible="false"
+                           managed="false">
+                        <VBox.margin>
+                            <Insets top="5" bottom="5"/>
+                        </VBox.margin>
+                    </Label>
+
                     <!-- Show/Hide password checkbox; Save details checkbox -->
                     <HBox alignment="CENTER_LEFT" spacing="10" maxWidth="Infinity">
-                        <CheckBox text="Save Details" style="-fx-text-fill: white;"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <CheckBox fx:id="showPasswordCheckBox" text="👁" onAction="#onTogglePassword" style="-fx-text-fill: white;"/>
                     </HBox>

@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 import model.UserService;
@@ -21,8 +22,12 @@ public class LoginController extends BaseController {
 
     @FXML
     private Button goBackButton;
+
     @FXML
     private Button loginButton;
+
+    @FXML
+    private Label incorrectPasswordLabel;
 
     @FXML
     private ImageView userImageView;
@@ -45,13 +50,15 @@ public class LoginController extends BaseController {
             SceneManager.switchToScene(gameView);
         } else {
             System.out.println("Invalid email or password");
+            incorrectPasswordLabel.setVisible(true);
+            incorrectPasswordLabel.setManaged(true);
         }
     }
 
     @FXML
     private void onGoBackClick() { // When the Go Back button is clicked
-        Stage stage = SceneManager.getPrimaryStage();
-        PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", stage);
+        GameView gameView = new GameView(true);
+        SceneManager.switchToScene(gameView);
     }
     /**
      * Navigates to the sign-up page when the link is clicked.
@@ -60,7 +67,7 @@ public class LoginController extends BaseController {
     private void onSignUpLinkClick() {
         Stage stage = (Stage) emailField.getScene().getWindow();
         // Use the PageLoader to open the SignUpPage
-        PageLoader.openPage("/pages/SignUp.fxml", "Sign Up", stage);
+        PageLoader.openPage("/pages/SignUp.fxml", "Geofarer - Geography Learning Game", stage);
     }
 
     @FXML
