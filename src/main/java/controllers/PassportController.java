@@ -37,6 +37,7 @@ public class PassportController {
     private static final String PASSPORT_PEACH = "#F2C3A7";
     private static final String PASSPORT_RED= "#731A12";
     private static final String PASSPORT_DARK= "#0D1A26";
+    private static final int TOTAL_HINT_SLOTS = 6;
 
     @FXML
     public void initialize() {
@@ -225,7 +226,7 @@ public class PassportController {
 
         // Add countries
         for (CountryStats country : countries) {
-            HBox countryRow = createCountryRow(country);
+            HBox countryRow = createCountryRow(country, continentName);
             countryList.getChildren().add(countryRow);
         }
 
@@ -245,7 +246,7 @@ public class PassportController {
         return section;
     }
 
-    private HBox createCountryRow(CountryStats country) {
+    private HBox createCountryRow(CountryStats country, String continentName) {
         HBox row = new HBox(15);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(8, 10, 8, 10));
@@ -324,12 +325,31 @@ public class PassportController {
         });
 
         // Make clickable for future detail view
-        row.setOnMouseClicked(e -> {
-            System.out.println("Clicked country: " + country.getCountryName());
-            // Future: Open detailed country stats page
-        });
+        row.setOnMouseClicked(e -> openCountryDetail(country, continentName));
 
         return row;
+    }
+
+    private void openCountryDetail(CountryStats country, String continentName) {
+        if (country == null || statsContainer == null || statsContainer.getScene() == null) {
+            return;
+        }
+
+        Stage stage = (Stage) statsContainer.getScene().getWindow();
+        if (stage == null) {
+            return;
+        }
+
+        System.out.println("Opening detail view for country: " + country.getCountryName());
+
+        PageLoader.openCountryDetailView(
+                String.format("Passport - %s", country.getCountryName()),
+                stage,
+                country,
+                continentName,
+                Collections.emptyList(),
+                TOTAL_HINT_SLOTS
+        );
     }
 
     private void loadMapView() {
