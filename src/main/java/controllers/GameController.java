@@ -307,6 +307,9 @@ public class GameController {
         newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
 
         if (newZoom != zoomLevel) {
+            // Reset drag detection after zoom to prevent stale coordinates
+            dragDetected = false;
+            isPanning = false;
             zoomAroundPoint(newZoom, event.getX(), event.getY());
         }
     }
@@ -331,9 +334,11 @@ public class GameController {
             double currentX = event.getSceneX();
             double currentY = event.getSceneY();
             
+            // Mark as drag - any mouse drag event means we're dragging, not clicking
+            dragDetected = true;
+            
             double deltaX = currentX - lastPanX;
             double deltaY = currentY - lastPanY;
-            dragDetected = true;
             
             // Logarithmic pan scaling for better feel across zoom levels
             // At zoom 1.0: factor = 1.0 (base speed)
