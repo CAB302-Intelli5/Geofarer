@@ -403,6 +403,12 @@ public class PassportController {
     }
 
     @FXML
+    public void handleMyStats() {
+        Stage stage = (Stage) statsContainer.getScene().getWindow();
+        PageLoader.openUserStatsView("My Stats - Geofarer", stage);
+    }
+
+    @FXML
     public void handleBackToGame() {
         Stage stage = (Stage) statsContainer.getScene().getWindow();
         PageLoader.openGameView("Geofarer - Geography Game", stage);

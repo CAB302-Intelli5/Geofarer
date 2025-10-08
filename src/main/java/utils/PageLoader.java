@@ -8,6 +8,7 @@ import model.CountryStats;
 import views.CountryDetailView;
 import views.GameView;
 import views.PassportView;
+import views.UserStatsView;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -38,6 +39,13 @@ public class PageLoader {
         stage.setTitle(title);
         SceneManager.switchToScene(passportView);
         stage.setOnShown(e -> passportView.initializePassport());
+    }
+
+    public static void openUserStatsView(String title, Stage stage) {
+        UserStatsView userStatsView = new UserStatsView();
+        stage.setTitle(title);
+        SceneManager.switchToScene(userStatsView);
+        stage.setOnShown(e -> userStatsView.initializeUserStats());
     }
 
     public static void openCountryDetailView(String title,

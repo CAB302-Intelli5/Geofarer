@@ -301,5 +301,136 @@ public class UserStatsDAO {
         return countries;
     }
 
+    /**
+     * Gets total number of hints unlocked for the user
+     * @return count of hints unlocked
+     */
+    public int getHintsUnlocked() {
+        String query = "SELECT COUNT(DISTINCT hint_id) as hints_count FROM unlocked_hints WHERE user_id = ?";
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("hints_count");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting hints unlocked: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+
+    /**
+     * Gets continent mastery stats for spider/radar chart
+     * @return Map with continent name as key and mastery percentage as value
+     */
+    public Map<String, Double> getContinentMasteryStats() {
+        Map<String, Double> continentStats = new LinkedHashMap<>();
+        
+        String query = """
+            SELECT 
+                c.region,
+                COUNT(DISTINCT c.country_id) as total_countries,
+                COUNT(DISTINCT CASE WHEN cm.mastery_level >= 3 THEN c.country_id END) as mastered_countries
+            FROM countries c
+            LEFT JOIN country_mastery cm ON c.country_id = cm.country_id AND cm.user_id = ?
+            WHERE c.region IS NOT NULL AND c.region != ''
+            GROUP BY c.region
+            ORDER BY c.region
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                String region = rs.getString("region");
+                int total = rs.getInt("total_countries");
+                int mastered = rs.getInt("mastered_countries");
+                
+                double percentage = total > 0 ? (mastered * 100.0) / total : 0.0;
+                continentStats.put(region, percentage);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting continent mastery stats: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return continentStats;
+    }
+
+    /**
+     * Gets progression data over time (countries mastered per day/week)
+     * @return List of maps containing date and count
+     */
+    public List<Map<String, Object>> getProgressionOverTime() {
+        List<Map<String, Object>> progression = new ArrayList<>();
+        
+        String query = """
+            SELECT 
+                DATE(last_played) as play_date,
+                COUNT(DISTINCT country_id) as countries_played,
+                SUM(CASE WHEN mastery_level >= 3 THEN 1 ELSE 0 END) as countries_mastered
+            FROM country_mastery
+            WHERE user_id = ? AND last_played IS NOT NULL
+            GROUP BY DATE(last_played)
+            ORDER BY play_date ASC
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            int cumulativeMastered = 0;
+            while (rs.next()) {
+                Map<String, Object> dataPoint = new HashMap<>();
+                dataPoint.put("date", rs.getString("play_date"));
+                dataPoint.put("countries_played", rs.getInt("countries_played"));
+                cumulativeMastered += rs.getInt("countries_mastered");
+                dataPoint.put("cumulative_mastered", cumulativeMastered);
+                progression.add(dataPoint);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting progression data: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return progression;
+    }
+
+    /**
+     * Calculates user rank based on countries mastered
+     * @return Rank title (e.g., "Explorer", "Traveler", "Master Geographer")
+     */
+    public String getUserRank() {
+        Map<String, Object> stats = getUserOverallStats();
+        int countriesMastered = (int) stats.getOrDefault("fully_unlocked", 0);
+        
+        if (countriesMastered >= 150) {
+            return "Master Geographer";
+        } else if (countriesMastered >= 100) {
+            return "World Traveler";
+        } else if (countriesMastered >= 50) {
+            return "Continental Expert";
+        } else if (countriesMastered >= 25) {
+            return "Regional Explorer";
+        } else if (countriesMastered >= 10) {
+            return "Adventurer";
+        } else if (countriesMastered >= 5) {
+            return "Novice Explorer";
+        } else {
+            return "Beginner";
+        }
+    }
+
 
 }
