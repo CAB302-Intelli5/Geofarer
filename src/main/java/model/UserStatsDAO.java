@@ -103,14 +103,14 @@ public class UserStatsDAO {
     public CountryStats getCountryStats(String countryCode) {
         String query = """
             SELECT 
-                c.country,
+                c.country_id,
                 c.name,
                 c.region,
                 COALESCE(cm.mastery_level, 0) as mastery_level,
                 COALESCE(cm.correct_guesses, 0) as correct_guesses
             FROM countries c
-            LEFT JOIN country_mastery cm ON c.country = cm.country_id AND cm.user_id = ?
-            WHERE c.country = ?
+            LEFT JOIN country_mastery cm ON c.country_id = cm.country_id AND cm.user_id = ?
+            WHERE c.country_id = ?
         """;
 
         try (Connection conn = Database.getConnection();
@@ -127,7 +127,7 @@ public class UserStatsDAO {
 
                 CountryStats stats = new CountryStats(
                         rs.getString("name"),
-                        rs.getString("country"),
+                        rs.getString("country_id"),
                         progress,
                         fullyUnlocked,
                         masteryLevel
@@ -301,29 +301,5 @@ public class UserStatsDAO {
         return countries;
     }
 
-    /**
-     * Returns the hint numbers unlocked by the current user for the given country.
-     */
-    public List<Integer> getUnlockedHintIds(String countryCode) {
-        List<Integer> unlockedHints = new ArrayList<>();
-        String query = "SELECT hint_id FROM unlocked_hints WHERE user_id = ? AND country_id = ? ORDER BY hint_id";
 
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, currentUserId);
-            stmt.setString(2, countryCode);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    unlockedHints.add(rs.getInt("hint_id"));
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error loading unlocked hints: " + e.getMessage());
-        }
-
-        return unlockedHints;
-    }
 }
