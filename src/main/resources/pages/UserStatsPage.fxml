@@ -70,34 +70,27 @@
 
             <!-- Stats Cards Section -->
             <VBox styleClass="stats-cards-container">
-                <Label text="Your Achievements" styleClass="section-header" />
-                <Label text="Track your progress and milestones" styleClass="section-subheader" />
-                
-                <HBox spacing="20" alignment="CENTER">
+                <HBox spacing="40" alignment="CENTER">
                     <!-- Stamps Earned Card -->
-                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox alignment="CENTER" spacing="5">
                         <Label fx:id="stampsEarnedNumber" text="0" styleClass="stat-number" />
                         <Label text="Countries Mastered" styleClass="stat-label" />
                     </VBox>
                     
                     <!-- Total Wins Card -->
-                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox alignment="CENTER" spacing="5">
                         <Label fx:id="totalWinsNumber" text="0" styleClass="stat-number" />
                         <Label text="Total Wins" styleClass="stat-label" />
                     </VBox>
-                </HBox>
-                
-                <Region prefHeight="20" />
-                
-                <HBox spacing="20" alignment="CENTER">
+                    
                     <!-- Hints Unlocked Card -->
-                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox alignment="CENTER" spacing="5">
                         <Label fx:id="hintsUnlockedNumber" text="0" styleClass="stat-number" />
                         <Label text="Hints Unlocked" styleClass="stat-label" />
                     </VBox>
                     
                     <!-- Countries Played Card -->
-                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox alignment="CENTER" spacing="5">
                         <Label fx:id="countriesPlayedNumber" text="0" styleClass="stat-number" />
                         <Label text="Countries Played" styleClass="stat-label" />
                     </VBox>
