@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
@@ -108,18 +109,6 @@
                 </VBox>
             </VBox>
 
-            <!-- List of Stamps/Mastered Countries -->
-            <VBox styleClass="stats-cards-container" alignment="CENTER">
-                <Label text="Mastered Countries" styleClass="section-header" />
-                
-                <VBox styleClass="mastered-countries-box" maxWidth="600" prefWidth="600">
-                    <ScrollPane fitToWidth="true" prefHeight="200" maxHeight="250" 
-                               style="-fx-background: transparent; -fx-background-color: transparent;">
-                        <VBox fx:id="masteredCountriesList" styleClass="stamps-list-container" spacing="8" />
-                    </ScrollPane>
-                </VBox>
-            </VBox>
-
             <!-- Charts Section -->
             <VBox styleClass="charts-container" alignment="CENTER">
                 
@@ -144,6 +133,22 @@
                     <Label text="Progress by Continent" styleClass="chart-title" />
                     <VBox fx:id="continentBarChartContainer" alignment="CENTER" prefHeight="400" />
                 </VBox>
+            </VBox>
+
+            <!-- Passport Stamps Section - Mastered Countries -->
+            <VBox styleClass="stamps-section" alignment="CENTER">
+                <VBox styleClass="stamps-title-container" alignment="CENTER">
+                    <Label text="Passport Collection" styleClass="stamps-section-title" />
+                    <Label text="Countries You've Mastered" styleClass="stamps-section-subtitle" />
+                </VBox>
+                
+                <ScrollPane fitToWidth="true" prefHeight="400" maxHeight="500" 
+                           styleClass="stamps-scroll-pane">
+                    <FlowPane fx:id="masteredCountriesList" 
+                             styleClass="stamps-grid" 
+                             hgap="25" vgap="25" 
+                             alignment="CENTER" />
+                </ScrollPane>
             </VBox>
 
             <!-- Footer -->

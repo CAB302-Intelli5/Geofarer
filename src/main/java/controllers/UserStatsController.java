@@ -2,7 +2,7 @@ package controllers;
 
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -10,7 +10,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.CountryStats;
 import model.UserStatsDAO;
@@ -31,7 +34,7 @@ public class UserStatsController {
     @FXML private Label totalWinsNumber;
     @FXML private Label hintsUnlockedNumber;
     @FXML private Label countriesPlayedNumber;
-    @FXML private VBox masteredCountriesList;
+    @FXML private FlowPane masteredCountriesList;
     @FXML private Label rankNameLabel;
     @FXML private Label rankDescriptionLabel;
     @FXML private VBox spiderChartContainer;
@@ -92,7 +95,7 @@ public class UserStatsController {
     }
 
     /**
-     * Loads the list of mastered countries
+     * Loads the list of mastered countries as passport stamps
      */
     private void loadMasteredCountriesList() {
         masteredCountriesList.getChildren().clear();
@@ -105,7 +108,7 @@ public class UserStatsController {
             for (CountryStats country : entry.getValue()) {
                 if (country.isFullyUnlocked()) {
                     totalMastered++;
-                    VBox stampItem = createStampItem(country);
+                    StackPane stampItem = createStampItem(country);
                     masteredCountriesList.getChildren().add(stampItem);
                 }
             }
@@ -119,21 +122,49 @@ public class UserStatsController {
     }
 
     /**
-     * Creates a stamp item for a mastered country
+     * Creates a circular passport stamp for a mastered country
      */
-    private VBox createStampItem(CountryStats country) {
-        VBox item = new VBox(5);
-        item.getStyleClass().add("stamp-item");
-        item.setPadding(new Insets(10));
-
+    private StackPane createStampItem(CountryStats country) {
+        // Main container
+        StackPane stamp = new StackPane();
+        stamp.getStyleClass().add("passport-stamp");
+        stamp.setMaxWidth(150);
+        stamp.setMaxHeight(150);
+        stamp.setMinWidth(150);
+        stamp.setMinHeight(150);
+        
+        // Create circular background with dashed border
+        Circle circle = new Circle(65);
+        circle.getStyleClass().add("stamp-circle");
+        
+        // Create content container
+        VBox content = new VBox(5);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(120);
+        
+        // Country code (e.g., "USA", "AUS", "JPN")
+        Label countryCode = new Label(country.getCountryCode());
+        countryCode.getStyleClass().add("stamp-country-code");
+        
+        // Country name (wrapped if needed)
         Label countryName = new Label(country.getCountryName());
-        countryName.getStyleClass().add("stamp-country-name");
-
-        Label masteryInfo = new Label("✓ Mastered (Level " + country.getMasteryLevel() + ")");
-        masteryInfo.getStyleClass().add("stamp-mastery-indicator");
-
-        item.getChildren().addAll(countryName, masteryInfo);
-        return item;
+        countryName.getStyleClass().add("stamp-country-label");
+        countryName.setWrapText(true);
+        countryName.setMaxWidth(110);
+        
+        // Mastery stars (★★★ for level 3)
+        String stars = "★".repeat(country.getMasteryLevel());
+        Label masteryStars = new Label(stars);
+        masteryStars.getStyleClass().add("stamp-mastery-stars");
+        
+        // Date stamp (current date or last played)
+        Label dateLabel = new Label("MASTERED");
+        dateLabel.getStyleClass().add("stamp-date");
+        
+        content.getChildren().addAll(countryCode, countryName, masteryStars, dateLabel);
+        stamp.getChildren().addAll(circle, content);
+        
+        return stamp;
     }
 
     /**
@@ -259,7 +290,7 @@ public class UserStatsController {
         xAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
         
         NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Countries Mastered");
+        yAxis.setLabel("Mastery Score");
         yAxis.setAutoRanging(true);
         yAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
         yAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
@@ -269,9 +300,9 @@ public class UserStatsController {
         lineChart.setTitle("Mastery Progression by Match");
         lineChart.setLegendVisible(true);
         
-        // Create series for countries mastered
+        // Create series for mastery score (goes up and down)
         XYChart.Series<Number, Number> masteredSeries = new XYChart.Series<>();
-        masteredSeries.setName("Countries Mastered");
+        masteredSeries.setName("Mastery Score");
         
         // Sample every nth point if there are too many matches (for performance)
         int sampleRate = Math.max(1, progressionData.size() / 100);
@@ -279,17 +310,17 @@ public class UserStatsController {
         for (int i = 0; i < progressionData.size(); i += sampleRate) {
             Map<String, Object> dataPoint = progressionData.get(i);
             Integer matchNumber = (Integer) dataPoint.get("matchNumber");
-            Integer countriesMastered = (Integer) dataPoint.get("countriesMastered");
+            Integer masteryScore = (Integer) dataPoint.get("totalMasteryScore");
             String result = (String) dataPoint.get("result");
             
-            XYChart.Data<Number, Number> point = new XYChart.Data<>(matchNumber, countriesMastered);
+            XYChart.Data<Number, Number> point = new XYChart.Data<>(matchNumber, masteryScore);
             masteredSeries.getData().add(point);
             
             // Add tooltip to show win/loss for this match
             if (point.getNode() != null) {
                 String resultSymbol = "win".equals(result) ? "✓" : "✗";
                 javafx.scene.control.Tooltip tooltip = new javafx.scene.control.Tooltip(
-                    "Match " + matchNumber + ": " + resultSymbol + " " + result.toUpperCase()
+                    "Match " + matchNumber + ": " + resultSymbol + " " + result.toUpperCase() + "\nScore: " + masteryScore
                 );
                 javafx.scene.control.Tooltip.install(point.getNode(), tooltip);
             }
@@ -299,8 +330,8 @@ public class UserStatsController {
         if (sampleRate > 1 && progressionData.size() > 0) {
             Map<String, Object> lastPoint = progressionData.get(progressionData.size() - 1);
             Integer matchNumber = (Integer) lastPoint.get("matchNumber");
-            Integer countriesMastered = (Integer) lastPoint.get("countriesMastered");
-            masteredSeries.getData().add(new XYChart.Data<>(matchNumber, countriesMastered));
+            Integer masteryScore = (Integer) lastPoint.get("totalMasteryScore");
+            masteredSeries.getData().add(new XYChart.Data<>(matchNumber, masteryScore));
         }
         
         lineChart.getData().add(masteredSeries);
@@ -319,11 +350,12 @@ public class UserStatsController {
         // Add information label
         int totalMatches = progressionData.size();
         Map<String, Object> lastData = progressionData.get(totalMatches - 1);
+        int finalScore = (Integer) lastData.get("totalMasteryScore");
         int finalMastered = (Integer) lastData.get("countriesMastered");
         
         Label infoLabel = new Label(String.format(
-            "Showing progression over %d matches • %d countries mastered", 
-            totalMatches, finalMastered
+            "Showing progression over %d matches • Score: %d • Countries Mastered: %d", 
+            totalMatches, finalScore, finalMastered
         ));
         infoLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 12px; -fx-padding: 5 0 10 0;");
         

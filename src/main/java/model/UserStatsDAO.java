@@ -597,10 +597,8 @@ public class UserStatsDAO {
                     }
                 } else {
                     consecutiveWins = 0;
-                    currentProgress -= 25;
-                    if (currentProgress < 0) {
-                        currentProgress = 0;
-                    }
+                    // Losing resets progress to 0, creating a big drop if you were close to mastering
+                    currentProgress = 0;
                 }
                 
                 // Update country tracking

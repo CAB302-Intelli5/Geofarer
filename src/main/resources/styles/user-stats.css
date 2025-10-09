@@ -278,3 +278,93 @@
 .chart-plot-background {
     -fx-background-color: transparent;
 }
+
+/* Passport Stamps Section */
+.stamps-section {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 40 20 40 20;
+    -fx-spacing: 20;
+}
+
+.stamps-title-container {
+    -fx-spacing: 10;
+    -fx-padding: 0 0 20 0;
+}
+
+.stamps-section-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F2C3A7;
+    -fx-effect: dropshadow(gaussian, rgba(242, 195, 167, 0.3), 8, 0, 0, 0);
+}
+
+.stamps-section-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #A6A186;
+    -fx-font-style: italic;
+}
+
+.stamps-scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.stamps-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.stamps-grid {
+    -fx-background-color: transparent;
+    -fx-padding: 20;
+}
+
+/* Individual Passport Stamp - Circular Design */
+.passport-stamp {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 3, 3);
+}
+
+.passport-stamp:hover {
+    -fx-effect: dropshadow(gaussian, rgba(242, 195, 167, 0.6), 12, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+.stamp-circle {
+    -fx-fill: linear-gradient(to bottom, #f4e4d7 0%, #e8d5c4 100%);
+    -fx-stroke: #731A12;
+    -fx-stroke-width: 4;
+    -fx-stroke-type: inside;
+    -fx-stroke-dash-array: 8 5;
+}
+
+.stamp-country-code {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #731A12;
+    -fx-font-family: "Courier New", "Lucida Console", monospace;
+    -fx-alignment: center;
+}
+
+.stamp-country-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #731A12;
+    -fx-font-family: "Courier New", "Lucida Console", monospace;
+    -fx-alignment: center;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
+
+.stamp-date {
+    -fx-font-size: 10px;
+    -fx-text-fill: #8B4513;
+    -fx-font-family: "Courier New", "Lucida Console", monospace;
+    -fx-alignment: center;
+}
+
+.stamp-mastery-stars {
+    -fx-font-size: 16px;
+    -fx-text-fill: #D4AF37;
+    -fx-alignment: center;
+}
