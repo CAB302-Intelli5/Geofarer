@@ -62,14 +62,14 @@
         <VBox spacing="0">
             
             <!-- Title Section with Underline -->
-            <VBox styleClass="stats-title-container">
+            <VBox styleClass="stats-title-container" alignment="CENTER">
                 <Label text="My Stats" styleClass="stats-title" />
                 <Region prefHeight="10" />
                 <Rectangle styleClass="stats-title-underline" />
             </VBox>
 
             <!-- Stats Cards Section -->
-            <VBox styleClass="stats-cards-container">
+            <VBox styleClass="stats-cards-container" alignment="CENTER">
                 <HBox spacing="40" alignment="CENTER">
                     <!-- Stamps Earned Card -->
                     <VBox alignment="CENTER" spacing="5">
@@ -97,17 +97,6 @@
                 </HBox>
             </VBox>
 
-            <!-- List of Stamps/Mastered Countries -->
-            <VBox styleClass="stats-cards-container">
-                <Label text="Mastered Countries" styleClass="section-header" />
-                <Label text="Countries you've fully unlocked" styleClass="section-subheader" />
-                
-                <ScrollPane fitToWidth="true" prefHeight="200" maxHeight="200" 
-                           style="-fx-background: transparent; -fx-background-color: transparent;">
-                    <VBox fx:id="masteredCountriesList" styleClass="stamps-list-container" />
-                </ScrollPane>
-            </VBox>
-
             <!-- Rank Section -->
             <VBox styleClass="stats-cards-container" alignment="CENTER">
                 <VBox styleClass="rank-container" maxWidth="600">
@@ -119,11 +108,23 @@
                 </VBox>
             </VBox>
 
+            <!-- List of Stamps/Mastered Countries -->
+            <VBox styleClass="stats-cards-container" alignment="CENTER">
+                <Label text="Mastered Countries" styleClass="section-header" />
+                
+                <VBox styleClass="mastered-countries-box" maxWidth="600" prefWidth="600">
+                    <ScrollPane fitToWidth="true" prefHeight="200" maxHeight="250" 
+                               style="-fx-background: transparent; -fx-background-color: transparent;">
+                        <VBox fx:id="masteredCountriesList" styleClass="stamps-list-container" spacing="8" />
+                    </ScrollPane>
+                </VBox>
+            </VBox>
+
             <!-- Charts Section -->
-            <VBox styleClass="charts-container">
+            <VBox styleClass="charts-container" alignment="CENTER">
                 
                 <!-- Continent Mastery Spider Chart -->
-                <VBox styleClass="chart-box">
+                <VBox styleClass="chart-box" alignment="CENTER">
                     <Label text="Continent Mastery Overview" styleClass="chart-title" />
                     <VBox fx:id="spiderChartContainer" alignment="CENTER" prefHeight="400" />
                 </VBox>
@@ -131,7 +132,7 @@
                 <Region prefHeight="20" />
                 
                 <!-- Progression Line Chart -->
-                <VBox styleClass="chart-box">
+                <VBox styleClass="chart-box" alignment="CENTER">
                     <Label text="Mastery Progression by Match" styleClass="chart-title" />
                     <VBox fx:id="progressionChartContainer" alignment="CENTER" prefHeight="400" />
                 </VBox>
@@ -139,7 +140,7 @@
                 <Region prefHeight="20" />
                 
                 <!-- Continent Progress Bar Chart -->
-                <VBox styleClass="chart-box">
+                <VBox styleClass="chart-box" alignment="CENTER">
                     <Label text="Progress by Continent" styleClass="chart-title" />
                     <VBox fx:id="continentBarChartContainer" alignment="CENTER" prefHeight="400" />
                 </VBox>

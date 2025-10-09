@@ -255,10 +255,14 @@ public class UserStatsController {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Match Number");
         xAxis.setAutoRanging(true);
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        xAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
         
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Countries Mastered");
         yAxis.setAutoRanging(true);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        yAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
 
         // Create line chart
         LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
@@ -342,10 +346,14 @@ public class UserStatsController {
         // Create axes
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Continent");
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        xAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
         
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Mastery Percentage");
         yAxis.setUpperBound(100);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        yAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
 
         // Create bar chart
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);

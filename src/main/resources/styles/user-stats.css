@@ -134,6 +134,7 @@
     -fx-font-weight: bold;
     -fx-text-fill: #F2C3A7;
     -fx-padding: 0 0 15 0;
+    -fx-alignment: center;
 }
 
 /* ScrollPane styling */
@@ -163,7 +164,8 @@
 .stamps-list-container {
     -fx-background-color: transparent;
     -fx-spacing: 10;
-    -fx-padding: 10;
+    -fx-padding: 5;
+    -fx-alignment: center;
 }
 
 .stamp-item {
@@ -172,19 +174,22 @@
     -fx-border-width: 1;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
-    -fx-padding: 15;
+    -fx-padding: 12;
     -fx-spacing: 8;
+    -fx-alignment: center;
 }
 
 .stamp-country-name {
-    -fx-font-size: 16px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #E4F2F1;
+    -fx-alignment: center;
 }
 
 .stamp-mastery-indicator {
     -fx-font-size: 12px;
     -fx-text-fill: #F2C3A7;
+    -fx-alignment: center;
 }
 
 /* Section headers */
@@ -192,13 +197,24 @@
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #E4F2F1;
-    -fx-padding: 10 0 10 0;
+    -fx-padding: 10 0 15 0;
+    -fx-alignment: center;
 }
 
 .section-subheader {
     -fx-font-size: 14px;
     -fx-text-fill: #A6A186;
     -fx-padding: 0 0 20 0;
+}
+
+/* Mastered Countries Box with passport border */
+.mastered-countries-box {
+    -fx-border-color: #A6A186;
+    -fx-border-width: 3;
+    -fx-border-radius: 15;
+    -fx-background-color: rgba(166, 161, 134, 0.08);
+    -fx-background-radius: 15;
+    -fx-padding: 15;
 }
 
 /* Chart styling - using passport red for clean minimal design */
