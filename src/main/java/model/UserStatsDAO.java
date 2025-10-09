@@ -432,5 +432,207 @@ public class UserStatsDAO {
         }
     }
 
+    /**
+     * Gets match-based progression data for a specific country
+     * Returns a list of matches with their outcomes to show progression toward mastery
+     * @param countryCode The FIPS10 country code
+     * @return List of maps containing match number, result (win/loss), and mastery progress
+     */
+    public List<Map<String, Object>> getMatchProgressionForCountry(String countryCode) {
+        List<Map<String, Object>> progression = new ArrayList<>();
+        
+        String query = """
+            SELECT 
+                match_result,
+                used_hints,
+                played_at
+            FROM match_history
+            WHERE user_id = ? AND country_id = ?
+            ORDER BY played_at ASC
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            stmt.setString(2, countryCode);
+            ResultSet rs = stmt.executeQuery();
+            
+            int matchNumber = 0;
+            int masteryProgress = 0;  // Track current mastery progress (-100 to 300)
+            int consecutiveWinsNoHints = 0;  // Track consecutive wins without hints
+            
+            while (rs.next()) {
+                matchNumber++;
+                String result = rs.getString("match_result");
+                boolean usedHints = rs.getInt("used_hints") == 1;
+                
+                Map<String, Object> dataPoint = new HashMap<>();
+                dataPoint.put("matchNumber", matchNumber);
+                dataPoint.put("result", result);
+                dataPoint.put("usedHints", usedHints);
+                
+                // Update mastery progress based on match outcome
+                if ("win".equals(result)) {
+                    if (!usedHints) {
+                        consecutiveWinsNoHints++;
+                        masteryProgress += 34;  // Gain progress toward next mastery level
+                        
+                        // Cap at mastery level 3 (300%)
+                        if (masteryProgress > 300) {
+                            masteryProgress = 300;
+                        }
+                    } else {
+                        // Win with hints doesn't increase mastery much
+                        consecutiveWinsNoHints = 0;
+                        masteryProgress += 5;
+                    }
+                } else {
+                    // Loss reduces progress
+                    consecutiveWinsNoHints = 0;
+                    masteryProgress -= 25;
+                    if (masteryProgress < 0) {
+                        masteryProgress = 0;
+                    }
+                }
+                
+                dataPoint.put("masteryProgress", masteryProgress);
+                dataPoint.put("consecutiveWins", consecutiveWinsNoHints);
+                progression.add(dataPoint);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting match progression for country: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return progression;
+    }
+
+    /**
+     * Records a match result (win or loss) in the match history
+     * @param countryCode The FIPS10 country code
+     * @param isWin Whether the match was won
+     * @param usedHints Whether hints were used during this match
+     */
+    public void recordMatchResult(String countryCode, boolean isWin, boolean usedHints) {
+        String insertQuery = """
+            INSERT INTO match_history (user_id, country_id, match_result, used_hints, played_at)
+            VALUES (?, ?, ?, ?, datetime('now'))
+        """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+
+            stmt.setInt(1, currentUserId);
+            stmt.setString(2, countryCode);
+            stmt.setString(3, isWin ? "win" : "loss");
+            stmt.setInt(4, usedHints ? 1 : 0);
+            stmt.executeUpdate();
+
+            System.out.println("Recorded match result for " + countryCode + ": " + 
+                             (isWin ? "WIN" : "LOSS") + 
+                             (usedHints ? " (with hints)" : " (no hints)"));
+
+        } catch (SQLException e) {
+            System.err.println("Error recording match result: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets aggregated match progression across all countries
+     * Shows overall mastery progress based on all matches played
+     * @return List of maps containing match number and cumulative mastery score
+     */
+    public List<Map<String, Object>> getOverallMatchProgression() {
+        List<Map<String, Object>> progression = new ArrayList<>();
+        
+        String query = """
+            SELECT 
+                mh.match_result,
+                mh.used_hints,
+                mh.country_id,
+                mh.played_at
+            FROM match_history mh
+            WHERE mh.user_id = ?
+            ORDER BY mh.played_at ASC
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            int matchNumber = 0;
+            int totalMasteryScore = 0;  // Cumulative mastery score across all countries
+            int countriesMastered = 0;
+            
+            // Track mastery progress per country
+            Map<String, Integer> countryMasteryProgress = new HashMap<>();
+            Map<String, Integer> countryConsecutiveWins = new HashMap<>();
+            
+            while (rs.next()) {
+                matchNumber++;
+                String result = rs.getString("match_result");
+                boolean usedHints = rs.getInt("used_hints") == 1;
+                String countryId = rs.getString("country_id");
+                
+                // Get current progress for this country
+                int currentProgress = countryMasteryProgress.getOrDefault(countryId, 0);
+                int consecutiveWins = countryConsecutiveWins.getOrDefault(countryId, 0);
+                int previousMasteryLevel = currentProgress / 100;
+                
+                // Update progress based on match outcome
+                if ("win".equals(result)) {
+                    if (!usedHints) {
+                        consecutiveWins++;
+                        currentProgress += 34;
+                        if (currentProgress > 300) {
+                            currentProgress = 300;
+                        }
+                    } else {
+                        consecutiveWins = 0;
+                        currentProgress += 5;
+                    }
+                } else {
+                    consecutiveWins = 0;
+                    currentProgress -= 25;
+                    if (currentProgress < 0) {
+                        currentProgress = 0;
+                    }
+                }
+                
+                // Update country tracking
+                countryMasteryProgress.put(countryId, currentProgress);
+                countryConsecutiveWins.put(countryId, consecutiveWins);
+                
+                // Check if country just reached mastery level 3
+                int newMasteryLevel = currentProgress / 100;
+                if (newMasteryLevel >= 3 && previousMasteryLevel < 3) {
+                    countriesMastered++;
+                }
+                
+                // Calculate total mastery score
+                totalMasteryScore = countryMasteryProgress.values().stream()
+                        .mapToInt(Integer::intValue)
+                        .sum();
+                
+                Map<String, Object> dataPoint = new HashMap<>();
+                dataPoint.put("matchNumber", matchNumber);
+                dataPoint.put("totalMasteryScore", totalMasteryScore);
+                dataPoint.put("countriesMastered", countriesMastered);
+                dataPoint.put("result", result);
+                
+                progression.add(dataPoint);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting overall match progression: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return progression;
+    }
+
 
 }

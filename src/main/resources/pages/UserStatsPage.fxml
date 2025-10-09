@@ -141,7 +141,7 @@
                 
                 <!-- Progression Line Chart -->
                 <VBox styleClass="chart-box">
-                    <Label text="Mastery Progression Over Time" styleClass="chart-title" />
+                    <Label text="Mastery Progression by Match" styleClass="chart-title" />
                     <VBox fx:id="progressionChartContainer" alignment="CENTER" prefHeight="400" />
                 </VBox>
                 

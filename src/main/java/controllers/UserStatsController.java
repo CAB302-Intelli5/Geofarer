@@ -215,9 +215,10 @@ public class UserStatsController {
 
     /**
      * Creates and loads the progression line chart
+     * Now shows match-by-match progression instead of date-based
      */
     private void loadProgressionChart() {
-        List<Map<String, Object>> progressionData = userStatsDAO.getProgressionOverTime();
+        List<Map<String, Object>> progressionData = userStatsDAO.getOverallMatchProgression();
         
         if (progressionData.isEmpty()) {
             Label noDataLabel = new Label("No progression data yet. Keep playing!");
@@ -227,34 +228,73 @@ public class UserStatsController {
         }
 
         // Create axes
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Date");
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Match Number");
+        xAxis.setAutoRanging(true);
         
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Countries Mastered");
+        yAxis.setAutoRanging(true);
 
         // Create line chart
-        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Your Progress Over Time");
-        lineChart.setLegendVisible(false);
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Mastery Progression by Match");
+        lineChart.setLegendVisible(true);
         
-        // Create series
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Mastered Countries");
+        // Create series for countries mastered
+        XYChart.Series<Number, Number> masteredSeries = new XYChart.Series<>();
+        masteredSeries.setName("Countries Mastered");
         
-        for (Map<String, Object> dataPoint : progressionData) {
-            String date = (String) dataPoint.get("date");
-            Integer cumulative = (Integer) dataPoint.get("cumulative_mastered");
-            series.getData().add(new XYChart.Data<>(date, cumulative));
+        // Sample every nth point if there are too many matches (for performance)
+        int sampleRate = Math.max(1, progressionData.size() / 100);
+        
+        for (int i = 0; i < progressionData.size(); i += sampleRate) {
+            Map<String, Object> dataPoint = progressionData.get(i);
+            Integer matchNumber = (Integer) dataPoint.get("matchNumber");
+            Integer countriesMastered = (Integer) dataPoint.get("countriesMastered");
+            String result = (String) dataPoint.get("result");
+            
+            XYChart.Data<Number, Number> point = new XYChart.Data<>(matchNumber, countriesMastered);
+            masteredSeries.getData().add(point);
+            
+            // Add tooltip to show win/loss for this match
+            if (point.getNode() != null) {
+                String resultSymbol = "win".equals(result) ? "✓" : "✗";
+                javafx.scene.control.Tooltip tooltip = new javafx.scene.control.Tooltip(
+                    "Match " + matchNumber + ": " + resultSymbol + " " + result.toUpperCase()
+                );
+                javafx.scene.control.Tooltip.install(point.getNode(), tooltip);
+            }
         }
         
-        lineChart.getData().add(series);
+        // Add the last point to ensure we show the final state
+        if (sampleRate > 1 && progressionData.size() > 0) {
+            Map<String, Object> lastPoint = progressionData.get(progressionData.size() - 1);
+            Integer matchNumber = (Integer) lastPoint.get("matchNumber");
+            Integer countriesMastered = (Integer) lastPoint.get("countriesMastered");
+            masteredSeries.getData().add(new XYChart.Data<>(matchNumber, countriesMastered));
+        }
+        
+        lineChart.getData().add(masteredSeries);
         
         // Style the chart
         lineChart.setStyle("-fx-background-color: transparent;");
-        lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: rgba(230, 242, 241, 0.05);");
+        if (lineChart.lookup(".chart-plot-background") != null) {
+            lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: rgba(230, 242, 241, 0.05);");
+        }
         
-        progressionChartContainer.getChildren().add(lineChart);
+        // Add information label
+        int totalMatches = progressionData.size();
+        Map<String, Object> lastData = progressionData.get(totalMatches - 1);
+        int finalMastered = (Integer) lastData.get("countriesMastered");
+        
+        Label infoLabel = new Label(String.format(
+            "Showing progression over %d matches • %d countries mastered", 
+            totalMatches, finalMastered
+        ));
+        infoLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 12px; -fx-padding: 5 0 10 0;");
+        
+        progressionChartContainer.getChildren().addAll(infoLabel, lineChart);
     }
 
     /**
