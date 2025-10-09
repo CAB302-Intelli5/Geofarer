@@ -46,6 +46,7 @@ public class UserStatsController {
     private static final String PASSPORT_PEACH = "#F2C3A7";
     private static final String PASSPORT_RED = "#731A12";
     private static final String PASSPORT_DARK = "#0D1A26";
+    private static final String PASSPORT_GREEN = "#A6A186";
 
     @FXML
     public void initialize() {
@@ -194,18 +195,41 @@ public class UserStatsController {
         SpiderWebPlot plot = new SpiderWebPlot(dataset);
         plot.setLabelFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12));
         
-        // Set colors
-        plot.setSeriesPaint(0, java.awt.Color.decode(PASSPORT_PEACH));
-        plot.setSeriesOutlinePaint(0, java.awt.Color.decode(PASSPORT_RED));
+        // Set colors - using passport red with nearly full opacity for progress
+        java.awt.Color redFill = new java.awt.Color(115, 26, 18, 250); // #731A12 with very high opacity (almost solid)
+        java.awt.Color redOutline = java.awt.Color.decode(PASSPORT_RED);
+        java.awt.Color darkBg = java.awt.Color.decode(PASSPORT_DARK);
+        java.awt.Color white = java.awt.Color.WHITE;
+        
+        plot.setSeriesPaint(0, redFill);
+        plot.setSeriesOutlinePaint(0, redOutline);
+        plot.setSeriesOutlineStroke(0, new java.awt.BasicStroke(3.0f)); // Thicker outline
+        
+        // Make plot background match the page background
+        plot.setBackgroundPaint(darkBg);
+        plot.setBackgroundAlpha(1.0f);
+        
+        // Set web lines to white
+        plot.setWebFilled(true);
+        plot.setAxisLinePaint(white);
+        plot.setAxisLineStroke(new java.awt.BasicStroke(1.0f));
+        
+        // Set label paint to cream color for visibility
+        plot.setLabelPaint(java.awt.Color.decode(PASSPORT_CREAM));
         
         JFreeChart chart = new JFreeChart("Continent Mastery", 
-                                         JFreeChart.DEFAULT_TITLE_FONT, plot, true);
-        chart.setBackgroundPaint(java.awt.Color.decode(PASSPORT_DARK));
+                                         JFreeChart.DEFAULT_TITLE_FONT, plot, false);
+        chart.setBackgroundPaint(darkBg); // Match page background
         chart.getTitle().setPaint(java.awt.Color.decode(PASSPORT_CREAM));
+        chart.setBorderVisible(false);
+        chart.setPadding(new org.jfree.chart.ui.RectangleInsets(0, 0, 0, 0));
 
-        // Embed in JavaFX
+        // Embed in JavaFX with matching background
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+        chartPanel.setBackground(darkBg); // Match page background
+        chartPanel.setBorder(null); // Remove border
+        chartPanel.setOpaque(true); // Make opaque to show the dark background
         
         SwingNode swingNode = new SwingNode();
         SwingUtilities.invokeLater(() -> swingNode.setContent(chartPanel));
@@ -277,11 +301,16 @@ public class UserStatsController {
         
         lineChart.getData().add(masteredSeries);
         
-        // Style the chart
+        // Style the chart with transparent background
         lineChart.setStyle("-fx-background-color: transparent;");
         if (lineChart.lookup(".chart-plot-background") != null) {
-            lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: rgba(230, 242, 241, 0.05);");
+            lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         }
+        
+        // Apply passport red color to the line series
+        lineChart.applyCss();
+        lineChart.layout();
+        masteredSeries.getNode().setStyle("-fx-stroke: " + PASSPORT_RED + "; -fx-stroke-width: 3px;");
         
         // Add information label
         int totalMatches = progressionData.size();
@@ -332,9 +361,18 @@ public class UserStatsController {
         
         barChart.getData().add(series);
         
-        // Style the chart
+        // Style the chart with passport red
         barChart.setStyle("-fx-background-color: transparent;");
-        barChart.lookup(".chart-plot-background").setStyle("-fx-background-color: rgba(230, 242, 241, 0.05);");
+        barChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
+        
+        // Apply passport red color to bars
+        barChart.applyCss();
+        barChart.layout();
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            if (data.getNode() != null) {
+                data.getNode().setStyle("-fx-bar-fill: " + PASSPORT_RED + ";");
+            }
+        }
         
         continentBarChartContainer.getChildren().add(barChart);
     }

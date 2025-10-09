@@ -121,8 +121,6 @@
 
             <!-- Charts Section -->
             <VBox styleClass="charts-container">
-                <Label text="Performance Analytics" styleClass="section-header" />
-                <Label text="Visual insights into your geography mastery" styleClass="section-subheader" />
                 
                 <!-- Continent Mastery Spider Chart -->
                 <VBox styleClass="chart-box">

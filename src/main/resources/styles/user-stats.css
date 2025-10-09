@@ -123,11 +123,9 @@
 }
 
 .chart-box {
-    -fx-background-color: rgba(230, 242, 241, 0.1);
-    -fx-border-color: rgba(166, 161, 134, 0.35);
-    -fx-border-width: 2;
-    -fx-border-radius: 15;
-    -fx-background-radius: 15;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-padding: 20;
 }
 
@@ -201,4 +199,66 @@
     -fx-font-size: 14px;
     -fx-text-fill: #A6A186;
     -fx-padding: 0 0 20 0;
+}
+
+/* Chart styling - using passport red for clean minimal design */
+.chart-series-line {
+    -fx-stroke: #731A12;
+    -fx-stroke-width: 3px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #731A12, #E4F2F1;
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #731A12;
+}
+
+.default-color0.chart-line-symbol {
+    -fx-background-color: #731A12, #E4F2F1;
+}
+
+/* Bar chart styling - using passport red */
+.default-color0.chart-bar {
+    -fx-bar-fill: #731A12;
+}
+
+.chart-bar:hover {
+    -fx-bar-fill: derive(#731A12, 20%);
+}
+
+/* Chart legend styling */
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-color: #731A12;
+}
+
+.chart-legend-item {
+    -fx-text-fill: #E4F2F1;
+}
+
+/* Chart axis styling */
+.axis {
+    -fx-tick-label-fill: #E4F2F1;
+}
+
+.axis-label {
+    -fx-text-fill: #E4F2F1;
+}
+
+.chart-title {
+    -fx-text-fill: #E4F2F1;
+}
+
+/* Remove chart backgrounds for seamless design */
+.chart {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
 }
