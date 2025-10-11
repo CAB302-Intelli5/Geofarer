@@ -4,16 +4,11 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import model.UserService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.w3c.dom.Text;
 import utils.PageLoader;
 import utils.SceneManager;
 import views.GameView;
-import views.LandingPageView;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert.AlertType;
-
 import java.util.Objects;
 
 public class SignUpController extends BaseController {

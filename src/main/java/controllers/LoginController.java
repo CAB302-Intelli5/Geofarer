@@ -2,21 +2,15 @@ package controllers;
 
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Circle;
 import model.UserService;
 import utils.SceneManager;
 import views.GameView;
-import views.LandingPageView;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import utils.PageLoader;
 import javafx.scene.control.Button;
-
 import javafx.scene.image.Image;
-import javafx.scene.paint.ImagePattern;
-import java.net.URL;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class LoginController extends BaseController {
 
