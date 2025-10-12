@@ -8,9 +8,9 @@ import utils.SessionManager;
 import java.time.LocalDate;
 
 /**
- * Stores and displays hints for a given country.
+ * Manages the retrieval and display of the hints for a specific country
+ * fetches the hints from the database and provides methods to display hints one at a time
  */
-
 public class HintsManager {
 
     List<String> countryHints;

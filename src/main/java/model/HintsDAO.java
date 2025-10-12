@@ -17,6 +17,10 @@ public class HintsDAO {
     private String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
     private String fips10;
 
+    /**
+     * Constructs a HintsDAO for a specific country
+     * @param 2 character code used by the US government to represent Geopolitical Entities and Codes
+     */
     public HintsDAO(String fips10) {
         this.fips10 = fips10;
     }
@@ -26,7 +30,7 @@ public class HintsDAO {
         try (Connection conn = DBConnection.getInstance().getFactbookConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, fips10); // Pass the GEC code as is
+            stmt.setString(1, fips10); // Pass the fips10 code as is
             stmt.setString(1, fips10.toLowerCase()); // force lower case as shape file is upper case
             ResultSet rs = stmt.executeQuery();
 
@@ -41,6 +45,12 @@ public class HintsDAO {
             e.printStackTrace();}
     }
 
+    /**
+     * Parses the json country data and extract hints about the country
+     * Extracts location, climate, continent, areaa, coastline and land boundaries
+     * @return a list of the formatted country hints as strings
+     * @throws JsonProcessingException if the JSON parsing fails
+     */
     public List<String> getCountryHints() throws JsonProcessingException {
         List<String> countryHints = new ArrayList<>();
         queryFactbook();
