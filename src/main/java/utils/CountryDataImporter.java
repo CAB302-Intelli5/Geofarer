@@ -1,6 +1,6 @@
 package utils;
 
-import model.Database;
+import model.DBConnection;
 import model.MapService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,7 +32,7 @@ public class CountryDataImporter {
         String insertSQL = "INSERT OR IGNORE INTO countries (country_id, name, region) VALUES (?, ?, ?);";
 
         //Connect to the database and perform the batch insert
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
 
             conn.setAutoCommit(false); // Use a transaction for efficiency

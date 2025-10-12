@@ -56,7 +56,7 @@ public class HintsDAO {
 
         // If no data was found, return an empty list to prevent a crash.
         if (countryData == null || countryData.isEmpty()) {
-            System.err.println("Could not generate hints for " + gecCode + " as no data was found.");
+            System.err.println("Could not generate hints for " + fips10 + " as no data was found.");
             return new ArrayList<>(); // Return an empty list
         }
 
