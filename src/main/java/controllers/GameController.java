@@ -475,6 +475,9 @@ public class GameController {
             // After the popup is closed, start a new round only if play again clicked
             if (popupController.isPlayAgainClicked()) {
                 selectNewTarget();
+            } else if (popupController.isPassportClicked()) {
+                // Navigate to passport page
+                showMyPassport();
             }
 
         } catch (IOException e) {
