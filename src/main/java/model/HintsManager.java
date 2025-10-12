@@ -3,7 +3,10 @@ package model;
 import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-
+/**
+ * Manages the retrieval and display of the hints for a specific country
+ * fetches the hints from the database and provides methods to display hints one at a time
+ */
 public class HintsManager {
 
     List<String> countryHints;
