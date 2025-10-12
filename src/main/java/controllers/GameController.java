@@ -70,6 +70,8 @@ public class GameController {
 
     private String clickedCountryCode = "XX";
     private String targetCountryCode = "XX";
+    private double translateX = 0;
+    private double translateY = 0;
 
     // Reference to the GameView to allow communication
     private views.GameView gameView;
@@ -341,6 +343,9 @@ public class GameController {
         newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
 
         if (newZoom != zoomLevel) {
+            // Reset drag detection after zoom to prevent stale coordinates
+            dragDetected = false;
+            isPanning = false;
             zoomAroundPoint(newZoom, event.getX(), event.getY());
         }
     }
@@ -353,8 +358,9 @@ public class GameController {
         if (innerMapPane == null) return;
         if (event.isPrimaryButtonDown()) {
             dragDetected = false;
-            lastPanX = event.getX();
-            lastPanY = event.getY();
+            // Use scene coordinates to avoid jitter from transform updates
+            lastPanX = event.getSceneX();
+            lastPanY = event.getSceneY();
             isPanning = true;
             innerMapPane.setCursor(Cursor.CLOSED_HAND);
             event.consume();
@@ -368,12 +374,33 @@ public class GameController {
     public void handleMouseDrag(MouseEvent event) {
         if (innerMapPane == null) return;
         if (isPanning && event.isPrimaryButtonDown()) {
-            double deltaX = event.getX() - lastPanX;
-            double deltaY = event.getY() - lastPanY;
+            // Use scene coordinates for stable tracking
+            double currentX = event.getSceneX();
+            double currentY = event.getSceneY();
+            
+            // Mark as drag - any mouse drag event means we're dragging, not clicking
             dragDetected = true;
-            pan(deltaX, deltaY);
-            lastPanX = event.getX();
-            lastPanY = event.getY();
+            
+            double deltaX = currentX - lastPanX;
+            double deltaY = currentY - lastPanY;
+            
+            // Logarithmic pan scaling for better feel across zoom levels
+            // At zoom 1.0: factor = 1.0 (base speed)
+            // At zoom 2.0: factor = 1.3 (gradual increase)
+            // At zoom 4.0: factor = 1.6 (moderate increase)
+            // At zoom 10.0: factor = 2.0 (doubled speed)
+            // At zoom 20.0: factor = 2.3 (capped growth)
+            // Logarithmic scaling prevents excessive speed at high zoom
+            double panScaleFactor = 1.0 + Math.log(zoomLevel) / Math.log(2) * 0.4;
+            
+            double scaledDeltaX = deltaX * panScaleFactor;
+            double scaledDeltaY = deltaY * panScaleFactor;
+            
+            pan(scaledDeltaX, scaledDeltaY);
+            
+            // Update last position with current scene coordinates
+            lastPanX = currentX;
+            lastPanY = currentY;
             event.consume();
         }
     }
