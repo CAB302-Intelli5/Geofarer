@@ -22,6 +22,8 @@ public class PassportView extends VBox {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load PassportPage.fxml", e);
         }
+
+        controller = loader.getController();
     }
 
         /**

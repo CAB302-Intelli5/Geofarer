@@ -59,8 +59,6 @@ public class CountryDataImporter {
             System.out.println("Import complete.");
             System.out.println("Processed " + countriesAdded + " valid countries.");
             System.out.println(updateCounts.length + " rows were affected in the database.");
-
-
         } catch (Exception e) {
             System.err.println("An error occurred during database import:");
             e.printStackTrace();

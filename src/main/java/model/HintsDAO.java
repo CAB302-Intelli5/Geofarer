@@ -8,14 +8,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode; //Using Jackson to parse Json
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Queries the factbook database and navigates the JSON tree for the chosen hint categories.
- */
 
 public class HintsDAO {
     private String countryData;
+    private String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
     private String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
-    private String fips10;
 
     /**
      * Constructs a HintsDAO for a specific country
@@ -23,23 +20,24 @@ public class HintsDAO {
      */
     public HintsDAO(String fips10) {
         this.fips10 = fips10;
+
     }
 
     private void queryFactbook() {
 
-        try (Connection conn = DBConnection.getInstance().getFactbookConnection();
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, fips10); // Pass the fips10 code as is
             stmt.setString(1, fips10.toLowerCase()); // force lower case as shape file is upper case
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) { //checks to see if there is data for the fips10
+            if (rs.next()) { //checks to see if there is data for the gecCode
                 this.countryData = rs.getString("data");
 
-                System.out.println("Data for " + fips10);
+                System.out.println("Data for " + gecCode);
             } else {
-                System.out.println("No data found for " + fips10);
+                System.out.println("No data found for " + gecCode);
             }
         } catch (SQLException e) {
             e.printStackTrace();}

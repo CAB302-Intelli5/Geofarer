@@ -35,7 +35,7 @@ public class UserService {
      */
     public static boolean addUser(String email, String password) {
         String sql = "INSERT INTO users(email, password_hash) VALUES(?, ?)";
-        try (Connection conn = DBConnection.getInstance().getConnection();
+        try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, email);
             stmt.setString(2, hashPassword(password));
@@ -105,7 +105,7 @@ public class UserService {
             return false;
         }
         String sql = "SELECT * FROM users where email = ? AND password_hash = ?";
-        try (Connection conn = DBConnection.getInstance().getConnection();
+        try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setString(2, hashPassword(password));
@@ -124,7 +124,7 @@ public class UserService {
      */
     public static boolean deleteUser(String email) {
         String sql = "DELETE FROM users WHERE email = ?";
-        try (Connection conn = DBConnection.getInstance().getConnection();
+        try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             return stmt.executeUpdate() > 0;
