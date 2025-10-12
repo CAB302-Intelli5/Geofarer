@@ -365,7 +365,7 @@ public class PassportController {
         // If country is fully unlocked, show all hints
         if (country.isFullyUnlocked() || country.getProgress() >= 100) {
             try {
-                HintsManager hintsManager = new HintsManager(country.getCountryCode().toLowerCase());
+                HintsManager hintsManager = new HintsManager(country.getCountryCode().toLowerCase(), country.getCountryName());
                 // Show all 6 hints when fully unlocked
                 for (int i = 0; i < TOTAL_HINT_SLOTS; i++) {
                     unlockedHints.add(hintsManager.showNextHint(i));
@@ -391,7 +391,7 @@ public class PassportController {
         // Load the hints that should be unlocked
         if (hintsToUnlock > 0) {
             try {
-                HintsManager hintsManager = new HintsManager(country.getCountryCode().toLowerCase());
+                HintsManager hintsManager = new HintsManager(country.getCountryCode().toLowerCase(), country.getCountryName());
                 for (int i = 0; i < hintsToUnlock; i++) {
                     unlockedHints.add(hintsManager.showNextHint(i));
                 }

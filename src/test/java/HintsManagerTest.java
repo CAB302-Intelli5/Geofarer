@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HintsManagerTest {
-    private static final String GECCODE = "AU"; //Austria
+    private static final String FIPS10 = "AU"; //Austria
     private static final String CLIMATE_HINT = "CLIMATE: temperate; continental, cloudy; cold winters with frequent rain and some snow in lowlands and snow in mountains; moderate summers with occasional showers";
     private static final String AREA_HINT = "AREA: 83,871 sq km";
     private static final String COASTLINE_HINT = "COASTLINE: 0 km (landlocked)";
@@ -18,7 +18,7 @@ public class HintsManagerTest {
 
     @BeforeEach
     public void setUp() {
-        this.austriaHints = new HintsManager(GECCODE);
+        this.austriaHints = new HintsManager(FIPS10, "Austria");
     }
 
     @Test
@@ -51,7 +51,7 @@ public class HintsManagerTest {
     @Test
     public void testHint4(){
         try {
-            assertEquals(LANDBOUNDARIES_HINT, austriaHints.showNextHint(3));
+            assertEquals(COASTLINE_HINT, austriaHints.showNextHint(3));
         }catch(JsonProcessingException e){
             e.printStackTrace();
         }

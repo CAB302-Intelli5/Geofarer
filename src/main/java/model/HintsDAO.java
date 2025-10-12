@@ -13,14 +13,14 @@ public class HintsDAO {
     private String countryData;
     private String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
     private String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
-    private String gecCode;
+    private String fips10;
 
     /**
      * Constructs a HintsDAO for a specific country
-     * @param gecCode
+     * @param fips10 2 character code used by the US government to represent Geopolitical Entities and Codes
      */
-    public HintsDAO(String gecCode) {
-        this.gecCode = gecCode;
+    public HintsDAO(String fips10) {
+        this.fips10 = fips10;
     }
 
 
@@ -29,16 +29,16 @@ public class HintsDAO {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, gecCode); // Pass the GEC code as is
-            stmt.setString(1, gecCode.toLowerCase()); // force lower case as shape file is upper case
+            stmt.setString(1, fips10); // Pass the GEC code as is
+            stmt.setString(1, fips10.toLowerCase()); // force lower case as shape file is upper case
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) { //checks to see if there is data for the gecCode
+            if (rs.next()) { //checks to see if there is data for the fips10
                 this.countryData = rs.getString("data");
 
-                System.out.println("Data for " + gecCode);
+                System.out.println("Data for " + fips10);
             } else {
-                System.out.println("No data found for " + gecCode);
+                System.out.println("No data found for " + fips10);
             }
         } catch (SQLException e) {
             e.printStackTrace();}

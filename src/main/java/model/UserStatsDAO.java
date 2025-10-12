@@ -27,6 +27,8 @@ public class UserStatsDAO {
     /**
      * Gets all counthires grouped by the continet with their master stat
      */
+    /*
+    This version of getCountriesByContinent does not select only the countries the user has encountered
     public Map<String, List<CountryStats>> getCountriesGroupedByContinent() {
         Map<String, List<CountryStats>> result = new LinkedHashMap<String, List<CountryStats>>(); //Create a hashmap
         String query = """
@@ -41,6 +43,78 @@ public class UserStatsDAO {
         LEFT JOIN
             country_mastery cm ON c.country_id = cm.country_id AND cm.user_id = ?
             ORDER BY c.region, c.name
+        """;
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            System.out.println("DAO: Executing query for user ID: " + currentUserId);
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+
+            //Check if the ResultSet has any data at all.
+            if (!rs.isBeforeFirst()) {
+                System.out.println("DAO: The query returned no rows.");
+            }
+
+            while (rs.next()) {
+                String region = rs.getString("region");
+                if (region == null || region.trim().isEmpty()) {
+                    region = "Unknown";
+                }
+
+                String countryCode = rs.getString("country_id");
+                String countryName = rs.getString("name");
+                int masteryLevel = rs.getInt("mastery_level");
+                int correctGuesses = rs.getInt("correct_guesses");
+
+                // We can use a boolean flag to ensure it only prints once.
+                if (result.isEmpty()) { // Only print for the first country found
+                    System.out.println("DAO: Processing first row -> Country: " + countryName +
+                            ", Region: " + region + ", Mastery: " + masteryLevel);
+                }
+
+                // Calculate progress: 33.33% per mastery level, max 100%
+                double progress = Math.min(100.0, (masteryLevel * 100.0) / 3.0);
+                boolean fullyUnlocked = masteryLevel >= 3;
+
+                CountryStats stats = new CountryStats(
+                        countryName,
+                        countryCode,
+                        progress,
+                        fullyUnlocked,
+                        masteryLevel
+                );
+                stats.setTotalCorrectGuesses(correctGuesses);
+
+                result.computeIfAbsent(region, k -> new ArrayList<>()).add(stats);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error loading country stats: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return result;
+
+    } */
+
+    public Map<String, List<CountryStats>> getCountriesGroupedByContinent() {
+        Map<String, List<CountryStats>> result = new LinkedHashMap<String, List<CountryStats>>(); //Create a hashmap
+        String query = """
+        SELECT
+            uc.*,
+            COALESCE(cm.mastery_level, 0) as mastery_level,
+            COALESCE(cm.correct_guesses, 0) as correct_guesses
+        FROM
+            (
+                SELECT DISTINCT c.* FROM unlocked_hints uh
+                JOIN hints h ON uh.hint_id = h.hint_id
+                JOIN countries c ON h.country_id = c.country_id
+                WHERE uh.user_id = 6
+            ) uc
+        LEFT JOIN
+            country_mastery cm ON uc.country_id = cm.country_id AND cm.user_id = ?
+            ORDER BY uc.region, uc.name
         """;
 
         try (Connection conn = DBConnection.getInstance().getConnection();
@@ -222,6 +296,7 @@ public class UserStatsDAO {
     /**
      * Records a hint being viewed
      */
+    /*
     public void recordHintViewed(String countryCode, int hintNumber) {
         String insertQuery = """
             INSERT OR IGNORE INTO unlocked_hints (user_id, country_id, hint_id, seen_date)
@@ -239,7 +314,7 @@ public class UserStatsDAO {
         } catch (SQLException e) {
             System.out.println("Error recording hint (may already exist): " + e.getMessage());
         }
-    }
+    } */
 
     /**
      * Gets overall user statistics
@@ -308,7 +383,7 @@ public class UserStatsDAO {
     public int getHintsUnlocked() {
         String query = "SELECT COUNT(DISTINCT hint_id) as hints_count FROM unlocked_hints WHERE user_id = ?";
         
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setInt(1, currentUserId);
@@ -344,7 +419,7 @@ public class UserStatsDAO {
             ORDER BY c.region
         """;
         
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setInt(1, currentUserId);
@@ -384,7 +459,7 @@ public class UserStatsDAO {
             ORDER BY play_date ASC
         """;
         
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setInt(1, currentUserId);
@@ -451,7 +526,7 @@ public class UserStatsDAO {
             ORDER BY played_at ASC
         """;
         
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setInt(1, currentUserId);
@@ -520,7 +595,7 @@ public class UserStatsDAO {
             VALUES (?, ?, ?, ?, datetime('now'))
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
 
             stmt.setInt(1, currentUserId);
@@ -558,7 +633,7 @@ public class UserStatsDAO {
             ORDER BY mh.played_at ASC
         """;
         
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setInt(1, currentUserId);

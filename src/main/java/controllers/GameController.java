@@ -224,13 +224,14 @@ public class GameController {
             if (hintsTextArea != null && hintsManager != null) {
                 try {
 
-                    hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1, targetCountry) + "\n");
+                    hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1) + "\n");
 
+                    /*
                     // Record hint usage in database
                     if (userStatsDAO != null) {
                         userStatsDAO.recordHintViewed(targetCountryCode, guessCount - 1);
                     }
-
+                    */
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                     System.out.println("Failed to load hint.");
@@ -262,7 +263,7 @@ public class GameController {
         if (targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: " + targetCountry);
         }
-        hintsManager = new HintsManager(targetCountryCode.toLowerCase());
+        hintsManager = new HintsManager(targetCountryCode.toLowerCase(), targetCountry);
     }
 
 
@@ -591,7 +592,7 @@ public class GameController {
                 }
             }
         }
-        this.hintsManager = new HintsManager(targetCountryCode.toLowerCase());
+        this.hintsManager = new HintsManager(targetCountryCode.toLowerCase(), targetCountry);
     }
 
     public boolean isRoundWin() {
