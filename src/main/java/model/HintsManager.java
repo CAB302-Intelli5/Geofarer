@@ -1,37 +1,29 @@
 package model;
 
-import java.sql.*;
 import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import utils.SessionManager;
 
 import java.time.LocalDate;
 
 /**
- * Stores and displays hints for a given country.
+ * Manages the retrieval and display of the hints for a specific country
+ * fetches the hints from the database and provides methods to display hints one at a time
  */
-
 public class HintsManager {
 
     List<String> countryHints;
-    String fips10;
-    String countryName;
 
-    /**
-     * Constructs a new HintsManager that holds a list of hints for a country.
-     * @param fips10 2 character code used by the US government to represent Geopolitical Entities and Codes
-     * @param countryName Country name passed from the NaturalEarth database
-     */
-    public HintsManager(String fips10, String countryName) {
-        HintsDAO hintsDAO = new HintsDAO(fips10);
+    public HintsManager(String gecCode) {
+        HintsDAO hintsDAO = new HintsDAO(gecCode);
         try {
             this.countryHints = hintsDAO.getCountryHints();
-            this.fips10 = fips10;
-            this.countryName = countryName;
         } catch (JsonProcessingException e){
             e.printStackTrace();
         }
     }
+
 
     /**
      * Shows the next hint category depending on how many hints have been shown so far.
@@ -49,6 +41,7 @@ public class HintsManager {
         }else{
             nextHint = "No more hints left!";
         }
+
         String hint = ("Hint" + hintsShown + ": " +nextHint);
         System.out.println(hint);
         return nextHint;

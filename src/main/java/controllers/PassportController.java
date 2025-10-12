@@ -9,6 +9,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import model.CountryStats;
+import model.HintsManager;
 import model.UserStatsDAO;
 import utils.PageLoader;
 import javafx.stage.Stage;
@@ -37,6 +38,7 @@ public class PassportController {
     private static final String PASSPORT_PEACH = "#F2C3A7";
     private static final String PASSPORT_RED= "#731A12";
     private static final String PASSPORT_DARK= "#0D1A26";
+    private static final int TOTAL_HINT_SLOTS = 6;
 
     @FXML
     public void initialize() {
@@ -225,7 +227,7 @@ public class PassportController {
 
         // Add countries
         for (CountryStats country : countries) {
-            HBox countryRow = createCountryRow(country);
+            HBox countryRow = createCountryRow(country, continentName);
             countryList.getChildren().add(countryRow);
         }
 
@@ -245,7 +247,7 @@ public class PassportController {
         return section;
     }
 
-    private HBox createCountryRow(CountryStats country) {
+    private HBox createCountryRow(CountryStats country, String continentName) {
         HBox row = new HBox(15);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(8, 10, 8, 10));
@@ -324,12 +326,82 @@ public class PassportController {
         });
 
         // Make clickable for future detail view
-        row.setOnMouseClicked(e -> {
-            System.out.println("Clicked country: " + country.getCountryName());
-            // Future: Open detailed country stats page
-        });
+        row.setOnMouseClicked(e -> openCountryDetail(country, continentName));
 
         return row;
+    }
+
+    private void openCountryDetail(CountryStats country, String continentName) {
+        if (country == null || statsContainer == null || statsContainer.getScene() == null) {
+            return;
+        }
+
+        Stage stage = (Stage) statsContainer.getScene().getWindow();
+        if (stage == null) {
+            return;
+        }
+
+        System.out.println("Opening detail view for country: " + country.getCountryName());
+
+        // Calculate which hints should be unlocked based on progress
+        List<String> unlockedHints = getUnlockedHintsForCountry(country);
+
+        PageLoader.openCountryDetailView(
+                String.format("Passport - %s", country.getCountryName()),
+                stage,
+                country,
+                continentName,
+                unlockedHints,
+                TOTAL_HINT_SLOTS
+        );
+    }
+
+    /**
+     * Calculate which hints should be unlocked for a country based on its progress
+     */
+    private List<String> getUnlockedHintsForCountry(CountryStats country) {
+        List<String> unlockedHints = new ArrayList<>();
+
+        // If country is fully unlocked, show all hints
+        if (country.isFullyUnlocked() || country.getProgress() >= 100) {
+            try {
+                HintsManager hintsManager = new HintsManager(country.getCountryCode().toLowerCase());
+                // Show all 6 hints when fully unlocked
+                for (int i = 0; i < TOTAL_HINT_SLOTS; i++) {
+                    unlockedHints.add(hintsManager.showNextHint(i));
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading hints for country: " + country.getCountryCode());
+                e.printStackTrace();
+            }
+            return unlockedHints;
+        }
+
+        // Calculate number of hints to unlock based on progress
+        double progress = country.getProgress();
+        int hintsToUnlock = 0;
+
+        if (progress >= 84) hintsToUnlock = 5;
+        else if (progress >= 67) hintsToUnlock = 4;
+        else if (progress >= 51) hintsToUnlock = 3;
+        else if (progress >= 34) hintsToUnlock = 2;
+        else if (progress >= 17) hintsToUnlock = 1;
+        // else hintsToUnlock = 0
+
+        // Load the hints that should be unlocked
+        if (hintsToUnlock > 0) {
+            try {
+                HintsManager hintsManager = new HintsManager(country.getCountryCode().toLowerCase());
+                for (int i = 0; i < hintsToUnlock; i++) {
+                    unlockedHints.add(hintsManager.showNextHint(i));
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading hints for country: " + country.getCountryCode());
+                e.printStackTrace();
+            }
+        }
+
+        return unlockedHints;
     }
 
     private void loadMapView() {
@@ -380,6 +452,12 @@ public class PassportController {
     @FXML
     public void handleMyPassport() {
         System.out.println("My Passport clicked!");
+    }
+
+    @FXML
+    public void handleMyStats() {
+        Stage stage = (Stage) statsContainer.getScene().getWindow();
+        PageLoader.openUserStatsView("My Stats - Geofarer", stage);
     }
 
     @FXML

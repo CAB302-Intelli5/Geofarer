@@ -1,0 +1,370 @@
+/* User Stats Page Styles */
+
+/* Root container */
+.stats-root {
+    -fx-background-color: #0D1A26;
+}
+
+/* Top header bar */
+.stats-header {
+    -fx-background-color: #E4F2F1;
+    -fx-padding: 10;
+}
+
+/* Navigation bar */
+.stats-nav-bar {
+    -fx-background-color: #A6A186;
+    -fx-padding: 10;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-text-fill: #0D1A26;
+    -fx-font-size: 14px;
+}
+
+.nav-button:hover {
+    -fx-text-fill: #731A12;
+    -fx-font-weight: bold;
+}
+
+/* Title section */
+.stats-title-container {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 30 20 20 20;
+    -fx-alignment: center;
+}
+
+.stats-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E4F2F1;
+}
+
+.stats-title-underline {
+    -fx-background-color: #F2C3A7;
+    -fx-pref-height: 4;
+    -fx-max-width: 300;
+}
+
+/* Stats cards container */
+.stats-cards-container {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+}
+
+/* Individual stat card */
+.stat-card {
+    -fx-background-color: rgba(166, 161, 134, 0.18);
+    -fx-border-color: rgba(166, 161, 134, 0.35);
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-alignment: center;
+    -fx-spacing: 10;
+}
+
+.stat-card:hover {
+    -fx-background-color: rgba(166, 161, 134, 0.25);
+    -fx-border-color: rgba(242, 195, 167, 0.5);
+}
+
+.stat-number {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F2C3A7;
+}
+
+.stat-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #E4F2F1;
+    -fx-font-weight: bold;
+}
+
+/* Rank section */
+.rank-container {
+    -fx-background-color: rgba(115, 26, 18, 0.3);
+    -fx-border-color: #731A12;
+    -fx-border-width: 3;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 30;
+    -fx-alignment: center;
+    -fx-spacing: 15;
+}
+
+.rank-title {
+    -fx-font-size: 20px;
+    -fx-text-fill: #E4F2F1;
+    -fx-font-weight: bold;
+}
+
+.rank-name {
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F2C3A7;
+    -fx-effect: dropshadow(gaussian, rgba(242, 195, 167, 0.5), 10, 0, 0, 0);
+}
+
+.rank-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #A6A186;
+    -fx-font-style: italic;
+}
+
+/* Charts section */
+.charts-container {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 20;
+    -fx-spacing: 30;
+}
+
+.chart-box {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 20;
+}
+
+.chart-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F2C3A7;
+    -fx-padding: 0 0 15 0;
+    -fx-alignment: center;
+}
+
+/* ScrollPane styling */
+.stats-scroll-pane {
+    -fx-background: #0D1A26;
+    -fx-background-color: #0D1A26;
+}
+
+.stats-scroll-pane > .viewport {
+    -fx-background-color: #0D1A26;
+}
+
+/* Footer */
+.stats-footer {
+    -fx-background-color: #A6A186;
+    -fx-padding: 10;
+    -fx-alignment: center;
+}
+
+.footer-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #0D1A26;
+    -fx-font-style: italic;
+}
+
+/* Stamps/Countries list styling */
+.stamps-list-container {
+    -fx-background-color: transparent;
+    -fx-spacing: 10;
+    -fx-padding: 5;
+    -fx-alignment: center;
+}
+
+.stamp-item {
+    -fx-background-color: rgba(166, 161, 134, 0.15);
+    -fx-border-color: rgba(242, 195, 167, 0.3);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+    -fx-alignment: center;
+}
+
+.stamp-country-name {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E4F2F1;
+    -fx-alignment: center;
+}
+
+.stamp-mastery-indicator {
+    -fx-font-size: 12px;
+    -fx-text-fill: #F2C3A7;
+    -fx-alignment: center;
+}
+
+/* Section headers */
+.section-header {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E4F2F1;
+    -fx-padding: 10 0 15 0;
+    -fx-alignment: center;
+}
+
+.section-subheader {
+    -fx-font-size: 14px;
+    -fx-text-fill: #A6A186;
+    -fx-padding: 0 0 20 0;
+}
+
+/* Mastered Countries Box with passport border */
+.mastered-countries-box {
+    -fx-border-color: #A6A186;
+    -fx-border-width: 3;
+    -fx-border-radius: 15;
+    -fx-background-color: rgba(166, 161, 134, 0.08);
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+}
+
+/* Chart styling - using passport red for clean minimal design */
+.chart-series-line {
+    -fx-stroke: #731A12;
+    -fx-stroke-width: 3px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #731A12, #E4F2F1;
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #731A12;
+}
+
+.default-color0.chart-line-symbol {
+    -fx-background-color: #731A12, #E4F2F1;
+}
+
+/* Bar chart styling - using passport red */
+.default-color0.chart-bar {
+    -fx-bar-fill: #731A12;
+}
+
+.chart-bar:hover {
+    -fx-bar-fill: derive(#731A12, 20%);
+}
+
+/* Chart legend styling */
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-color: #731A12;
+}
+
+.chart-legend-item {
+    -fx-text-fill: #E4F2F1;
+}
+
+/* Chart axis styling */
+.axis {
+    -fx-tick-label-fill: #E4F2F1;
+}
+
+.axis-label {
+    -fx-text-fill: #E4F2F1;
+}
+
+.chart-title {
+    -fx-text-fill: #E4F2F1;
+}
+
+/* Remove chart backgrounds for seamless design */
+.chart {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+/* Passport Stamps Section */
+.stamps-section {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 40 20 40 20;
+    -fx-spacing: 20;
+}
+
+.stamps-title-container {
+    -fx-spacing: 10;
+    -fx-padding: 0 0 20 0;
+}
+
+.stamps-section-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F2C3A7;
+    -fx-effect: dropshadow(gaussian, rgba(242, 195, 167, 0.3), 8, 0, 0, 0);
+}
+
+.stamps-section-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #A6A186;
+    -fx-font-style: italic;
+}
+
+.stamps-scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.stamps-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.stamps-grid {
+    -fx-background-color: transparent;
+    -fx-padding: 20;
+}
+
+/* Individual Passport Stamp - Circular Design */
+.passport-stamp {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 3, 3);
+}
+
+.passport-stamp:hover {
+    -fx-effect: dropshadow(gaussian, rgba(242, 195, 167, 0.6), 12, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+.stamp-circle {
+    -fx-fill: linear-gradient(to bottom, #f4e4d7 0%, #e8d5c4 100%);
+    -fx-stroke: #731A12;
+    -fx-stroke-width: 4;
+    -fx-stroke-type: inside;
+    -fx-stroke-dash-array: 8 5;
+}
+
+.stamp-country-code {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #731A12;
+    -fx-font-family: "Courier New", "Lucida Console", monospace;
+    -fx-alignment: center;
+}
+
+.stamp-country-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #731A12;
+    -fx-font-family: "Courier New", "Lucida Console", monospace;
+    -fx-alignment: center;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
+
+.stamp-date {
+    -fx-font-size: 10px;
+    -fx-text-fill: #8B4513;
+    -fx-font-family: "Courier New", "Lucida Console", monospace;
+    -fx-alignment: center;
+}
+
+.stamp-mastery-stars {
+    -fx-font-size: 16px;
+    -fx-text-fill: #D4AF37;
+    -fx-alignment: center;
+}

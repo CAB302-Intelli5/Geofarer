@@ -50,7 +50,7 @@
         <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Explore" onAction="#handleExplore" />
         <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Leaders" onAction="#handleLeaders" />
         <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26; -fx-font-weight: bold;" text="My Passport" onAction="#handleMyPassport" />
-        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Back to Game" onAction="#handleBackToGame" />
+        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="My Stats" onAction="#handleMyStats" />
     </HBox>
 
     <!-- Control Bar with Filters and View Toggle -->

@@ -8,39 +8,48 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode; //Using Jackson to parse Json
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Queries the factbook database and navigates the JSON tree for the chosen hint categories.
- */
 
 public class HintsDAO {
     private String countryData;
+    private String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
     private String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
-    private String fips10;
+    private String gecCode;
 
-    public HintsDAO(String fips10) {
-        this.fips10 = fips10;
+    /**
+     * Constructs a HintsDAO for a specific country
+     * @param gecCode
+     */
+    public HintsDAO(String gecCode) {
+        this.gecCode = gecCode;
     }
+
 
     private void queryFactbook() {
 
-        try (Connection conn = DBConnection.getInstance().getFactbookConnection();
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, fips10); // Pass the GEC code as is
-            stmt.setString(1, fips10.toLowerCase()); // force lower case as shape file is upper case
+            stmt.setString(1, gecCode); // Pass the GEC code as is
+            stmt.setString(1, gecCode.toLowerCase()); // force lower case as shape file is upper case
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) { //checks to see if there is data for the fips10
+            if (rs.next()) { //checks to see if there is data for the gecCode
                 this.countryData = rs.getString("data");
 
-                System.out.println("Data for " + fips10);
+                System.out.println("Data for " + gecCode);
             } else {
-                System.out.println("No data found for " + fips10);
+                System.out.println("No data found for " + gecCode);
             }
         } catch (SQLException e) {
             e.printStackTrace();}
     }
 
+    /**
+     * Parses the json country data and extract hints about the country
+     * Extracts location, climate, continent, areaa, coastline and land boundaries
+     * @return a list of the formatted country hints as strings
+     * @throws JsonProcessingException if the JSON parsing fails
+     */
     public List<String> getCountryHints() throws JsonProcessingException {
         List<String> countryHints = new ArrayList<>();
         queryFactbook();

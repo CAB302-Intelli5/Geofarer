@@ -11,10 +11,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/**
- * Shared controller class used for common UI functionality,
- * this includes login/signup and navigation
- */
 public class BaseController {
 
     @FXML protected StackPane userCirclePane;
@@ -25,15 +21,12 @@ public class BaseController {
 
     protected ContextMenu userMenu;
 
-    /**
-     * Initializes of the controller designed for future initializations if needed
-     */
     @FXML
     public void initialize() {
         setupUserMenu();
     }
 
-
+    // Dropdown menu options
     private void setupUserMenu() {
         userMenu = new ContextMenu();
 
@@ -48,10 +41,7 @@ public class BaseController {
         userMenu.getItems().addAll(profile, login, signup, settings, logout);
     }
 
-    /**
-     * Handles a click on the user icon and togges the visibility of the user dropdown
-     * @param event the mouse triggered by clicking the user icon
-     */
+    // Function for when the user icon in the top right is clicked
     @FXML
     protected void onUserCircleClick(MouseEvent event) {
         if (userMenu.isShowing()) {
@@ -61,9 +51,7 @@ public class BaseController {
         }
     }
 
-    /**
-     * Toggles the visibility of the password field
-     */
+    // Function for toggling the hidden password on and off
     @FXML
     protected void onTogglePassword() {
         if (showPasswordCheckBox.isSelected()) {
@@ -77,17 +65,13 @@ public class BaseController {
         }
     }
 
-    /**
-     * Opens the login page
-     */
+    // Open Login Page
     protected void openLoginPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
         PageLoader.openPage("/com/example/geofarer/pages/LoginPage.fxml", "Login", stage);
     }
 
-    /**
-     * Handles the sign up page in current stage
-     */
+    // Open Sign Up Page
     protected void openSignUpPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
         PageLoader.openPage("/com/example/geofarer/pages/SignUpPage.fxml", "Sign Up", stage);
