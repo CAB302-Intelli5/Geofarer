@@ -68,7 +68,7 @@ public class UserService {
             return null;
         }
         String sql = "SELECT user_id FROM users WHERE email = ? AND password_hash = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setString(2, hashPassword(password));

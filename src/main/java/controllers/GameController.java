@@ -231,7 +231,7 @@ public class GameController {
             }
             if (hintsTextArea != null && hintsManager != null) {
                 try {
-                    hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1) + "\n");
+                    hintsTextArea.appendText(hintsManager.showNextHint(guessCount - 1, targetCountry) + "\n");
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                     System.out.println("Failed to load hint.");

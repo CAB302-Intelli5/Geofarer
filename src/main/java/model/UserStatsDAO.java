@@ -7,7 +7,7 @@ import java.util.*;
 public class UserStatsDAO {
     private int currentUserId = 1; // This is just a deafult user should be set on login
 
-    //There is no need for a init of database as already dne
+    //There is no need for a init of DBConnection.getInstance() as already dne
 
     /**
      * setter for current user id to set the current user id for user stat features
@@ -43,7 +43,7 @@ public class UserStatsDAO {
             ORDER BY c.region, c.name
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             System.out.println("DAO: Executing query for user ID: " + currentUserId);
             stmt.setInt(1, currentUserId);
@@ -113,7 +113,7 @@ public class UserStatsDAO {
             WHERE c.country = ?
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, currentUserId);
@@ -150,7 +150,7 @@ public class UserStatsDAO {
      * @param usedHints Whether hints were used during this round
      */
     public void recordCorrectGuess(String countryCode, boolean usedHints) {
-        try (Connection conn = Database.getConnection()) {
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
             conn.setAutoCommit(false);
 
             try {
@@ -228,7 +228,7 @@ public class UserStatsDAO {
             VALUES (?, ?, ?, datetime('now'))
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
 
             stmt.setInt(1, currentUserId);
@@ -256,7 +256,7 @@ public class UserStatsDAO {
             WHERE user_id = ?
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, currentUserId);
@@ -285,7 +285,7 @@ public class UserStatsDAO {
 
         String query = "SELECT country, name FROM countries";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
