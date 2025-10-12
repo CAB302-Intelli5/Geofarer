@@ -1,7 +1,9 @@
 package controllers;
 
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import model.UserService;
 import utils.PageLoader;
 import utils.SceneManager;
@@ -17,7 +19,12 @@ public class SignUpController extends BaseController {
 
     @FXML
     private Button goBackButton;
+
+    @FXML
     private Button signupButton;
+
+    @FXML
+    private Label websiteLabel;
 
     @FXML
     private ImageView userImageView;
@@ -39,7 +46,7 @@ public class SignUpController extends BaseController {
     }
 
     @FXML
-    private void onGoBackClick() { // When the Go Back button is clicked
+    private void onGoBackClick() { // When the logo and website title button is clicked
         Stage stage = SceneManager.getPrimaryStage();
         PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", stage);
     }

@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-public class GameController {
+public class GameController extends BaseController {
     @FXML
     private Label targetCountryLabel;
     @FXML Label countryLabel;

@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 import model.UserService;
@@ -19,11 +20,11 @@ import java.util.ResourceBundle;
 
 public class LoginController extends BaseController {
 
+
     @FXML
     private Button goBackButton;
     @FXML
     private Button loginButton;
-
     @FXML
     private ImageView userImageView;
 

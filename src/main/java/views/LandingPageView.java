@@ -12,6 +12,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.AccessibleRole;
+import javafx.scene.text.Text;
 
 public class LandingPageView extends StackPane {
 
@@ -37,16 +39,33 @@ public class LandingPageView extends StackPane {
         backgroundMap.fitWidthProperty().bind(this.widthProperty());
 
         // 2. Center Overlay
+        // with functional screen reader set up
         VBox overlay = new VBox(20);
         overlay.setAlignment(Pos.CENTER);
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
 
-        Label welcomeLabel = new Label("Welcome to Geofarer");
-        welcomeLabel.setFont(Font.font("System", FontWeight.BOLD, 48));
-        welcomeLabel.setTextFill(Color.WHITE);
+        Text welcomeText1 = new Text("WELCOME TO ");
+        welcomeText1.setFont(Font.font("Inika", FontWeight.NORMAL, 48));
+        welcomeText1.setFill(Color.WHITE);
+
+        Text welcomeText2 = new Text("GEOFARER");
+        welcomeText2.setFont(Font.font("Inika", FontWeight.BOLD, 68));
+        welcomeText2.setFill(Color.WHITE);
+
+        VBox welcomeTextBox = new VBox(5, welcomeText1, welcomeText2);
+        welcomeTextBox.setAlignment(Pos.CENTER);
+
+        Label welcomeLabel = new Label();
+        welcomeLabel.setGraphic(welcomeTextBox);
+
+        //for pronunciation purposes, spelled as such
+        welcomeLabel.setAccessibleText("welcome to geo farer");
+        welcomeLabel.setFocusTraversable(true);
 
         Button playButton = new Button("PLAY NOW");
-        playButton.setFont(Font.font("System", FontWeight.BOLD, 24));
+        playButton.setFont(Font.font("TASA Explorer", FontWeight.BOLD, 24));
+        playButton.setAccessibleText("Click to start the game");
+        playButton.setFocusTraversable(true);
 
         //On button click start the game
         playButton.setOnAction(e -> controller.startGame());
@@ -63,6 +82,7 @@ public class LandingPageView extends StackPane {
             iconView.setFitHeight(40);
             iconView.setPreserveRatio(true);
             loginButton.setGraphic(iconView);
+            loginButton.setAccessibleText("login");
         } catch (Exception e) {
             System.err.println("Error loading login icon: " + e.getMessage());
             // Fallback to text if the icon fails to load

@@ -8,7 +8,7 @@ import views.GameView;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class LandingPageController {
+public class LandingPageController extends BaseController {
 
     @FXML
     private Button loginButton;

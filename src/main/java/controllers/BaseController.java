@@ -1,26 +1,30 @@
 package controllers;
 
 import javafx.geometry.Side;
+import javafx.scene.control.*;
 import utils.PageLoader;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class BaseController {
 
-    @FXML protected StackPane userCirclePane;
-    @FXML protected CheckBox showPasswordCheckBox;
-    @FXML protected PasswordField passwordField;
-    @FXML protected TextField passwordVisibleField;
-    @FXML protected TextField emailField;
+    @FXML
+    protected StackPane userCirclePane;
+    @FXML
+    protected CheckBox showPasswordCheckBox;
+    @FXML
+    protected PasswordField passwordField;
+    @FXML
+    protected TextField passwordVisibleField;
+    @FXML
+    protected TextField emailField;
+    @FXML
+    protected Button loginButton;
 
     protected ContextMenu userMenu;
+
 
     @FXML
     public void initialize() {
@@ -44,7 +48,7 @@ public class BaseController {
         if (userMenu.isShowing()) {
             userMenu.hide();
         } else {
-            userMenu.show(userCirclePane, Side.BOTTOM,  0, 0);
+            userMenu.show(userCirclePane, Side.BOTTOM, 0, 0);
         }
     }
 
@@ -65,12 +69,12 @@ public class BaseController {
     // Open Login Page
     protected void openLoginPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("/com/example/geofarer/pages/LoginPage.fxml", "Login", stage);
+        PageLoader.openPage("@../pages/LoginPage.fxml", "Login", stage);
     }
 
     // Open Sign Up Page
     protected void openSignUpPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("/com/example/geofarer/pages/SignUpPage.fxml", "Sign Up", stage);
+        PageLoader.openPage("@../pages/SignUpPage.fxml", "Sign Up", stage);
     }
 }

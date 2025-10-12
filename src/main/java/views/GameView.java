@@ -51,7 +51,7 @@ public class GameView extends VBox {
     private final SimpleBooleanProperty imageReady = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty shapefileReady = new SimpleBooleanProperty(false);
 
-    //Clipping rectange for boundaries of the map
+    //Clipping rectangle for boundaries of the map
     private Rectangle clipRect;
 
     @FXML private Button loginButton;

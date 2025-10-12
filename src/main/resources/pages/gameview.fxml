@@ -11,16 +11,21 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.geometry.Pos?>
 <?import javafx.scene.shape.Circle?>
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" >
-        <!-- Top Header Bar -->
-        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #0D1A26; -fx-padding: 10;">
+<?import java.net.URL?>
 
+
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" >
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+    </stylesheets>
+
+    <!-- Top Header Bar -->
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" styleClass="header-bar">
             <StackPane alignment="CENTER">
                 <Circle radius="20" fill="white" />
                 <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
@@ -30,28 +35,15 @@
                 </ImageView>
             </StackPane>
 
-                <Region HBox.hgrow="ALWAYS" />
 
-                <Label text="GEOFARER">
-                    <font>
-                        <Font size="28.0" />
-                    </font>
-                    <style>
-                        -fx-font-family: 'Inika';
-                        -fx-text-fill: white;
-                        -fx-font-weight: bold;
-                    </style>
-                </Label>
+            <Label text="Geofarer" styleClass="geofarer-heading"/>
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-cursor: hand;" text="Login">
+            <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
+                <Button fx:id="loginButton" onAction="handleLoginButton" styleClass="login-icon-button">
                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../images/login_icon.png" />
-                            </image>
-                        </ImageView>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
                     </graphic>
                 </Button>
             <padding>
@@ -60,28 +52,29 @@
         </HBox>
 
         <!-- Navigation Menu -->
-        <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #0D1A26; -fx-border-color: white; -fx-border-width: 4;">
-                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="Game Modes" onAction="#handleGameModes"
+        <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" styleClass="nav-bar-bg">
+                <Button styleClass="nav-bar-text" text="Game Modes" onAction="#handleGameModes"
                         HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                <Separator orientation="VERTICAL" style="-fx-background-color: white; -fx-pref-width: 2;" />
+                <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
 
-                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="Explore" onAction="#handleExplore"
+                <Button styleClass="nav-bar-text" text="Explore" onAction="#handleExplore"
                         HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                <Separator orientation="VERTICAL" style="-fx-background-color: white; -fx-pref-width: 2;" />
+                <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
 
-                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="Leaders" onAction="#handleLeaders"
+                <Button styleClass="nav-bar-text" text="Leaders" onAction="#handleLeaders"
                         HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                <Separator orientation="VERTICAL" style="-fx-background-color: white; -fx-pref-width: 2;" />
+                <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
 
-                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport"
+                <Button styleClass="nav-bar-text" text="My Passport" onAction="#handleMyPassport"
                         HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
         </HBox>
+
     <!-- Target Country label -->
     <HBox alignment="CENTER" prefHeight="50.0"
-          style="-fx-background-color: #731A12; -fx-padding:10;">
+          styleClass="country-label-bg">
         <Label fx:id="targetCountryLabel"
                text="Target Country: Loading..."
-               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; "/>
+               styleClass="country-label-text"/>
     </HBox>
     <!-- Game map -->
         <HBox alignment="CENTER">
@@ -92,7 +85,7 @@
                        style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;">
                 <StackPane fx:id="innerMapPane">
                     <ImageView fx:id="imageView" preserveRatio="true" fitWidth="${innerMapPane.width}" fitHeight="${innerMapPane.height}" />
-                    <Pane fx:id="overlay" />
+                    <Pane fx:id="overlay"/>
                 </StackPane>
 
                 <Button fx:id="viewSuccessButton" onAction="#handleSuccessButton" text="X" styleClass="view-Success-button"
@@ -104,35 +97,20 @@
             </StackPane>
         </HBox>
 
+    <!-- current issue: no way to exit game once hints run out -->
         <!-- Bottom Bar for Country Label -->
-        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #731A12;">
-                <Label fx:id="countryLabel" text="Click on a country to see its name">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                    <style>
-                        -fx-font-family: 'TASA Explorer';
-                        -fx-text-fill: white;
-                        -fx-font-weight: bold;
-                    </style>
-                </Label>
+        <HBox alignment="CENTER" prefHeight="40.0" styleClass="country-label-bg">
+                <Label fx:id="countryLabel" text="Click on a country to see its name" styleClass="country-label-text"/>
         </HBox>
 
         <!-- Text Area for the country hints from the CIA Factbook database -->
     <HBox alignment="BOTTOM_RIGHT" maxWidth="Infinity" style="-fx-background-color: #0D1A26;">
         <Region HBox.hgrow="ALWAYS"/>
         <VBox>
-            <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
-                <font>
-                    <Font size="14.0" />
-                </font>
-                <style>
-                    -fx-control-inner-background: #E4F2F1;
-                    -fx-font-family: 'TASA Explorer';
-                </style>
-            </TextArea>
+            <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false" styleClass="hints-text" />
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
+
         <!-- Go Back button -->
         <Button fx:id="goBackButton"
                 text="Go Back"
