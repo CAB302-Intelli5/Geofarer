@@ -142,47 +142,53 @@ public class CountryDetailController {
 	private Node buildHintCard(String hintText, int index) {
 		String displayText = hintText != null && !hintText.trim().isEmpty() ? hintText.trim() : "Hint " + index;
 
-		VBox card = new VBox(6);
+		VBox card = new VBox(8);
 		card.getStyleClass().add("hint-card");
+		card.setMaxWidth(500);
 
 		Label title = new Label(String.format("Hint %d", index));
 		title.getStyleClass().add("hint-index");
 
 		Label body = new Label(displayText);
 		body.setWrapText(true);
+		body.getStyleClass().add("hint-text");
 
-		card.getChildren().addAll(title, body);
+		// Add a subtle icon or indicator for unlocked hints
+		Label status = new Label("✓ Unlocked");
+		status.getStyleClass().add("hint-status");
+
+		card.getChildren().addAll(title, body, status);
 		return card;
 	}
 
 	private Node buildLockedHintCard(int index) {
-		VBox card = new VBox(6);
+		VBox card = new VBox(8);
 		card.getStyleClass().add("locked-hint-card");
+		card.setMaxWidth(500);
 
 		Label header = new Label(String.format("Hint %d", index));
 		header.getStyleClass().add("locked-hint-header");
 
-		Label ghost = new Label(generateGhostText());
-		ghost.getStyleClass().add("locked-hint-ghost");
-		ghost.setWrapText(true);
+		Label redacted = new Label(generateRedactedText());
+		redacted.getStyleClass().add("locked-hint-redacted");
+		redacted.setWrapText(true);
 
-		Label cta = new Label("Play to unlock this hint");
+		Label cta = new Label("🔒 Play to unlock this hint");
 		cta.getStyleClass().add("locked-hint-cta");
 
-		card.getChildren().addAll(header, ghost, cta);
+		card.getChildren().addAll(header, redacted, cta);
 		return card;
 	}
 
-	private String generateGhostText() {
-		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ?*!";
-		int lineLength = 26;
-		int lines = 2 + RANDOM.nextInt(2);
+	private String generateRedactedText() {
+		int lines = 2 + RANDOM.nextInt(3); // 2-4 lines of redacted text
 		StringBuilder builder = new StringBuilder();
 
 		for (int line = 0; line < lines; line++) {
-			for (int i = 0; i < lineLength; i++) {
-				int charIndex = RANDOM.nextInt(characters.length());
-				builder.append(characters.charAt(charIndex));
+			// Create black bars of varying lengths (like redacted sensitive information)
+			int barLength = 20 + RANDOM.nextInt(30); // 20-50 characters wide
+			for (int i = 0; i < barLength; i++) {
+				builder.append('█'); // Unicode black square block
 			}
 			if (line < lines - 1) {
 				builder.append('\n');

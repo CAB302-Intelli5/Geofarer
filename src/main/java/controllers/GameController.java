@@ -204,6 +204,8 @@ public class GameController {
             // Record the successful guess in database
             if (userStatsDAO != null) {
                 userStatsDAO.recordCorrectGuess(targetCountryCode, hintsUsedThisRound);
+                // Record match result (win)
+                userStatsDAO.recordMatchResult(targetCountryCode, true, hintsUsedThisRound);
             }
 
             this.roundWin = true;
@@ -263,6 +265,11 @@ public class GameController {
 
     // Method to start a new round with a different target country
     public void selectNewTarget() {
+        // Record a loss if the previous round was not won
+        if (!this.roundWin) {
+            userStatsDAO.recordMatchResult(targetCountryCode, false, hintsUsedThisRound);
+        }
+        
         this.roundWin = false;
         this.hintsUsedThisRound = false; //New round no hints used
         if (viewSuccessButton != null) {
@@ -468,6 +475,9 @@ public class GameController {
             // After the popup is closed, start a new round only if play again clicked
             if (popupController.isPlayAgainClicked()) {
                 selectNewTarget();
+            } else if (popupController.isPassportClicked()) {
+                // Navigate to passport page
+                showMyPassport();
             }
 
         } catch (IOException e) {

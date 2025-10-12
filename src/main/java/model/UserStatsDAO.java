@@ -301,5 +301,336 @@ public class UserStatsDAO {
         return countries;
     }
 
+    /**
+     * Gets total number of hints unlocked for the user
+     * @return count of hints unlocked
+     */
+    public int getHintsUnlocked() {
+        String query = "SELECT COUNT(DISTINCT hint_id) as hints_count FROM unlocked_hints WHERE user_id = ?";
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("hints_count");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting hints unlocked: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+
+    /**
+     * Gets continent mastery stats for spider/radar chart
+     * @return Map with continent name as key and mastery percentage as value
+     */
+    public Map<String, Double> getContinentMasteryStats() {
+        Map<String, Double> continentStats = new LinkedHashMap<>();
+        
+        String query = """
+            SELECT 
+                c.region,
+                COUNT(DISTINCT c.country_id) as total_countries,
+                COUNT(DISTINCT CASE WHEN cm.mastery_level >= 3 THEN c.country_id END) as mastered_countries
+            FROM countries c
+            LEFT JOIN country_mastery cm ON c.country_id = cm.country_id AND cm.user_id = ?
+            WHERE c.region IS NOT NULL AND c.region != ''
+            GROUP BY c.region
+            ORDER BY c.region
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                String region = rs.getString("region");
+                int total = rs.getInt("total_countries");
+                int mastered = rs.getInt("mastered_countries");
+                
+                double percentage = total > 0 ? (mastered * 100.0) / total : 0.0;
+                continentStats.put(region, percentage);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting continent mastery stats: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return continentStats;
+    }
+
+    /**
+     * Gets progression data over time (countries mastered per day/week)
+     * @return List of maps containing date and count
+     */
+    public List<Map<String, Object>> getProgressionOverTime() {
+        List<Map<String, Object>> progression = new ArrayList<>();
+        
+        String query = """
+            SELECT 
+                DATE(last_played) as play_date,
+                COUNT(DISTINCT country_id) as countries_played,
+                SUM(CASE WHEN mastery_level >= 3 THEN 1 ELSE 0 END) as countries_mastered
+            FROM country_mastery
+            WHERE user_id = ? AND last_played IS NOT NULL
+            GROUP BY DATE(last_played)
+            ORDER BY play_date ASC
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            int cumulativeMastered = 0;
+            while (rs.next()) {
+                Map<String, Object> dataPoint = new HashMap<>();
+                dataPoint.put("date", rs.getString("play_date"));
+                dataPoint.put("countries_played", rs.getInt("countries_played"));
+                cumulativeMastered += rs.getInt("countries_mastered");
+                dataPoint.put("cumulative_mastered", cumulativeMastered);
+                progression.add(dataPoint);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting progression data: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return progression;
+    }
+
+    /**
+     * Calculates user rank based on countries mastered
+     * @return Rank title (e.g., "Explorer", "Traveler", "Master Geographer")
+     */
+    public String getUserRank() {
+        Map<String, Object> stats = getUserOverallStats();
+        int countriesMastered = (int) stats.getOrDefault("fully_unlocked", 0);
+        
+        if (countriesMastered >= 150) {
+            return "Master Geographer";
+        } else if (countriesMastered >= 100) {
+            return "World Traveler";
+        } else if (countriesMastered >= 50) {
+            return "Continental Expert";
+        } else if (countriesMastered >= 25) {
+            return "Regional Explorer";
+        } else if (countriesMastered >= 10) {
+            return "Adventurer";
+        } else if (countriesMastered >= 5) {
+            return "Novice Explorer";
+        } else {
+            return "Beginner";
+        }
+    }
+
+    /**
+     * Gets match-based progression data for a specific country
+     * Returns a list of matches with their outcomes to show progression toward mastery
+     * @param countryCode The FIPS10 country code
+     * @return List of maps containing match number, result (win/loss), and mastery progress
+     */
+    public List<Map<String, Object>> getMatchProgressionForCountry(String countryCode) {
+        List<Map<String, Object>> progression = new ArrayList<>();
+        
+        String query = """
+            SELECT 
+                match_result,
+                used_hints,
+                played_at
+            FROM match_history
+            WHERE user_id = ? AND country_id = ?
+            ORDER BY played_at ASC
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            stmt.setString(2, countryCode);
+            ResultSet rs = stmt.executeQuery();
+            
+            int matchNumber = 0;
+            int masteryProgress = 0;  // Track current mastery progress (-100 to 300)
+            int consecutiveWinsNoHints = 0;  // Track consecutive wins without hints
+            
+            while (rs.next()) {
+                matchNumber++;
+                String result = rs.getString("match_result");
+                boolean usedHints = rs.getInt("used_hints") == 1;
+                
+                Map<String, Object> dataPoint = new HashMap<>();
+                dataPoint.put("matchNumber", matchNumber);
+                dataPoint.put("result", result);
+                dataPoint.put("usedHints", usedHints);
+                
+                // Update mastery progress based on match outcome
+                if ("win".equals(result)) {
+                    if (!usedHints) {
+                        consecutiveWinsNoHints++;
+                        masteryProgress += 34;  // Gain progress toward next mastery level
+                        
+                        // Cap at mastery level 3 (300%)
+                        if (masteryProgress > 300) {
+                            masteryProgress = 300;
+                        }
+                    } else {
+                        // Win with hints doesn't increase mastery much
+                        consecutiveWinsNoHints = 0;
+                        masteryProgress += 5;
+                    }
+                } else {
+                    // Loss reduces progress
+                    consecutiveWinsNoHints = 0;
+                    masteryProgress -= 25;
+                    if (masteryProgress < 0) {
+                        masteryProgress = 0;
+                    }
+                }
+                
+                dataPoint.put("masteryProgress", masteryProgress);
+                dataPoint.put("consecutiveWins", consecutiveWinsNoHints);
+                progression.add(dataPoint);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting match progression for country: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return progression;
+    }
+
+    /**
+     * Records a match result (win or loss) in the match history
+     * @param countryCode The FIPS10 country code
+     * @param isWin Whether the match was won
+     * @param usedHints Whether hints were used during this match
+     */
+    public void recordMatchResult(String countryCode, boolean isWin, boolean usedHints) {
+        String insertQuery = """
+            INSERT INTO match_history (user_id, country_id, match_result, used_hints, played_at)
+            VALUES (?, ?, ?, ?, datetime('now'))
+        """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+
+            stmt.setInt(1, currentUserId);
+            stmt.setString(2, countryCode);
+            stmt.setString(3, isWin ? "win" : "loss");
+            stmt.setInt(4, usedHints ? 1 : 0);
+            stmt.executeUpdate();
+
+            System.out.println("Recorded match result for " + countryCode + ": " + 
+                             (isWin ? "WIN" : "LOSS") + 
+                             (usedHints ? " (with hints)" : " (no hints)"));
+
+        } catch (SQLException e) {
+            System.err.println("Error recording match result: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets aggregated match progression across all countries
+     * Shows overall mastery progress based on all matches played
+     * @return List of maps containing match number and cumulative mastery score
+     */
+    public List<Map<String, Object>> getOverallMatchProgression() {
+        List<Map<String, Object>> progression = new ArrayList<>();
+        
+        String query = """
+            SELECT 
+                mh.match_result,
+                mh.used_hints,
+                mh.country_id,
+                mh.played_at
+            FROM match_history mh
+            WHERE mh.user_id = ?
+            ORDER BY mh.played_at ASC
+        """;
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, currentUserId);
+            ResultSet rs = stmt.executeQuery();
+            
+            int matchNumber = 0;
+            int totalMasteryScore = 0;  // Cumulative mastery score across all countries
+            int countriesMastered = 0;
+            
+            // Track mastery progress per country
+            Map<String, Integer> countryMasteryProgress = new HashMap<>();
+            Map<String, Integer> countryConsecutiveWins = new HashMap<>();
+            
+            while (rs.next()) {
+                matchNumber++;
+                String result = rs.getString("match_result");
+                boolean usedHints = rs.getInt("used_hints") == 1;
+                String countryId = rs.getString("country_id");
+                
+                // Get current progress for this country
+                int currentProgress = countryMasteryProgress.getOrDefault(countryId, 0);
+                int consecutiveWins = countryConsecutiveWins.getOrDefault(countryId, 0);
+                int previousMasteryLevel = currentProgress / 100;
+                
+                // Update progress based on match outcome
+                if ("win".equals(result)) {
+                    if (!usedHints) {
+                        consecutiveWins++;
+                        currentProgress += 34;
+                        if (currentProgress > 300) {
+                            currentProgress = 300;
+                        }
+                    } else {
+                        consecutiveWins = 0;
+                        currentProgress += 5;
+                    }
+                } else {
+                    consecutiveWins = 0;
+                    // Losing resets progress to 0, creating a big drop if you were close to mastering
+                    currentProgress = 0;
+                }
+                
+                // Update country tracking
+                countryMasteryProgress.put(countryId, currentProgress);
+                countryConsecutiveWins.put(countryId, consecutiveWins);
+                
+                // Check if country just reached mastery level 3
+                int newMasteryLevel = currentProgress / 100;
+                if (newMasteryLevel >= 3 && previousMasteryLevel < 3) {
+                    countriesMastered++;
+                }
+                
+                // Calculate total mastery score
+                totalMasteryScore = countryMasteryProgress.values().stream()
+                        .mapToInt(Integer::intValue)
+                        .sum();
+                
+                Map<String, Object> dataPoint = new HashMap<>();
+                dataPoint.put("matchNumber", matchNumber);
+                dataPoint.put("totalMasteryScore", totalMasteryScore);
+                dataPoint.put("countriesMastered", countriesMastered);
+                dataPoint.put("result", result);
+                
+                progression.add(dataPoint);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting overall match progression: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return progression;
+    }
+
 
 }

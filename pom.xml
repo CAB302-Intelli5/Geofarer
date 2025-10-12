@@ -103,6 +103,13 @@
             <version>3.45.2.0</version>
         </dependency>
 
+        <!-- JFreeChart for charting -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+
         <!-- Unit test dependencioes-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
