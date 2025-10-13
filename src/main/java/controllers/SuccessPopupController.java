@@ -5,6 +5,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+/**
+ * A controller for the success popup that allows handles playing again, exiting out,
+ * accessing passport page and stats on the game.
+ */
 public class SuccessPopupController {
 
     @FXML private Label statsLabel;
@@ -15,6 +19,10 @@ public class SuccessPopupController {
     // Flag to communicate the result back to the GameController
     private boolean playAgainClicked = false;
 
+    /**
+     * Sets the stats message to the amount of guesses the user took so that it is updated in the fxml
+     * @param message The amount of guesses the user took
+     */
     public void setStatsMessage(String message) {
         statsLabel.setText(message);
     }

@@ -18,6 +18,11 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the login page
+ * Handles the user login, navigation back to the landing page, and nav to the sign-up page
+ * Inherits from {@link BaseController} to access common UI elements like email and password fields.
+ */
 public class LoginController extends BaseController {
 
 

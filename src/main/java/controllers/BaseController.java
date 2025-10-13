@@ -8,6 +8,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+/**
+ * Shared controller class used for common UI functionality,
+ * this includes login/signup and navigation
+ */
 public class BaseController {
 
     @FXML
@@ -26,6 +30,9 @@ public class BaseController {
     protected ContextMenu userMenu;
 
 
+    /**
+     * Initializes of the controller designed for future initializations if needed
+     */
     @FXML
     public void initialize() {
         setupUserMenu();
@@ -42,7 +49,10 @@ public class BaseController {
         userMenu.getItems().addAll(profile, settings, logout);
     }
 
-    // Function for when the user icon in the top right is clicked
+    /**
+     * Handles a click on the user icon and togges the visibility of the user dropdown
+     * @param event the mouse triggered by clicking the user icon
+     */
     @FXML
     protected void onUserCircleClick(MouseEvent event) {
         if (userMenu.isShowing()) {
@@ -52,7 +62,9 @@ public class BaseController {
         }
     }
 
-    // Function for toggling the hidden password on and off
+    /**
+     * Toggles the visibility of the password field
+     */
     @FXML
     protected void onTogglePassword() {
         if (showPasswordCheckBox.isSelected()) {
@@ -66,13 +78,17 @@ public class BaseController {
         }
     }
 
-    // Open Login Page
+    /**
+     * Opens the login page
+     */
     protected void openLoginPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
         PageLoader.openPage("@../pages/LoginPage.fxml", "Login", stage);
     }
 
-    // Open Sign Up Page
+    /**
+     * Handles the sign up page in current stage
+     */
     protected void openSignUpPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
         PageLoader.openPage("@../pages/SignUpPage.fxml", "Sign Up", stage);
