@@ -7,6 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * A class for managing users and all user features. This includes creating accounts, login proceses,
+ * deleting users for the database. Essentially CRUD related services that relate to the user
+ */
 public class UserService {
 
     private static String hashPassword(String salt, String password) {
@@ -24,10 +28,16 @@ public class UserService {
         }
     }
 
+    /**
+     * Adds the user to the database given the user has not been added before (password is hashed using sha-256)
+     * @param email Users email that was provided
+     * @param password Users password prehashed (hashed in function)
+     * @return a boolean of true if successfully added to databse and false if not added to database
+     */
     public static boolean addUser(String email, String password) {
         String insertSql = "INSERT INTO users(email, password_hash) VALUES(?, ?)";
         String updateSql = "UPDATE users SET password_hash = ? WHERE user_id = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement insertStmt = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             insertStmt.setString(1, email);
             insertStmt.setString(2, "TEMP");
@@ -56,9 +66,19 @@ public class UserService {
         }
     }
 
+    /**
+     * Function that validates the login parameters before adding the user
+     * @param email Provied user email
+     * @param password Users provided password to compare the hashed values between databsae
+     * @return
+     */
     public static boolean validateLogin(String email, String password) {
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            System.out.println("Email or password field is empty");
+            return false;
+        }
        String getIdSql = "SELECT user_id FROM users WHERE email = ?";
-       try (Connection conn = Database.getConnection();
+       try (Connection conn = DBConnection.getInstance().getConnection();
             PreparedStatement stmt = conn.prepareStatement(getIdSql)) {
            stmt.setString(1, email);
            ResultSet rs = stmt.executeQuery();
@@ -78,11 +98,17 @@ public class UserService {
            System.out.println("Login validation error: " + e.getMessage());
            return false;
        }
+
     }
 
+    /**
+     * Deletes a user from the databse that relates to an email as a unique ID
+     * @param email the users unique id or email
+     * @return a true if successfuly deleted false if failed
+     */
     public static boolean deleteUser(String email) {
         String sql = "DELETE FROM users WHERE email = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             return stmt.executeUpdate() > 0;

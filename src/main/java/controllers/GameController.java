@@ -35,6 +35,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Controller for the main game logic and interactions which handles all user clicks,
+ * guesses, zooms and pans and the success popup when getting the answer correct.
+ */
 public class GameController {
     @FXML
     private Label targetCountryLabel;
@@ -66,21 +70,41 @@ public class GameController {
 
     private String clickedCountryCode = "XX";
     private String targetCountryCode = "XX";
+    private double translateX = 0;
+    private double translateY = 0;
 
     // Reference to the GameView to allow communication
     private views.GameView gameView;
 
-    // Setter for GameView
+    /**
+     * A setter for the game view
+     * @param gameView The gameview that is associated with this controller
+     */
     public void setGameView(views.GameView gameView) {
         this.gameView = gameView;
     }
 
+    /**
+     * Handles the click on the success buton the succes popup page
+     * @param button the success button is pressed
+     */
     @FXML
     public void handleSuccessButton(Button button){
         System.out.println("View Success window button clicked");
         showSuccessPopup();
     }
 
+
+    /**
+     * Initializes the controller reference for fxml injection. Also sets
+     * @param targetCountryLabel This is the fxml of the target country
+     * @param countryLabel This is the label for that country
+     * @param hintsTextArea Area for the hints to be outputted
+     * @param overlay The overlay is for the entire map and border
+     * @param innerMapPane The inner map pane is the area taht the map is going to fill
+     * @param mapContainer The map container is filled with the map which is filled to the inner map pane
+     * @param viewSuccessButton This is the button that will show up when the success overlay pops up
+     */
     @FXML
     public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer, Button viewSuccessButton) {
         // Use "this." to refer to the instance variables of the GameController class
@@ -105,11 +129,21 @@ public class GameController {
             hintsTextArea.setText("Guess where the country is first to get a hint!");
         }
     }
+
+    /**
+     * Sets the available feature infos and selects a random target country
+     * @param featureInfos List of map features
+     */
     public void setFeatureInfos(List<MapService.FeatureInfo> featureInfos) {
         this.featureInfos = featureInfos;
         selectRandomTargetCountry(); // Call this after data is set
     }
 
+    /**
+     * Handles the click event on the map converting the screen coords to WGS84 which matches the natural earth
+     * finding the country which was clicked and procesing the guess.
+     * @param event Mouse click event
+     */
     public void processMapClick(MouseEvent event) {
         if (featureInfos == null || featureInfos.isEmpty()) return; // just for unit tests.
         if (overlay == null || innerMapPane == null) {
@@ -271,7 +305,9 @@ public class GameController {
     }
 
 
-    // Method to start a new round with a different target country
+    /**
+     * Method to start a new round with a different target country
+     */
     public void selectNewTarget() {
         this.roundWin = false;
         if (viewSuccessButton != null) {
@@ -292,8 +328,10 @@ public class GameController {
         }
     }
 
-    // --- Zoom and Pan Logic ---
-
+    /**
+     * Handels the mouse wheel scroll to zoom in and out of the map
+     * @param event This is as a mouse event scroll being zoom in action
+     */
     public void handleScroll(ScrollEvent event) {
         if (innerMapPane == null) return; // nothing to scroll
         event.consume();
@@ -305,35 +343,73 @@ public class GameController {
         newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
 
         if (newZoom != zoomLevel) {
+            // Reset drag detection after zoom to prevent stale coordinates
+            dragDetected = false;
+            isPanning = false;
             zoomAroundPoint(newZoom, event.getX(), event.getY());
         }
     }
 
+    /**
+     * Handles the mouse press to initiate panning and click detection
+     * @param event On mouse click (left click)
+     */
     public void handleMousePress(MouseEvent event) {
         if (innerMapPane == null) return;
         if (event.isPrimaryButtonDown()) {
             dragDetected = false;
-            lastPanX = event.getX();
-            lastPanY = event.getY();
+            // Use scene coordinates to avoid jitter from transform updates
+            lastPanX = event.getSceneX();
+            lastPanY = event.getSceneY();
             isPanning = true;
             innerMapPane.setCursor(Cursor.CLOSED_HAND);
             event.consume();
         }
     }
 
+    /**
+     * Handles the mouse dragging so that it can be registered
+     * @param event Mouse button is being held down
+     */
     public void handleMouseDrag(MouseEvent event) {
         if (innerMapPane == null) return;
         if (isPanning && event.isPrimaryButtonDown()) {
-            double deltaX = event.getX() - lastPanX;
-            double deltaY = event.getY() - lastPanY;
+            // Use scene coordinates for stable tracking
+            double currentX = event.getSceneX();
+            double currentY = event.getSceneY();
+            
+            // Mark as drag - any mouse drag event means we're dragging, not clicking
             dragDetected = true;
-            pan(deltaX, deltaY);
-            lastPanX = event.getX();
-            lastPanY = event.getY();
+            
+            double deltaX = currentX - lastPanX;
+            double deltaY = currentY - lastPanY;
+            
+            // Logarithmic pan scaling for better feel across zoom levels
+            // At zoom 1.0: factor = 1.0 (base speed)
+            // At zoom 2.0: factor = 1.3 (gradual increase)
+            // At zoom 4.0: factor = 1.6 (moderate increase)
+            // At zoom 10.0: factor = 2.0 (doubled speed)
+            // At zoom 20.0: factor = 2.3 (capped growth)
+            // Logarithmic scaling prevents excessive speed at high zoom
+            double panScaleFactor = 1.0 + Math.log(zoomLevel) / Math.log(2) * 0.4;
+            
+            double scaledDeltaX = deltaX * panScaleFactor;
+            double scaledDeltaY = deltaY * panScaleFactor;
+            
+            pan(scaledDeltaX, scaledDeltaY);
+            
+            // Update last position with current scene coordinates
+            lastPanX = currentX;
+            lastPanY = currentY;
             event.consume();
         }
     }
 
+    /**
+     * Handles the mouse release so that it can stop dragging across the screen and
+     * ensure the guess is not clicked on relase
+     * @param event Mouse event (for mouse release)
+     */
     public void handleMouseRelease(MouseEvent event) {
         if (innerMapPane == null) return;
         if (isPanning && !dragDetected) {
@@ -346,6 +422,10 @@ public class GameController {
         event.consume();
     }
 
+    /**
+     * Handles the click for right click. It will reset the view
+     * @param event Mouse event detecting the right click
+     */
     public void handleViewClick(MouseEvent event) {
         if (innerMapPane == null) return;
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -419,6 +499,9 @@ public class GameController {
         innerMapPane.getTransforms().add(boundedTransform);
     }
 
+    /**
+     * Setter function to reset the zoom and pan to set back to original map
+     */
     public void resetZoomAndPan() {
         zoomLevel = 1.0;
         innerMapPane.getTransforms().clear();
@@ -427,6 +510,9 @@ public class GameController {
     }
 
 
+    /**
+     * controller to show the success popup when the user is guessed correctly
+     */
     protected void showSuccessPopup() {
         try {
             // Load the FXML file for the popup
@@ -473,7 +559,10 @@ public class GameController {
     }
 
 
-    // Navigation Logic
+    /**
+     * Method to register the login button and change and call the scene change method
+     * @param button This is the login button, when on click this is called
+     */
     public void doLogin(Button button) {
         if (button == null) {
             System.out.println("Login button is null");
@@ -524,6 +613,12 @@ public class GameController {
         this.hintsManager = new HintsManager(targetCountryCode.toLowerCase());
     }
 
+    /**
+     * This is a function that returns a boolean if the match is a win or loss. This is
+     * currently always going to return round win as our only game mode does not need to perform
+     * this check but is good practice for later gameplay integration
+     * @return True of False (True being game win, False being Game loss)
+     */
     public boolean isRoundWin() {
         return roundWin;
     }
