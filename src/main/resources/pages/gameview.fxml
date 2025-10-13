@@ -41,7 +41,7 @@
                 <Region HBox.hgrow="ALWAYS" />
 
             <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
-                <Button fx:id="loginButton" onAction="handleLoginButton" styleClass="login-icon-button">
+                <Button fx:id="loginButton" onAction="#handleLoginButton" styleClass="login-icon-button">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
                     </graphic>
