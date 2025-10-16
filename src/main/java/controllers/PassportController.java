@@ -31,6 +31,7 @@ public class PassportController {
     private Map<String, List<CountryStats>> countriesByContinent;
     private String selectedContinent = "All";
     private UserStatsDAO userStatsDAO; // get the userStatsDAO model
+    private HintsManager hintsManager;
 
     //Colours of the page to match the passport theme
     private static final String PASSPORT_GREEN = "#A6A186";
@@ -343,8 +344,9 @@ public class PassportController {
 
         System.out.println("Opening detail view for country: " + country.getCountryName());
 
-        // Calculate which hints should be unlocked based on progress
-        List<String> unlockedHints = getUnlockedHintsForCountry(country);
+        // Get unlocked hints from database
+        this.hintsManager = new HintsManager(country.getCountryCode(), country.getCountryName());
+        List<String> unlockedHints = hintsManager.getUnlockedHints(country.getCountryCode());
 
         PageLoader.openCountryDetailView(
                 String.format("Passport - %s", country.getCountryName()),
@@ -356,9 +358,11 @@ public class PassportController {
         );
     }
 
+    /*
     /**
      * Calculate which hints should be unlocked for a country based on its progress
      */
+    /*
     private List<String> getUnlockedHintsForCountry(CountryStats country) {
         List<String> unlockedHints = new ArrayList<>();
 
@@ -402,7 +406,7 @@ public class PassportController {
         }
 
         return unlockedHints;
-    }
+    }*/
 
     private void loadMapView() {
         mapViewContainer.getChildren().clear();

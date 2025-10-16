@@ -211,6 +211,8 @@ public class GameController {
             this.roundWin = true;
             if (viewSuccessButton != null) {
                 viewSuccessButton.setVisible(roundWin);
+                hintsManager.saveHints();
+                hintsManager.unlockAllHints(); //TO DO: Change for now
                 viewSuccessButton.setText("View Results");
             }
             showSuccessPopup();
@@ -263,7 +265,7 @@ public class GameController {
         if (targetCountryLabel != null) {
             targetCountryLabel.setText("Target Country: " + targetCountry);
         }
-        hintsManager = new HintsManager(targetCountryCode.toLowerCase(), targetCountry);
+        this.hintsManager = new HintsManager(targetCountryCode.toLowerCase(), targetCountry);
     }
 
 

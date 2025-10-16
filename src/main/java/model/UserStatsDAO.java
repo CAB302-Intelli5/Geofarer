@@ -110,7 +110,7 @@ public class UserStatsDAO {
                 SELECT DISTINCT c.* FROM unlocked_hints uh
                 JOIN hints h ON uh.hint_id = h.hint_id
                 JOIN countries c ON h.country_id = c.country_id
-                WHERE uh.user_id = 6
+                WHERE uh.user_id = ?
             ) uc
         LEFT JOIN
             country_mastery cm ON uc.country_id = cm.country_id AND cm.user_id = ?
@@ -121,6 +121,7 @@ public class UserStatsDAO {
              PreparedStatement stmt = conn.prepareStatement(query)) {
             System.out.println("DAO: Executing query for user ID: " + currentUserId);
             stmt.setInt(1, currentUserId);
+            stmt.setInt(2, currentUserId);
             ResultSet rs = stmt.executeQuery();
 
             //Check if the ResultSet has any data at all.
