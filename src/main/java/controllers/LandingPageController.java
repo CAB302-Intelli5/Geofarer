@@ -1,5 +1,7 @@
 package controllers;
 
+import javafx.fxml.FXML;
+import javafx.scene.text.Font;
 import utils.PageLoader;
 import utils.SceneManager;
 import views.GameView;
@@ -13,8 +15,14 @@ import javafx.stage.Stage;
  */
 public class LandingPageController {
 
+    @FXML
     private Button loginButton;
 
+    @FXML
+    public void initialise() {
+        Font.loadFont(getClass().getResource("/fonts/Inika-Regular.ttf").toExternalForm(), 72);
+        Font.loadFont(getClass().getResource("/fonts/Inika-Bold.ttf").toExternalForm(), 72);
+    }
     /**
      *Refernce  to the login button from the view
      * @param loginButton This login button in the view
@@ -30,7 +38,7 @@ public class LandingPageController {
     public void onLoginButtonClick() {
         if (loginButton != null && loginButton.getScene() != null && loginButton.getScene().getWindow() != null) {
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+            PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
         } else {
             System.err.println("Could not get the stage from the login button.");
         }

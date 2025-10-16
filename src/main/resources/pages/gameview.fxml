@@ -14,27 +14,37 @@
 
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.TextArea?>
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" >
+<?import javafx.scene.control.Separator?>
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" >
         <!-- Top Header Bar -->
-        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #0D1A26; -fx-padding: 10;">
+
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../images/logo_placeholder.png" />
+                </image>
+            </ImageView>
+
                 <Region HBox.hgrow="ALWAYS" />
-                <Label text="Geofarer - Geography Game">
+
+                <Label text="GEOFARER">
                     <font>
-                        <Font size="24.0" />
+                        <Font size="28.0" />
                     </font>
+                    <style>
+                        -fx-font-family: 'Inika';
+                        -fx-text-fill: white;
+                        -fx-font-weight: bold;
+                    </style>
                 </Label>
+
                 <Region HBox.hgrow="ALWAYS" />
-                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../images/logo_placeholder.png" />
-                    </image>
-                </ImageView>
-                <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
+
+                <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-cursor: hand;" text="Login">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-
-                                <Image url="@../images/logo_placeholder.png" />
+                                <Image url="@../images/login_icon.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -45,18 +55,28 @@
         </HBox>
 
         <!-- Navigation Menu -->
-        <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #e0e0e0; -fx-padding: 10;">
-                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Game Modes" onAction="#handleGameModes" />
-                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Explore" onAction="#handleExplore" />
-                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Leaders" onAction="#handleLeaders" />
-                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport" />
+        <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #0D1A26; -fx-border-color: white; -fx-border-width: 4;">
+                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="Game Modes" onAction="#handleGameModes"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Separator orientation="VERTICAL" style="-fx-background-color: white; -fx-pref-width: 2;" />
+
+                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="Explore" onAction="#handleExplore"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Separator orientation="VERTICAL" style="-fx-background-color: white; -fx-pref-width: 2;" />
+
+                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="Leaders" onAction="#handleLeaders"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Separator orientation="VERTICAL" style="-fx-background-color: white; -fx-pref-width: 2;" />
+
+                <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; -fx-font-size: 18px; -fx-padding: 5 20; -fx-alignment: CENTER; -fx-cursor: hand;" text="My Passport" onAction="#handleMyPassport"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
         </HBox>
     <!-- Target Country label -->
     <HBox alignment="CENTER" prefHeight="50.0"
           style="-fx-background-color: #731A12; -fx-padding:10;">
         <Label fx:id="targetCountryLabel"
                text="Target Country: Loading..."
-               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;" />
+               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'TASA Explorer'; "/>
     </HBox>
     <!-- Game map -->
         <HBox alignment="CENTER">
@@ -80,20 +100,29 @@
         </HBox>
 
         <!-- Bottom Bar for Country Label -->
-        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
+        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #731A12;">
                 <Label fx:id="countryLabel" text="Click on a country to see its name">
                     <font>
                         <Font size="14.0" />
                     </font>
+                    <style>
+                        -fx-font-family: 'TASA Explorer';
+                        -fx-text-fill: white;
+                        -fx-font-weight: bold;
+                    </style>
                 </Label>
         </HBox>
 
         <!-- Text Area for the country hints from the CIA Factbook database -->
-        <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: rgba(255,255,255,0.95); -fx-border-color: #ddd;">
+        <HBox alignment="CENTER" maxWidth="Infinity" style="-fx-background-color: #0D1A26;">
             <TextArea fx:id="hintsTextArea" text="Loading hints..." wrapText="true" editable="false">
                 <font>
                     <Font size="14.0" />
                 </font>
+                <style>
+                    -fx-control-inner-background: #E4F2F1;
+                    -fx-font-family: 'TASA Explorer';
+                </style>
             </TextArea>
         </HBox>
 
