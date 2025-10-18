@@ -2,16 +2,23 @@
 /* large heading */
 .main-label {
     -fx-font-size: 72px;
-    -fx-font-family: "Inika", "OpenDyslexic", sans-serif;
+    -fx-font-family: "Inika", sans-serif;
     -fx-text-fill: white;
 }
 
 /* secondary heading */
 .secondary-label {
     -fx-font-size: 28px;
-    -fx-font-family: "Inika", "OpenDyslexic", sans-serif;
+    -fx-font-family: "Inika", sans-serif;
     -fx-font-weight: bold;
     -fx-text-fill: #0D1A26;
+}
+
+.subheading-label {
+    -fx-font-family: "TASA Explorer", sans-serif;
+    -fx-font-size: 21px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
 }
 
 .details-label {
@@ -21,7 +28,6 @@
 }
 
 /* LOGIN/SIGNUP USER PAGE STYLES */
-
 .user-next-text {
     -fx-text-fill: white;
     -fx-underline: true;
@@ -29,7 +35,7 @@
 }
 
 .user-shadow-box {
-    -box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    -fx-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     -fx-background-color: #731A12BF;
     -fx-padding: 20;
     -fx-border-color: #FFFFFF;
@@ -44,7 +50,7 @@
    -fx-min-height: 80px;
    -fx-max-width: 300px;
    -fx-max-height: 80px;
-   -fx-font-family: "TASA Explorer", "OpenDyslexic", sans-serif;
+   -fx-font-family: "TASA Explorer", sans-serif;
    -fx-font-size: 26px;
    -fx-cursor: hand
 }
@@ -84,7 +90,7 @@
     -fx-max-width: 40px;
     -fx-max-height: 40px;
     -fx-background-colour: transparent;
-    -fx-background-image: url('/images/userIcon.png');
+    -fx-background-image: url('/images/login_icon.png');
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -93,7 +99,7 @@
 
 /* project title (on all pages) */
 .geofarer-heading {
-    -fx-font-family: 'Inika';
+    -fx-font-family: 'Inika', sans-serif;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 28px;
@@ -140,3 +146,25 @@
     -fx-font-size: 16px;
 }
 
+/* ACCESSIBILITY STYLES */
+/* large text size */
+.text-large {
+    -fx-font-size: 20px;
+}
+
+/* dyslexia-friendly font */
+.dyslexia-font {
+    -fx-font-family: "OpenDyslexic", "Arial";
+}
+
+/* contrast settings - light theme */
+.light-theme {
+    -fx-background-color: #E4F2F1;
+    -fx-text-fill: black;
+}
+
+/* contrast settings - dark theme */
+.dark-theme {
+    -fx-background-color: #0D1A26;
+    -fx-text-fill: white;
+}

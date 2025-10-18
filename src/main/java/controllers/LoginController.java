@@ -1,8 +1,5 @@
 package controllers;
 
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
-import javafx.scene.shape.Circle;
 import model.UserService;
 import utils.SceneManager;
 import views.GameView;
@@ -12,21 +9,17 @@ import javafx.stage.Stage;
 import utils.PageLoader;
 import javafx.scene.control.Button;
 
-import javafx.scene.image.Image;
-import javafx.scene.paint.ImagePattern;
-import java.net.URL;
-import java.util.Objects;
-import java.util.ResourceBundle;
-
+/**
+ * Controller for the login page
+ * Handles the user login, navigation back to the landing page, and nav to the sign-up page
+ * Inherits from {@link BaseController} to access common UI elements like email and password fields.
+ */
 public class LoginController extends BaseController {
-
 
     @FXML
     private Button goBackButton;
     @FXML
     private Button loginButton;
-    @FXML
-    private ImageView userImageView;
 
     private UserService userService = new UserService();
 
@@ -51,9 +44,13 @@ public class LoginController extends BaseController {
 
     @FXML
     private void onGoBackClick() { // When the Go Back button is clicked
+        LandingPageView landingView = new LandingPageView();
+        SceneManager.switchToScene(landingView);
+
         Stage stage = SceneManager.getPrimaryStage();
-        PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", stage);
+        stage.setTitle("Geofarer - Geography Learning Game");
     }
+
     /**
      * Navigates to the sign-up page when the link is clicked.
      */
@@ -62,15 +59,5 @@ public class LoginController extends BaseController {
         Stage stage = (Stage) emailField.getScene().getWindow();
         // Use the PageLoader to open the SignUpPage
         PageLoader.openPage("/pages/SignUp.fxml", "Sign Up", stage);
-    }
-
-    @FXML
-    public void initialize() {
-        setupUserMenu();
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/userIcon.png")));
-        userImageView.setImage(img);
-
-        userImageView.setPreserveRatio(true);
-        userImageView.setSmooth(true);
     }
 }

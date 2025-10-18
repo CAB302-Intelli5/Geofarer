@@ -14,7 +14,7 @@ public class LandingPageController extends BaseController {
     private Button loginButton;
 
     @FXML
-    public void initialise() {
+    public void initialize() {
         Font.loadFont(getClass().getResource("/fonts/Inika-Regular.ttf").toExternalForm(), 72);
         Font.loadFont(getClass().getResource("/fonts/Inika-Bold.ttf").toExternalForm(), 72);
     }

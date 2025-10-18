@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefHeight="500" prefWidth="800"
+            stylesheets="/styles/base.css"
+            fx:controller="controllers.SettingsController">
+
+    <styleClass>
+        <String fx:value="background-map"/>
+        <String fx:value="border-pane"/>
+    </styleClass>
+
+
+    <top>
+        <HBox prefHeight="70" spacing="10" styleClass="header-bar">
+            <!-- top left corner: logo -->
+            <StackPane>
+                <Circle radius="20" fill="white" />
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand"> <!-- onMouseClicked="#onGoBackClick" -->
+                    <image>
+                        <Image url="/images/Logo.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Top centre: Website name
+            <Label text="Geofarer" alignment="CENTER" onMouseClicked="#onGoBackClick" styleClass="geofarer-heading"/> -->
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- top right: profile -->
+            <Button fx:id="loginButton" styleClass="login-icon-button"> <!-- onMouseClicked="#onUserCircleClick" -->
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                </graphic>
+            </Button>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+        </HBox>
+    </top>
+
+    <center>
+        <GridPane fx:id="settingsGrid" hgap="10" vgap="10" padding="25">
+
+            <!-- row 0: title -->
+            <Label text="Settings" GridPane.columnSpan="2" styleClass="secondary-label"  alignment="CENTER"/>
+
+            <!-- row 1: my account title-->
+            <Label text="My Account" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="subheading-label"/>
+
+            <!-- row 2: username/email -->
+            <Label text="Email" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="details-label"/>
+            <!-- get the user's email from the DB -->
+
+            <!-- row 3: reset password -->
+            <Label text="Password" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="details-label"/>
+            <Button text="Reset Password" fx:id="resetPasswordButton" GridPane.rowIndex="3" GridPane.columnIndex="1" /> <!-- onAction="#onPasswordReset"-->
+
+            <!-- row 4: preferences w/ accessibility -->
+            <Label text="Accessibility &amp; Preferences" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="subheading-label"/>
+
+            <!-- row 5: theme -->
+            <Label text="Appearance" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="details-label"/>
+            <!-- light vs dark mode -->
+
+            <!-- row 6: increase text size -->
+            <Label text="Large Text" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="details-label" />
+            <CheckBox fx:id="largeTextChecked" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+            <!-- row 7: dyslexia-friendly font -->
+            <Label text="Dyslexia-friendly Font" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="details-label"/>
+            <CheckBox fx:id="dyslexiaFontChecked" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+            <!-- row 8: colour-blind palette -->
+            <Label text="Colour Vision Mode?" GridPane.rowIndex="8" GridPane.columnIndex="0" styleClass="details-label"/>
+
+            <!-- row 9: save button -->
+            <Button text="Save Changes" fx:id="saveSettingsButton" GridPane.rowIndex="9" GridPane.columnIndex="1"  GridPane.halignment="LEFT"/>
+            <Button text="Cancel" GridPane.rowIndex="9" GridPane.columnIndex="1"  GridPane.halignment="RIGHT"/> <!-- onAction="#onGoBackClick" -->
+
+        </GridPane>
+    </center>
+</BorderPane>

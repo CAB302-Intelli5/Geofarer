@@ -19,7 +19,7 @@
 <?import java.net.URL?>
 
 
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" >
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" styleClass="dark-theme" >
     <stylesheets>
         <URL value="@../styles/base.css"/>
     </stylesheets>
@@ -34,14 +34,14 @@
                     </image>
                 </ImageView>
             </StackPane>
-
+            <Region HBox.hgrow="ALWAYS" />
 
             <Label text="Geofarer" styleClass="geofarer-heading"/>
 
                 <Region HBox.hgrow="ALWAYS" />
 
             <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
-                <Button fx:id="loginButton" onAction="handleLoginButton" styleClass="login-icon-button">
+                <Button fx:id="loginButton" onAction="#handleLoginButton" styleClass="login-icon-button">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
                     </graphic>
