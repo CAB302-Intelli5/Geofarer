@@ -87,7 +87,7 @@
 
                     <Label text="Already have an account? Login here."
                            onMouseClicked="#onLoginLinkClick"
-                           style="-fx-text-fill: white; -fx-underline: true; -fx-cursor: hand;"
+                           styleClass="user-next-text"
                            wrapText="true">
                         <VBox.margin>
                             <Insets top="10"/>

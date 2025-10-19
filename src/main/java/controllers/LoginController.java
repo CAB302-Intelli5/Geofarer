@@ -58,6 +58,6 @@ public class LoginController extends BaseController {
     private void onSignUpLinkClick() {
         Stage stage = (Stage) emailField.getScene().getWindow();
         // Use the PageLoader to open the SignUpPage
-        PageLoader.openPage("/pages/SignUp.fxml", "Sign Up", stage);
+        PageLoader.openPage("/pages/SettingsPage.fxml", "Sign Up", stage);
     }
 }
