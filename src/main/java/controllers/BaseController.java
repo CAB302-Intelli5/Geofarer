@@ -39,10 +39,14 @@ public class BaseController {
         userMenu = new ContextMenu();
 
         MenuItem profile = new MenuItem("Profile");
+        MenuItem login = new MenuItem("Login");
+        login.setOnAction(e -> openLoginPage());
+        MenuItem signup = new MenuItem("Sign Up");
+        signup.setOnAction(e -> openSignUpPage());
         MenuItem settings = new MenuItem("Settings");
         MenuItem logout = new MenuItem("Log Out");
 
-        userMenu.getItems().addAll(profile, settings, logout);
+        userMenu.getItems().addAll(profile, login, signup, settings, logout);
     }
 
     /**
@@ -54,7 +58,7 @@ public class BaseController {
         if (userMenu.isShowing()) {
             userMenu.hide();
         } else {
-            userMenu.show(userCirclePane, Side.BOTTOM,  0, 0);
+            userMenu.show(userCirclePane, event.getScreenX(), event.getScreenY());
         }
     }
 

@@ -4,7 +4,9 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import model.UserService;
 import utils.SceneManager;
+import utils.SessionManager;
 import views.GameView;
+import views.LandingPageView;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import utils.PageLoader;
@@ -42,9 +44,12 @@ public class LoginController extends BaseController {
         } else {
             password = passwordField.getText();
         }
-        if(userService.validateLogin(email, password)) {
-            System.out.println("Login successful: " + email);
 
+        //Gets the user ID if credentials are valid
+        Integer userId = UserService.getUserId(email, password);
+        if(userId != null) {
+            System.out.println("Login successful: " + email);
+            SessionManager.getInstance().login(userId, email); //Store the user to the session ID
             GameView gameView = new GameView(true);
             SceneManager.switchToScene(gameView);
         } else {
@@ -59,6 +64,7 @@ public class LoginController extends BaseController {
         GameView gameView = new GameView(true);
         SceneManager.switchToScene(gameView);
     }
+
     /**
      * Navigates to the sign-up page when the link is clicked.
      */

@@ -58,13 +58,50 @@ public class UserService {
                     updateStmt.executeUpdate();
                 }
             }
-
             return true;
         } catch (SQLException e) {
             System.out.println("Adding user error: " + e.getMessage());
             return false;
         }
     }
+
+
+    /**
+     * Gets the user ID for a given email and password
+     * @param email users email as a string
+     * @param password users password
+     * @return returns null if credentials are invalid
+     */
+    public static Integer getUserId(String email, String password) {
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            System.out.println("Email or password field is empty");
+            return null;
+        }
+        // First get the user_id for the given email so we can use it as the salt.
+        String getIdSql = "SELECT user_id FROM users WHERE email = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(getIdSql)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int userId = rs.getInt("user_id");
+                // Compute salted hash using the user id as salt and verify it matches.
+                String checkSql = "SELECT user_id FROM users WHERE user_id = ? AND password_hash = ?";
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                    checkStmt.setInt(1, userId);
+                    checkStmt.setString(2, hashPassword(String.valueOf(userId), password));
+                    ResultSet checkRs = checkStmt.executeQuery();
+                    if (checkRs.next()) {
+                        return checkRs.getInt("user_id");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Get user ID error: " + e.getMessage());
+        }
+        return null;
+    }
+
 
     /**
      * Function that validates the login parameters before adding the user

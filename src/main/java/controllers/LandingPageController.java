@@ -35,6 +35,7 @@ public class LandingPageController {
      * Handles the click event for the login button.
      * Navigates the user to the login page.
      */
+
     public void onLoginButtonClick() {
         if (loginButton != null && loginButton.getScene() != null && loginButton.getScene().getWindow() != null) {
             Stage stage = (Stage) loginButton.getScene().getWindow();
