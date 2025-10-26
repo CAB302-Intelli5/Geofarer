@@ -26,6 +26,15 @@
     -fx-font-size: 16px;
 }
 
+/* Label for showing email of currently logged in user */
+.user-label {
+    -fx-font-family: 'Inika';
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
 /* LOGIN/SIGNUP USER PAGE STYLES */
 .hyperlink-text {
     -fx-underline: true;
