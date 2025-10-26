@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import utils.SessionManager;
@@ -44,11 +45,8 @@ public class HintsManager {
      */
     public String showNextHint(int hintsShown) throws JsonProcessingException {
         String nextHint;
-
-        String hintId = fips10 + hintsShown;
         if (hintsShown < 6) {
             nextHint = countryHints.get(hintsShown);
-            saveHint(hintId, nextHint);
         } else {
             nextHint = "No more hints left!";
         }
@@ -58,54 +56,74 @@ public class HintsManager {
     }
 
     /**
-     * Creates a record in the database that links an unlocked/seen hint to a user, if unique.
-     * @param hintId HintID comes from the country's GEC/FIPs CODE and the hint number
-     * @param hintText The string of the hint being saved
+     * Saves hint records to database to be referenced in unlocked_hints
      * @return
      */
-    private boolean saveHint(String hintId, String hintText){
+    public boolean saveHints() {
         LocalDate seenDate = LocalDate.now();
         String insertHint = "INSERT INTO hints(hint_id, hint_type, hint_text, date_retrieved, country_id) VALUES(?, ?, ?, ?, ?)";
-        String insertSeenHint = "INSERT INTO unlocked_hints(hint_id, user_id, seen_date) VALUES (?, ?, ?)";
 
-        String[] hintSplit = hintText.split(":", 2);
-        String hintType = hintSplit[0].trim();
-        String hintBody = hintSplit[1].trim();
-
-        try (Connection conn = DBConnection.getInstance().getConnection()){
-            try (PreparedStatement stmt = conn.prepareStatement(insertHint)){
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
+            for (int i = 0; i < countryHints.size(); i++) {
+                String[] hintSplit = countryHints.get(i).split(":", 2);
+                String hintType = hintSplit[0].trim();
+                String hintBody = hintSplit[1].trim();
+                String hintId = fips10 + i;
                 //Saves hint to hint table in the Geofarer database
-                stmt.setString(1, hintId);
-                stmt.setString(2, hintType);
-                stmt.setString(3, hintBody);
-                stmt.setString(4, seenDate.toString());
-                stmt.setString(5, fips10);
-                stmt.executeUpdate();
-                System.out.println("New hint saved!");
-            }catch (SQLException e){ //Handles attempt to insert duplicate hint
-                if (e.getMessage().contains("UNIQUE")){
-                    //Don't print stack trace if unique constraint failing. Intended behaviour.
-                    System.out.println("Hint already exists in Geofarer database");
-                }else {
-                    e.printStackTrace();
+                try (PreparedStatement stmt = conn.prepareStatement(insertHint)) {
+                    stmt.setString(1, hintId);
+                    stmt.setString(2, hintType);
+                    stmt.setString(3, hintBody);
+                    stmt.setString(4, seenDate.toString());
+                    stmt.setString(5, fips10);
+                    stmt.executeUpdate();
+                    System.out.println("New hint saved!");
+
+                } catch (SQLException e) { //Handles attempt to insert duplicate hint
+                    if (e.getMessage().contains("UNIQUE")) {
+                        //Don't print stack trace if unique constraint failing. Intended behaviour.
+                        System.out.println("Hint already exists in Geofarer database");
+                        break;
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
             }
-            //Only save unlocked hint if logged in
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Unlocks all of a given country's hints for the user
+     * @return
+     */
+    public boolean unlockAllHints(){
+        String insertSeenHint = "INSERT INTO unlocked_hints(hint_id, user_id, seen_date) VALUES (?, ?, ?)";
+        LocalDate seenDate = LocalDate.now();
+
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
+            //Only unlock hint if logged in
             if(SessionManager.getInstance().isLoggedIn()) {
                 String userId = (SessionManager.getInstance().getCurrentUserId()).toString();
-                try (PreparedStatement stmt = conn.prepareStatement(insertSeenHint)) {
-                    //No hint text duplicates in the database. Users and hints are linked together using foreign IDs.
-                    stmt.setString(1, hintId);
-                    stmt.setString(2, userId);
-                    stmt.setString(3, seenDate.toString());
-                    stmt.executeUpdate();
-                    System.out.println("Hint unlocked!");
-                } catch (SQLException e) {
-                    if (e.getMessage().contains("UNIQUE")){
-                        //Don't print stack trace if unique constraint failing. Intended behaviour.
-                        System.out.println("Hint already seen by user");
-                    }else {
-                        e.printStackTrace();
+                for (int i = 0; i < countryHints.size(); i++) {
+                    String hintId = fips10 + i;
+                    try (PreparedStatement stmt = conn.prepareStatement(insertSeenHint)) {
+                        stmt.setString(1, hintId);
+                        stmt.setString(2, userId);
+                        stmt.setString(3, seenDate.toString());
+                        stmt.executeUpdate();
+                        System.out.println("Hint unlocked!");
+                    } catch (SQLException e) {
+                        if (e.getMessage().contains("UNIQUE")) {
+                            //Don't print stack trace if unique constraint failing. Intended behaviour.
+                            System.out.println("Hint already seen by user");
+                        } else {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -117,6 +135,10 @@ public class HintsManager {
     }
 
 
+    /**
+     * Saves the country that the HintsManager is being instantiated for in the Geofarer database
+     * @return
+     */
     private boolean saveCountry() {
         //Saves country record in countries table in the Geofarer database
         String insertCountry = "INSERT INTO countries(country_id, name, region) VALUES (?, ?, ?)";
@@ -141,5 +163,48 @@ public class HintsManager {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Retrieves hints the user has unlocked from the database
+     * @return
+     */
+    public List<String> getUnlockedHints(String fips10) {
+        this.fips10 = fips10;
+        List<String> unlockedHints = new ArrayList<>();
+        String selectUnlockedHints = """
+                SELECT 
+                    h.hint_type,
+                    h.hint_text
+                FROM hints h
+                JOIN unlocked_hints uh
+                ON h.hint_id=uh.hint_id
+                WHERE uh.user_id=? AND h.country_id=?
+                """;
+        try (Connection conn = DBConnection.getInstance().getConnection()) {
+            String userId = (SessionManager.getInstance().getCurrentUserId()).toString();
+            System.out.println("Accessing unlocked hints for user id:" + userId + "and country: " + fips10);
+                try (PreparedStatement stmt = conn.prepareStatement(selectUnlockedHints)) {
+                    stmt.setString(1, userId);
+                    stmt.setString(2, fips10);
+                    System.out.println("Loading country hints...");
+                    ResultSet rs = stmt.executeQuery();
+                    while(rs.next()){
+                        unlockedHints.add(rs.getString("hint_type") + ": " + rs.getString("hint_text"));
+                    }
+                    System.out.println("Loaded unlocked hint!");
+                } catch (SQLException e) {
+                    if (e.getMessage().contains("UNIQUE")) {
+                        //Don't print stack trace if unique constraint failing. Intended behaviour.
+                        System.err.println("Error loading unlocked hints for user");
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error connecting to database");
+        }
+        return unlockedHints;
     }
 }
