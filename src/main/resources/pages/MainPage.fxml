@@ -7,10 +7,8 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.geofarer.MainController"
             fx:id="rootPane"
-            style="-fx-background-image: url('/images/Map.png');
-                   -fx-background-size: cover;
-                   -fx-background-repeat: no-repeat;
-                   -fx-background-position: center;"
+            stylesheets="@../styles/base.css"
+            styleClass="background-map"
             prefWidth="800" prefHeight="600">
 
     <center>

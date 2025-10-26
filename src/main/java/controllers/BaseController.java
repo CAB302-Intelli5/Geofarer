@@ -1,6 +1,8 @@
 package controllers;
 
 import javafx.geometry.Side;
+import javafx.scene.control.*;
+import javafx.geometry.Side;
 import utils.PageLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -18,11 +20,18 @@ import javafx.stage.Stage;
  */
 public class BaseController {
 
-    @FXML protected StackPane userCirclePane;
-    @FXML protected CheckBox showPasswordCheckBox;
-    @FXML protected PasswordField passwordField;
-    @FXML protected TextField passwordVisibleField;
-    @FXML protected TextField emailField;
+    @FXML
+    protected StackPane userCirclePane;
+    @FXML
+    protected CheckBox showPasswordCheckBox;
+    @FXML
+    protected PasswordField passwordField;
+    @FXML
+    protected TextField passwordVisibleField;
+    @FXML
+    protected TextField emailField;
+    @FXML
+    protected Button loginButton;
 
     protected ContextMenu userMenu;
 
@@ -39,14 +48,10 @@ public class BaseController {
         userMenu = new ContextMenu();
 
         MenuItem profile = new MenuItem("Profile");
-        MenuItem login = new MenuItem("Login");
-        login.setOnAction(e -> openLoginPage());
-        MenuItem signup = new MenuItem("Sign Up");
-        signup.setOnAction(e -> openSignUpPage());
         MenuItem settings = new MenuItem("Settings");
         MenuItem logout = new MenuItem("Log Out");
 
-        userMenu.getItems().addAll(profile, login, signup, settings, logout);
+        userMenu.getItems().addAll(profile, settings, logout);
     }
 
     /**
@@ -58,7 +63,7 @@ public class BaseController {
         if (userMenu.isShowing()) {
             userMenu.hide();
         } else {
-            userMenu.show(userCirclePane, event.getScreenX(), event.getScreenY());
+            userMenu.show(userCirclePane, Side.BOTTOM, 0, 0);
         }
     }
 
@@ -83,7 +88,7 @@ public class BaseController {
      */
     protected void openLoginPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("/com/example/geofarer/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
+        PageLoader.openPage("@../pages/LoginPage.fxml", "Login", stage);
     }
 
     /**
@@ -91,6 +96,6 @@ public class BaseController {
      */
     protected void openSignUpPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("/com/example/geofarer/pages/SignUpPage.fxml", "Geofarer - Geography Learning Game", stage);
+        PageLoader.openPage("@../pages/SignUpPage.fxml", "Sign Up", stage);
     }
 }

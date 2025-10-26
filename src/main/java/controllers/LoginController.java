@@ -2,6 +2,7 @@ package controllers;
 
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import model.UserService;
 import utils.SceneManager;
 import utils.SessionManager;
@@ -13,6 +14,12 @@ import utils.PageLoader;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import java.util.Objects;
+
+import javafx.scene.image.Image;
+import javafx.scene.paint.ImagePattern;
+import java.net.URL;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 /**
  * Controller for the login page

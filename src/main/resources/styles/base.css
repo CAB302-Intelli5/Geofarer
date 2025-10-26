@@ -1,0 +1,142 @@
+
+/* large heading */
+.main-label {
+    -fx-font-size: 72px;
+    -fx-font-family: "Inika", "OpenDyslexic", sans-serif;
+    -fx-text-fill: white;
+}
+
+/* secondary heading */
+.secondary-label {
+    -fx-font-size: 28px;
+    -fx-font-family: "Inika", "OpenDyslexic", sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0D1A26;
+}
+
+.details-label {
+    -fx-font-family: "TASA Explorer", sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* LOGIN/SIGNUP USER PAGE STYLES */
+
+.user-next-text {
+    -fx-text-fill: white;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+.user-shadow-box {
+    -fx-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    -fx-background-color: #731A12BF;
+    -fx-padding: 20;
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 2;
+}
+
+/* "play!" button on landing page */
+.play-button {
+   -fx-background-radius: 50%;
+   -fx-background-color: #E4F2F1;
+   -fx-min-width: 300px;
+   -fx-min-height: 80px;
+   -fx-max-width: 300px;
+   -fx-max-height: 80px;
+   -fx-font-family: "TASA Explorer", "OpenDyslexic", sans-serif;
+   -fx-font-size: 26px;
+   -fx-cursor: hand
+}
+
+/* BACKGROUND STYLES */
+/* border (for all pages) */
+.border-pane {
+    -fx-border-color: #0D1A26;
+    -fx-border-width: 20;
+}
+
+/* background map */
+.background-map {
+    -fx-background-image: url('/images/Map.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+/* dark opaque shading over background map */
+.overlay {
+    -fx-background-color: rgba(0,0,0,0.5);
+}
+
+/* HEADER STYLES */
+/* top header bar background (on all pages) */
+.header-bar {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 10
+}
+
+/* login icon button at top right corner (of all pages) */
+.login-icon-button {
+    -fx-background-radius: 50%;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    -fx-background-colour: transparent;
+    -fx-background-image: url('/images/userIcon.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-cursor: hand;
+}
+
+/* project title (on all pages) */
+.geofarer-heading {
+    -fx-font-family: 'Inika';
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 28px;
+    -fx-cursor: hand;
+}
+
+/* NAVIGATION BAR STYLES */
+/* text for menu options in the top navigation bar */
+.nav-bar-text {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-family: 'TASA Explorer', sans-serif;
+    -fx-font-size: 18px;
+    -fx-padding: 5 20;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.nav-bar-bg {
+    -fx-background-color: #0D1A26;
+    -fx-border-color: #A6A186;
+    -fx-border-width: 4;
+}
+
+/* GAME VIEW - LABELS STYLES */
+/* text for sections mentioning country with red background */
+.country-label-text {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: 'TASA Explorer', sans-serif;
+}
+
+.country-label-bg {
+    -fx-background-color: #731A12;
+    -fx-padding:10;
+}
+
+/* GAME VIEW - HINTS STYLES */
+.hints-text {
+    -fx-control-inner-background: #E4F2F1;
+    -fx-font-family: 'TASA Explorer', sans-serif;
+    -fx-font-size: 16px;
+}
+

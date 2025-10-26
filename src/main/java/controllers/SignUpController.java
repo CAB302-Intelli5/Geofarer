@@ -1,16 +1,25 @@
 package controllers;
 
-import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.control.*;
 import model.UserService;
 import utils.PageLoader;
 import utils.SceneManager;
 import views.GameView;
+import views.LandingPageView;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
+
 import java.util.Objects;
 
+/**
+ * Sign up controller
+ * Handles the signup  and navigation on the sign up page
+ * Inherits from {@link BaseController} to access common UI elements like email and password fields.
+ */
 public class SignUpController extends BaseController {
 
     @FXML
@@ -18,6 +27,9 @@ public class SignUpController extends BaseController {
 
     @FXML
     private Button signupButton;
+
+    @FXML
+    private Label websiteLabel;
 
     @FXML
     private ImageView userImageView;
