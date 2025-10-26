@@ -1,0 +1,4 @@
+/* ACCESSIBILITY STYLE - DYSLEXIA FRIENDLY FONT */
+.root, .label, .text {
+    -fx-font-family: "OpenDyslexic3", "Arial", sans-serif;
+}

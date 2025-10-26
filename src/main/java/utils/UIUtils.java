@@ -20,12 +20,20 @@ public class UIUtils {
 
         ContextMenu menu = new ContextMenu();
         MenuItem profile = new MenuItem("Profile");
+        MenuItem settings = new MenuItem("Settings");
         MenuItem logout = new MenuItem("Logout");
 
         profile.setOnAction(e -> {
             Stage stage = (Stage) anchor.getScene().getWindow();
             if (stage != null) {
                 PageLoader.openUserStatsView("My Stats - Geofarer", stage);
+            }
+        });
+
+        settings.setOnAction(e -> {
+            Stage stage = (Stage) anchor.getScene().getWindow();
+            if (stage != null) {
+                PageLoader.openPage("/pages/SettingsPage.fxml", "Settings", stage);
             }
         });
 
@@ -40,7 +48,7 @@ public class UIUtils {
             }
         });
 
-        menu.getItems().addAll(profile, logout);
+    menu.getItems().addAll(profile, settings, logout);
 
         // Show below the button
         menu.show(anchor, Side.BOTTOM, 0, 0);

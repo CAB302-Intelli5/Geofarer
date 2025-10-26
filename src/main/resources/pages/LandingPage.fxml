@@ -5,14 +5,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.Image?>
+<?import java.net.URL?>
 
 <StackPane fx:id="root"
            xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="controllers.LandingPageController"
            maxWidth="Infinity"
-           maxHeight="Infinity"
-           stylesheets="@../styles/base.css">
+           maxHeight="Infinity">
+
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+        <URL value="@../styles/dark-theme.css"/>
+        <URL value="@../styles/default-text.css"/>
+    </stylesheets>
 
     <!-- Background map -->
     <children>
@@ -34,11 +40,11 @@
             <children>
                 <Label fx:id="welcomeLabel"
                        text="Welcome to"
-                       styleClass="main-label" />
+                       styleClass="welcome-label" />
 
                 <Label fx:id="GeofarerLabel"
                        text="Geofarer"
-                       styleClass="main-label" />
+                       styleClass="welcome-label" />
 
                 <Button fx:id="playButton"
                         text="PLAY NOW!"

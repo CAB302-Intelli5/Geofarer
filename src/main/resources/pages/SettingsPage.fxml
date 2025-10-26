@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="controllers.SettingsController"
+           maxWidth="Infinity"
+           maxHeight="Infinity">
+
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+        <URL value="@../styles/dark-theme.css"/>
+        <URL value="@../styles/default-text.css"/>
+    </stylesheets>
+
+    <!-- rendering background -->
+    <BorderPane prefHeight="500" prefWidth="800">
+        <styleClass>
+            <String fx:value="background-map"/>
+            <String fx:value="border-pane"/>
+        </styleClass>
+    </BorderPane>
+
+    <StackPane fx:id="overlay"
+               styleClass="overlay"
+               StackPane.alignment="TOP_CENTER"/>
+
+    <VBox>
+        <HBox prefHeight="70" spacing="10" styleClass="header-bar">
+            <!-- top left corner: logo -->
+            <StackPane>
+                <Circle radius="20" fill="white"/>
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#onGoBackClick"
+                           style="-fx-cursor: hand">
+                    <image>
+                        <Image url="@../images/Logo.png"/>
+                    </image>
+                </ImageView>
+            </StackPane>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- top centre: website name -->
+            <Label text="Geofarer" alignment="CENTER" onMouseClicked="#onGoBackClick"
+                   styleClass="geofarer-heading"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- top right: profile -->
+            <Button fx:id="loginButton" onMouseClicked="#onUserCircleClick"
+                    styleClass="login-icon-button">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                </graphic>
+            </Button>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+            </padding>
+        </HBox>
+
+        <!-- settings grid -->
+        <GridPane fx:id="settingsGrid" hgap="10" vgap="10" alignment="CENTER">
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="40.0"/>
+            </padding>
+            <!-- row 0: title -->
+            <Label text="Settings"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER"
+                   styleClass="secondary-label"/>
+
+<!--            &lt;!&ndash; row 1: my account title&ndash;&gt;-->
+<!--            <Label text="My Account"-->
+<!--                   GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.halignment="CENTER"-->
+<!--                   styleClass="subheading-label"/>-->
+
+<!--            &lt;!&ndash; row 2: username/email &ndash;&gt;-->
+<!--            <Label text="Email"-->
+<!--                   GridPane.rowIndex="2" GridPane.columnIndex="0"-->
+<!--                   styleClass="details-label"/>-->
+<!--            &lt;!&ndash; get the user's email from the DB (or singleton instance) &ndash;&gt;-->
+
+<!--            &lt;!&ndash; row 3: reset password &ndash;&gt;-->
+<!--            <Label text="Password" GridPane.rowIndex="3" GridPane.columnIndex="0"-->
+<!--                   styleClass="details-label"/>-->
+<!--            <Button text="Reset Password" fx:id="resetPasswordReset"-->
+<!--                    GridPane.rowIndex="3" GridPane.columnIndex="1"/> &lt;!&ndash; onAction="#onPasswordReset"&ndash;&gt;-->
+
+<!--            &lt;!&ndash; row 4: preferences w/ accessibility &ndash;&gt;-->
+<!--            <Label text="Accessibility and Preferences"-->
+<!--                   GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.halignment="CENTER"-->
+<!--                   styleClass="subheading-label"/>-->
+
+            <!-- row 5: theme -->
+            <Label text="Appearance"
+                   GridPane.rowIndex="6" GridPane.columnIndex="0"
+                   styleClass="details-label"/>
+            <ToggleButton fx:id="themeToggled" text="Switch to Light Mode"
+                          GridPane.rowIndex="6" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+
+            <!-- row 6: increase text size -->
+            <Label text="Large Text"
+                   GridPane.rowIndex="7" GridPane.columnIndex="0"
+                   styleClass="details-label"/>
+            <CheckBox fx:id="largeTextChecked"
+                      GridPane.rowIndex="7" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+
+            <!-- row 7: dyslexia-friendly font -->
+            <Label text="Dyslexia-friendly Font"
+                   GridPane.rowIndex="8" GridPane.columnIndex="0"
+                   styleClass="details-label"/>
+            <CheckBox fx:id="dysFontChecked"
+                      GridPane.rowIndex="8" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+
+            <!-- row 8: colour-blind palette -->
+            <Label text="Colour Vision Mode"
+                   GridPane.rowIndex="9" GridPane.columnIndex="0"
+                   styleClass="details-label"/>
+            <CheckBox fx:id="CVDModeChecked"
+                      GridPane.rowIndex="9" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+
+<!--            &lt;!&ndash; row 9: save button &ndash;&gt;-->
+<!--            <Button text="Save Changes" fx:id="saveButton" onAction="#handleSaveButton"-->
+<!--                    GridPane.rowIndex="11" GridPane.columnIndex="0" GridPane.halignment="RIGHT"/>-->
+            <Button text="Return to Game" fx:id="discardButton" onAction="#onGoBackClick"
+                    GridPane.rowIndex="11" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/> <!-- alert before exiting/discarding changes? -->
+        </GridPane>
+    </VBox>
+</StackPane>
