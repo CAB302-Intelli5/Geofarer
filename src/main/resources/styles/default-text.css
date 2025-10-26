@@ -1,0 +1,40 @@
+/* DEFAULT TEXT SIZE */
+.root {
+    -fx-font-size: 15px;
+}
+
+/*
+/* large heading
+.welcome-label {
+    -fx-font-size: 72px;
+    -fx-font-family: "Inika", sans-serif;
+    -fx-text-fill: white;
+}
+
+/* secondary heading
+.secondary-label {
+    -fx-font-size: 28px;
+    -fx-font-family: "Inika", sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.subheading-label {
+    -fx-font-family: "TASA Explorer", sans-serif;
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.details-label {
+    -fx-font-family: "TASA Explorer", sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+}
+
+.user-next-text {
+    -fx-text-fill: white;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+*/

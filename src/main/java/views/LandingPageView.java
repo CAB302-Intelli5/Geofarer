@@ -1,6 +1,8 @@
 package views;
 
 import controllers.LandingPageController;
+import javafx.scene.AccessibleRole;
+import javafx.scene.text.Text;
 import model.MapService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,8 +14,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.AccessibleRole;
-import javafx.scene.text.Text;
 
 public class LandingPageView extends StackPane {
 
@@ -39,7 +39,7 @@ public class LandingPageView extends StackPane {
         backgroundMap.fitWidthProperty().bind(this.widthProperty());
 
         // 2. Center Overlay
-        // with functional screen reader set up
+        //with functional screen reader set up
         VBox overlay = new VBox(20);
         overlay.setAlignment(Pos.CENTER);
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");

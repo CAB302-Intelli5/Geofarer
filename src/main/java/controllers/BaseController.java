@@ -2,7 +2,6 @@ package controllers;
 
 import javafx.geometry.Side;
 import javafx.scene.control.*;
-import javafx.geometry.Side;
 import utils.PageLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -32,6 +31,8 @@ public class BaseController {
     protected TextField emailField;
     @FXML
     protected Button loginButton;
+    @FXML
+    protected Button settingsButton;
 
     protected ContextMenu userMenu;
 
@@ -43,13 +44,15 @@ public class BaseController {
         setupUserMenu();
     }
 
-    // Dropdown menu options
-    public void setupUserMenu() {
+
+    protected void setupUserMenu() {
         userMenu = new ContextMenu();
 
-        MenuItem profile = new MenuItem("Profile");
-        MenuItem settings = new MenuItem("Settings");
-        MenuItem logout = new MenuItem("Log Out");
+    MenuItem profile = new MenuItem("Profile");
+    MenuItem settings = new MenuItem("Settings");
+    // Open settings when clicked
+    settings.setOnAction(e -> openSettingsPage());
+    MenuItem logout = new MenuItem("Log Out");
         // Profile navigates to user stats view
         profile.setOnAction(e -> {
             if (loginButton != null && loginButton.getScene() != null) {
@@ -58,10 +61,7 @@ public class BaseController {
             }
         });
 
-        // Settings - placeholder for future
-        settings.setOnAction(e -> {
-            System.out.println("Settings clicked - not implemented");
-        });
+        // (no-op) settings action already set above to open settings page
 
         // Logout - clear session and return to landing page
         logout.setOnAction(e -> {
@@ -76,7 +76,7 @@ public class BaseController {
     }
 
     /**
-     * Handles a click on the user icon and togges the visibility of the user dropdown
+     * Handles a click on the user icon and toggles the visibility of the user dropdown
      * @param event the mouse triggered by clicking the user icon
      */
     @FXML
@@ -94,9 +94,7 @@ public class BaseController {
         }
     }
 
-    /**
-     * Toggles the visibility of the password field
-     */
+    // Function for toggling the hidden password on and off
     @FXML
     protected void onTogglePassword() {
         if (showPasswordCheckBox.isSelected()) {
@@ -115,7 +113,7 @@ public class BaseController {
      */
     protected void openLoginPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("@../pages/LoginPage.fxml", "Login", stage);
+        PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
     }
 
     /**
@@ -123,6 +121,27 @@ public class BaseController {
      */
     protected void openSignUpPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("@../pages/SignUpPage.fxml", "Sign Up", stage);
+        PageLoader.openPage("/pages/SignUp.fxml", "Sign Up", stage);
+    }
+
+    /**
+     * Opens the Settings page
+     */
+    protected void openSettingsPage() {
+        // Try to resolve a stage from available injected nodes in a safe order
+        Stage stage = null;
+        if (settingsButton != null && settingsButton.getScene() != null) {
+            stage = (Stage) settingsButton.getScene().getWindow();
+        } else if (loginButton != null && loginButton.getScene() != null) {
+            stage = (Stage) loginButton.getScene().getWindow();
+        } else if (userCirclePane != null && userCirclePane.getScene() != null) {
+            stage = (Stage) userCirclePane.getScene().getWindow();
+        }
+
+        if (stage != null) {
+            PageLoader.openPage("/pages/SettingsPage.fxml", "Settings", stage);
+        } else {
+            System.err.println("BaseController: could not find a Stage to open Settings page");
+        }
     }
 }

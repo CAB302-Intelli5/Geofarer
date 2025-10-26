@@ -34,12 +34,17 @@ public class SceneManager {
             return;
         }
         Scene currentScene = primaryStage.getScene();
+        Scene newScene;
         if (currentScene == null) {
-            // Creaete scene if no scene
-            primaryStage.setScene(new Scene(root)); //default dimensions
+            // Create scene if no scene
+            newScene = new Scene(root); //default dimensions
         } else {
-            primaryStage.setScene(new Scene(root, currentScene.getWidth(), currentScene.getHeight())); //Uses last scenes dimensions
+            newScene = new Scene(root, currentScene.getWidth(), currentScene.getHeight()); //Uses last scenes dimensions
         }
+
+        // activating/registering the scene to StyleManager to update style
+        StyleManager.getInstance().activateScene(newScene);
+        primaryStage.setScene(newScene);
         primaryStage.show();
     }
 

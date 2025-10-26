@@ -18,7 +18,7 @@
 <?import java.net.URL?>
 <?import javafx.scene.text.Font?>
 
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" fx:controller="controllers.PassportController">
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" styleClass="page-bg" fx:controller="controllers.PassportController">
     <stylesheets>
         <URL value="@../styles/base.css"/>
     </stylesheets>
@@ -69,7 +69,7 @@
     </HBox>
 
     <!-- Control Bar with Filters and View Toggle -->
-    <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #E4F2F1; -fx-padding: 15;" prefHeight="60.0">
+    <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 15;" prefHeight="60.0" styleClass="control-bar">
         <Label text="Filter by Continent:" style="-fx-font-size: 14px; -fx-text-fill: #0D1A26; -fx-font-weight: bold;" />
         <ComboBox fx:id="continentFilter" prefWidth="200" style="-fx-background-color: white; -fx-border-color: #731A12; -fx-border-radius: 5;" />
 
@@ -99,18 +99,18 @@
     <!-- Main Content Area -->
 
         <!-- Stats View -->
-        <ScrollPane fitToWidth="true" style="-fx-background: #0D1A26; -fx-background-color: #0D1A26;" HBox.hgrow="ALWAYS">
-            <VBox fx:id="statsContainer" spacing="0" style="-fx-background-color: #0D1A26;">
+        <ScrollPane fitToWidth="true" styleClass="page-content" HBox.hgrow="ALWAYS">
+            <VBox fx:id="statsContainer" spacing="0" styleClass="page-content">
             </VBox>
         </ScrollPane>
 
         <!-- Map View (hidden by default) -->
-        <VBox fx:id="mapViewContainer" HBox.hgrow="ALWAYS" style="-fx-background-color: #0D1A26;" visible="false" managed="false">
+        <VBox fx:id="mapViewContainer" HBox.hgrow="ALWAYS" styleClass="page-content" visible="false" managed="false">
             <!-- Map view content will be added here -->
         </VBox>
 
     <!-- Footer -->
-    <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
+    <HBox alignment="CENTER" prefHeight="40.0" style="-fx-padding: 10;" styleClass="footer-bg">
         <Label text="Complete countries to earn passport stamps!" style="-fx-font-size: 12px; -fx-text-fill: #0D1A26; -fx-font-style: italic;" />
     </HBox>
 

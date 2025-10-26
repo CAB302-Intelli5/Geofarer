@@ -10,50 +10,63 @@
 <?import java.lang.String?>
 
 <?import javafx.scene.image.Image?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controllers.SignUpController"
-            prefWidth="800" prefHeight="500">
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="controllers.SignUpController"
+           maxWidth="Infinity"
+           maxHeight="Infinity"
+           prefWidth="800" prefHeight="500">
 
     <stylesheets>
         <URL value="@../styles/base.css"/>
+        <URL value="@../styles/dark-theme.css"/>
+        <URL value="@../styles/default-text.css"/>
     </stylesheets>
 
-    <styleClass>
-        <String fx:value="background-map"/>
-        <String fx:value="border-pane"/>
-    </styleClass>
+    <BorderPane prefHeight="500" prefWidth="800">
+        <styleClass>
+            <String fx:value="background-map"/>
+            <String fx:value="border-pane"/>
+        </styleClass>
+    </BorderPane>
 
-    <top>
+    <StackPane fx:id="overlay"
+               styleClass="overlay"
+               StackPane.alignment="TOP_CENTER"/>
+
+    <VBox>
         <HBox prefHeight="70" spacing="10" styleClass="header-bar">
             <!-- Top left corner: logo -->
             <StackPane alignment="CENTER">
-                <Circle radius="20" fill="white" />
-                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#onGoBackClick" >
+                <Circle radius="20" fill="white"/>
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true"
+                           onMouseClicked="#onGoBackClick">
                     <image>
                         <Image url="@../images/Logo.png"/>
                     </image>
                 </ImageView>
             </StackPane>
-            <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS"/>
 
             <!-- Top centre: Website name -->
             <Label text="Geofarer" alignment="CENTER" onMouseClicked="#onGoBackClick" styleClass="geofarer-heading"/>
-                <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS"/>
 
             <!-- Top right corner: User icon (for profile) -->
             <StackPane fx:id="userCirclePane" alignment="CENTER_RIGHT" onMouseClicked="#onUserCircleClick">
-                <Circle fill="white" radius="20" stroke="white" strokeWidth="2" styleClass="login-icon-button" />
-                <ImageView fx:id="userImageView" fitHeight="40" fitWidth="40" />
+                <Circle fill="white" radius="20" stroke="white" strokeWidth="2" styleClass="login-icon-button"/>
+                <ImageView fx:id="userImageView" fitHeight="40" fitWidth="40"/>
             </StackPane>
             <padding>
-                <Insets bottom="10" left="20" right="20" top="10" />
+                <Insets bottom="10" left="20" right="20" top="10"/>
             </padding>
         </HBox>
-    </top>
 
-    <center>
         <StackPane>
             <VBox alignment="TOP_CENTER" spacing="20">
+                <padding>
+                    <Insets bottom="10" left="10" right="10" top="30"/>
+                </padding>
                 <!-- Sign up title -->
                 <Label text="Sign Up"
                        styleClass="secondary-label"/>
@@ -69,8 +82,10 @@
                     <TextField fx:id="emailField" promptText="Enter your email here..." maxWidth="Infinity"/>
                     <StackPane maxWidth="Infinity">
                         <!-- Enter password text box (with hidden and viewable) -->
-                        <PasswordField fx:id="passwordField" promptText="Enter your password here..." maxWidth="Infinity"/>
-                        <TextField fx:id="passwordVisibleField" promptText="Enter your password here..." maxWidth="Infinity" visible="false"/>
+                        <PasswordField fx:id="passwordField" promptText="Enter your password here..."
+                                       maxWidth="Infinity"/>
+                        <TextField fx:id="passwordVisibleField" promptText="Enter your password here..."
+                                   maxWidth="Infinity" visible="false"/>
                     </StackPane>
 
                     <!-- Password requirements -->
@@ -91,16 +106,18 @@
                     <!-- Show/Hide password checkbox -->
                     <HBox alignment="CENTER_LEFT" spacing="10" maxWidth="Infinity">
                         <Region HBox.hgrow="ALWAYS"/>
-                        <CheckBox fx:id="showPasswordCheckBox" text="👁" onAction="#onTogglePassword" styleClass="details-label"/>
+                        <CheckBox fx:id="showPasswordCheckBox" text="👁" onAction="#onTogglePassword"
+                                  styleClass="details-label"/>
                     </HBox>
                     <!-- Buttons for signing up and going back -->
                     <HBox alignment="CENTER" spacing="20" maxWidth="Infinity">
-                        <Button fx:id="signupButton" text="Sign Up" onAction="#onSignUpClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
+                        <Button fx:id="signupButton" text="Sign Up" onAction="#onSignUpClick" prefWidth="120"
+                                style="-fx-font-family: 'TASA Explorer';"/>
                     </HBox>
 
                     <Label text="Already have an account? Login here."
                            onMouseClicked="#onLoginLinkClick"
-                           style="-fx-text-fill: white; -fx-underline: true; -fx-cursor: hand;"
+                           styleClass="hyperlink-text"
                            wrapText="true">
                         <VBox.margin>
                             <Insets top="10"/>
@@ -109,5 +126,5 @@
                 </VBox>
             </VBox>
         </StackPane>
-    </center>
-</BorderPane>
+    </VBox>
+</StackPane>
