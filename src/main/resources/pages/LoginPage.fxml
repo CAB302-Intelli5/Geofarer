@@ -6,10 +6,16 @@
 <?import javafx.scene.shape.Circle?>
 
 <!-- Border around the outside -->
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="controllers.LoginController"
             prefWidth="800" prefHeight="500"
-            style="-fx-background-color: #E4F2F1; -fx-border-color: #0D1A26; -fx-border-width: 20;">
+            style="-fx-background-image: url('images/Map.png');
+                   -fx-background-size: 100% 100%;
+                   -fx-background-repeat: no-repeat;
+                   -fx-background-position: center;
+                   -fx-border-color: #0D1A26;
+                   -fx-border-width: 20;">
 
     <top>
         <!-- User icon in top right corner -->
@@ -18,7 +24,8 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
             <StackPane fx:id="userCirclePane" onMouseClicked="#onUserCircleClick">
-                <Circle fx:id="userCircle" radius="20" fill="lightgray" stroke="white" strokeWidth="2"/>
+                <Circle radius="20" stroke="white" strokeWidth="2" fill="white"/>
+                <ImageView fx:id="userImageView" fitWidth="40" fitHeight="40"/>
             </StackPane>
         </HBox>
     </top>
@@ -27,7 +34,7 @@
         <StackPane>
             <VBox alignment="TOP_CENTER" spacing="20">
                 <!-- GEOFARER title -->
-                <Label text="GEOFARER"
+                <Label text="GEOFARER - Login"
                        style="-fx-font-family: 'Inika'; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #0D1A26;"/>
                 <!-- Inner box that contains logging in details for user to enter -->
                 <VBox alignment="CENTER" spacing="15"
@@ -44,9 +51,24 @@
                         <PasswordField fx:id="passwordField" promptText="Enter your password here..." maxWidth="Infinity"/>
                         <TextField fx:id="passwordVisibleField" promptText="Enter your password here..." maxWidth="Infinity" visible="false"/>
                     </StackPane>
+
+                    <!-- Incorrect Password -->
+                    <Label fx:id="incorrectPasswordLabel"
+                           text="Invalid email and/or password"
+                           wrapText="true"
+                           maxWidth="360"
+                           style="-fx-font-family: 'TASA Explorer'; -fx-font-size: 12px; -fx-text-fill: white;"
+                           textAlignment="LEFT"
+                           alignment="TOP_LEFT"
+                           visible="false"
+                           managed="false">
+                        <VBox.margin>
+                            <Insets top="5" bottom="5"/>
+                        </VBox.margin>
+                    </Label>
+
                     <!-- Show/Hide password checkbox; Save details checkbox -->
                     <HBox alignment="CENTER_LEFT" spacing="10" maxWidth="Infinity">
-                        <CheckBox text="Save Details" style="-fx-text-fill: white;"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <CheckBox fx:id="showPasswordCheckBox" text="👁" onAction="#onTogglePassword" style="-fx-text-fill: white;"/>
                     </HBox>

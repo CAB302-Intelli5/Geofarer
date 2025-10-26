@@ -1,16 +1,32 @@
 package controllers;
 
+import javafx.fxml.FXML;
+import javafx.scene.text.Font;
 import utils.PageLoader;
 import utils.SceneManager;
 import views.GameView;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+/**
+ * Controller for the landing page of the applications.
+ * Handles the navigation from the landign page to the login, register, stats
+ * and the init of the game view
+ */
 public class LandingPageController {
 
+    @FXML
     private Button loginButton;
 
-    // Method for the View to pass the button reference
+    @FXML
+    public void initialise() {
+        Font.loadFont(getClass().getResource("/fonts/Inika-Regular.ttf").toExternalForm(), 72);
+        Font.loadFont(getClass().getResource("/fonts/Inika-Bold.ttf").toExternalForm(), 72);
+    }
+    /**
+     *Refernce  to the login button from the view
+     * @param loginButton This login button in the view
+     */
     public void setLoginButton(Button loginButton) {
         this.loginButton = loginButton;
     }
@@ -23,12 +39,15 @@ public class LandingPageController {
     public void onLoginButtonClick() {
         if (loginButton != null && loginButton.getScene() != null && loginButton.getScene().getWindow() != null) {
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+            PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
         } else {
             System.err.println("Could not get the stage from the login button.");
         }
     }
 
+    /**
+     * Is called to start the game in the by initializing a new game view
+     */
     public void startGame() {
         System.out.println("Play button clicked, initializing game view");
         GameView gameView = new GameView(true);

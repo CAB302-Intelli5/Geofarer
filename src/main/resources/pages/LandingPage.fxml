@@ -19,47 +19,72 @@
         <ImageView fx:id="backgroundMap"
                    preserveRatio="false"
                    fitWidth="${root.width}"
-                   fitHeight="${root.height}" />
+                   fitHeight="${root.height}">
+                <image>
+                    <Image url="/images/Map.png"/>
+                </image>
+        </ImageView>
 
         <!-- Overlay -->
         <VBox fx:id="overlay"
               alignment="CENTER"
               spacing="20"
               style="-fx-background-color: rgba(0,0,0,0.5);"
-              StackPane.alignment="CENTER">
+              StackPane.alignment="TOP_CENTER">
             <children>
                 <Label fx:id="welcomeLabel"
-                       text="Welcome to Geofarer"
-                       textFill="WHITE">
+                       text="Welcome to"
+                       textFill="#0D1A26">
                     <font>
-                        <Font name="System Bold" size="48"/>
+                        <Font size="72"/>
                     </font>
+                    <style>
+                        -fx-font-family: 'Inika';
+                    </style>
+                </Label>
+                <Label fx:id="GeofarerLabel"
+                       text="Geofarer"
+                       textFill="#0D1A26">
+                    <font>
+                        <Font size="72"/>
+                    </font>
+                    <style>
+                        -fx-font-family: 'Inika';
+                        -fx-font-weight: bold;
+                    </style>
                 </Label>
 
                 <Button fx:id="playButton"
-                        text="PLAY NOW"
-                        onAction="#startGame">
+                        text="PLAY NOW!"
+                        onAction="#startGame"
+                        style="-fx-background-radius: 50%;
+                               -fx-background-color: #E4F2F1;
+                               -fx-min-width: 300px;
+                               -fx-min-height: 80px;
+                               -fx-max-width: 300px;
+                               -fx-max-height: 80px;">
                     <font>
-                        <Font name="System Bold" size="24"/>
+                        <Font size="32"/>
                     </font>
                 </Button>
             </children>
         </VBox>
-        
+
         <!-- Login Icon Button -->
         <Button fx:id="loginButton"
                 onAction="#onLoginButtonClick"
-                StackPane.alignment="TOP_RIGHT">
+                StackPane.alignment="TOP_RIGHT"
+                style="-fx-background-radius: 50%; -fx-min-width: 40px; -fx-min-height: 40px; -fx-max-width: 40px; -fx-max-height: 40px; -fx-background-colour: transparent;">
             <graphic>
                 <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                    <image>
-                        <Image url="/images/login_icon.png" />
-                    </image>
+                    <Image url="/images/userIcon.png"/>
                 </ImageView>
             </graphic>
             <StackPane.margin>
-                <Insets top="10" right="10"/>
+                <Insets top="30" right="30"/>
             </StackPane.margin>
         </Button>
+        <Pane style="-fx-border-color: #0D1A26; -fx-border-width: 20;"
+              pickOnBounds="false"/>
     </children>
 </StackPane>

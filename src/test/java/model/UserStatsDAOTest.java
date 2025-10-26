@@ -45,7 +45,7 @@ public class UserStatsDAOTest {
 
     private void cleanupTestData() {
         // Delete test user's country mastery data
-        try (Connection conn = Database.getConnection();
+    try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "DELETE FROM country_mastery WHERE user_id = ?")) {
             stmt.setInt(1, TEST_USER_ID);
@@ -472,7 +472,7 @@ public class UserStatsDAOTest {
 
     // Helper method to add test country mastery data
     private void addTestCountryMastery(String countryCode, int masteryLevel, int correctGuesses) {
-        try (Connection conn = Database.getConnection();
+    try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "INSERT OR REPLACE INTO country_mastery (user_id, country_id, mastery_level, correct_guesses) " +
                              "VALUES (?, ?, ?, ?)")) {
@@ -488,7 +488,7 @@ public class UserStatsDAOTest {
 
     // Helper method to update test country mastery data
     private void updateTestCountryMastery(String countryCode, int masteryLevel, int correctGuesses) {
-        try (Connection conn = Database.getConnection();
+    try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE country_mastery SET mastery_level = ?, correct_guesses = ? " +
                              "WHERE user_id = ? AND country_id = ?")) {
