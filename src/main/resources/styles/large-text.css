@@ -1,0 +1,18 @@
+/* ACCESSIBILITY STYLE - LARGE TEXT SIZE */
+.root {
+    -fx-font-size: 18px;
+}
+
+.text-large {
+    -fx-font-size: 20px;
+}
+
+/*
+.welcome-label {
+    -fx-font-family: 'Inika', sans-serif;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 45px;
+    -fx-cursor: hand;
+}
+*/

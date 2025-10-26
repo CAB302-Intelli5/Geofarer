@@ -1,11 +1,22 @@
+import utils.PageLoader;
 import utils.SceneManager;
 import views.LandingPageView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+/**
+ * Main class that is center of the entire application, thus extending from the application
+ * starts up and runs the program before calling exteriror methods and classes
+ */
 public class GeofarerApp extends Application {
 
+    /**
+     * Starts the display for the user to see, ensures that everything is loaded and all files needed
+     * such as the rasters are there
+     * @param primaryStage The first stage that is deisred to be shown on startup
+     * @throws Exception The exception that caused the error on startup
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         //Setup an app icon
@@ -23,7 +34,7 @@ public class GeofarerApp extends Application {
         primaryStage.setHeight(768);
 
         // Switch to landing page
-        SceneManager.switchToScene(new LandingPageView());
+        PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", primaryStage);
 
         primaryStage.show();
         
@@ -89,7 +100,6 @@ public class GeofarerApp extends Application {
         // Preload resources in background
         SceneManager.preloadResources();
     }
-
     public static void main(String[] args) {
         launch(args);
     }

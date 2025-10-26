@@ -1,0 +1,470 @@
+package controllers;
+
+import javafx.embed.swing.SwingNode;
+import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import model.CountryStats;
+import model.UserStatsDAO;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.SpiderWebPlot;
+import org.jfree.data.category.DefaultCategoryDataset;
+import utils.PageLoader;
+import utils.SessionManager;
+
+import javax.swing.*;
+import java.util.List;
+import java.util.Map;
+
+public class UserStatsController {
+
+    @FXML private Label stampsEarnedNumber;
+    @FXML private Label totalWinsNumber;
+    @FXML private Label hintsUnlockedNumber;
+    @FXML private Label countriesPlayedNumber;
+    @FXML private FlowPane masteredCountriesList;
+    @FXML private Label rankNameLabel;
+    @FXML private Label rankDescriptionLabel;
+    @FXML private VBox spiderChartContainer;
+    @FXML private VBox progressionChartContainer;
+    @FXML private VBox continentBarChartContainer;
+    @FXML private Button loginButton;
+    @FXML private Label userLabel;
+
+    private UserStatsDAO userStatsDAO;
+
+    // Color palette constants
+    private static final String PASSPORT_CREAM = "#E4F2F1";
+    private static final String PASSPORT_PEACH = "#F2C3A7";
+    private static final String PASSPORT_RED = "#731A12";
+    private static final String PASSPORT_DARK = "#0D1A26";
+    private static final String PASSPORT_GREEN = "#A6A186";
+
+    @FXML
+    public void initialize() {
+        userStatsDAO = new UserStatsDAO();
+
+        // Set current user ID from session
+        if (SessionManager.getInstance().isLoggedIn()) {
+            Integer userId = SessionManager.getInstance().getCurrentUserId();
+            this.userLabel.setText(SessionManager.getInstance().getCurrentUserEmail());
+            if (userId != null) {
+                userStatsDAO.setCurrentUserId(userId);
+                System.out.println("UserStatsController: Loaded for user ID: " + userId);
+            }
+        } else{
+            this.userLabel.setText("Login");
+        }
+
+        loadUserStats();
+    }
+
+    /**
+     * Loads all user statistics and populates the UI
+     */
+    public void loadUserStats() {
+        loadStatCards();
+        loadMasteredCountriesList();
+        loadRank();
+        loadCharts();
+    }
+
+    /**
+     * Loads the stat cards with user data
+     */
+    private void loadStatCards() {
+        Map<String, Object> stats = userStatsDAO.getUserOverallStats();
+        
+        int countriesMastered = (int) stats.getOrDefault("fully_unlocked", 0);
+        int totalCorrect = (int) stats.getOrDefault("total_correct", 0);
+        int countriesPlayed = (int) stats.getOrDefault("countries_played", 0);
+        int hintsUnlocked = userStatsDAO.getHintsUnlocked();
+
+        stampsEarnedNumber.setText(String.valueOf(countriesMastered));
+        totalWinsNumber.setText(String.valueOf(totalCorrect));
+        hintsUnlockedNumber.setText(String.valueOf(hintsUnlocked));
+        countriesPlayedNumber.setText(String.valueOf(countriesPlayed));
+    }
+
+    /**
+     * Loads the list of mastered countries as passport stamps
+     */
+    private void loadMasteredCountriesList() {
+        masteredCountriesList.getChildren().clear();
+        
+        Map<String, List<CountryStats>> countriesByContinent = 
+            userStatsDAO.getCountriesGroupedByContinent();
+        
+        int totalMastered = 0;
+        for (Map.Entry<String, List<CountryStats>> entry : countriesByContinent.entrySet()) {
+            for (CountryStats country : entry.getValue()) {
+                if (country.isFullyUnlocked()) {
+                    totalMastered++;
+                    StackPane stampItem = createStampItem(country);
+                    masteredCountriesList.getChildren().add(stampItem);
+                }
+            }
+        }
+
+        if (totalMastered == 0) {
+            Label emptyLabel = new Label("No countries mastered yet. Keep playing!");
+            emptyLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 14px;");
+            masteredCountriesList.getChildren().add(emptyLabel);
+        }
+    }
+
+    /**
+     * Creates a circular passport stamp for a mastered country
+     */
+    private StackPane createStampItem(CountryStats country) {
+        // Main container
+        StackPane stamp = new StackPane();
+        stamp.getStyleClass().add("passport-stamp");
+        stamp.setMaxWidth(150);
+        stamp.setMaxHeight(150);
+        stamp.setMinWidth(150);
+        stamp.setMinHeight(150);
+        
+        // Create circular background with dashed border
+        Circle circle = new Circle(65);
+        circle.getStyleClass().add("stamp-circle");
+        
+        // Create content container
+        VBox content = new VBox(5);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(120);
+        
+        // Country code (e.g., "USA", "AUS", "JPN")
+    Label countryCode = new Label(utils.TextUtils.stripHtmlTags(country.getCountryCode()));
+        countryCode.getStyleClass().add("stamp-country-code");
+        
+        // Country name (wrapped if needed)
+    Label countryName = new Label(utils.TextUtils.stripHtmlTags(country.getCountryName()));
+        countryName.getStyleClass().add("stamp-country-label");
+        countryName.setWrapText(true);
+        countryName.setMaxWidth(110);
+        
+        // Mastery stars (★★★ for level 3)
+        String stars = "★".repeat(country.getMasteryLevel());
+        Label masteryStars = new Label(stars);
+        masteryStars.getStyleClass().add("stamp-mastery-stars");
+        
+        // Date stamp (current date or last played)
+        Label dateLabel = new Label("MASTERED");
+        dateLabel.getStyleClass().add("stamp-date");
+        
+        content.getChildren().addAll(countryCode, countryName, masteryStars, dateLabel);
+        stamp.getChildren().addAll(circle, content);
+        
+        return stamp;
+    }
+
+    /**
+     * Loads and displays the user's rank
+     */
+    private void loadRank() {
+        String rank = userStatsDAO.getUserRank();
+        rankNameLabel.setText(utils.TextUtils.stripHtmlTags(rank));
+        
+        // Set description based on rank
+        String description = getRankDescription(rank);
+    rankDescriptionLabel.setText(utils.TextUtils.stripHtmlTags(description));
+    }
+
+    /**
+     * Gets a description for the rank
+     */
+    private String getRankDescription(String rank) {
+        return switch (rank) {
+            case "Master Geographer" -> "You've conquered the world! Exceptional knowledge!";
+            case "World Traveler" -> "Outstanding! You know the globe like the back of your hand.";
+            case "Continental Expert" -> "Impressive mastery across multiple continents!";
+            case "Regional Explorer" -> "Great progress! You're becoming a geography expert.";
+            case "Adventurer" -> "Well done! Your journey across the world continues.";
+            case "Novice Explorer" -> "Good start! Keep exploring to advance your rank.";
+            default -> "Begin your journey to become a Master Geographer!";
+        };
+    }
+
+    /**
+     * Loads all charts
+     */
+    private void loadCharts() {
+        loadSpiderChart();
+        loadProgressionChart();
+        loadContinentBarChart();
+    }
+
+    /**
+     * Creates and loads the spider/radar chart for continent mastery
+     */
+    private void loadSpiderChart() {
+        Map<String, Double> continentStats = userStatsDAO.getContinentMasteryStats();
+        
+        if (continentStats.isEmpty()) {
+            Label noDataLabel = new Label("No data available yet. Start playing to see your progress!");
+            noDataLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 14px;");
+            spiderChartContainer.getChildren().add(noDataLabel);
+            return;
+        }
+
+        // Create dataset for spider chart
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Map.Entry<String, Double> entry : continentStats.entrySet()) {
+            // Strip any HTML that might have been stored in the database for region names
+            String regionLabel = utils.TextUtils.stripHtmlTags(entry.getKey());
+            dataset.addValue(entry.getValue(), "Mastery %", regionLabel);
+        }
+
+        // Create spider web plot
+        SpiderWebPlot plot = new SpiderWebPlot(dataset);
+        plot.setLabelFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12));
+        
+        // Set colors - using passport red with nearly full opacity for progress
+        java.awt.Color redFill = new java.awt.Color(115, 26, 18, 250); // #731A12 with very high opacity (almost solid)
+        java.awt.Color redOutline = java.awt.Color.decode(PASSPORT_RED);
+        java.awt.Color darkBg = java.awt.Color.decode(PASSPORT_DARK);
+        java.awt.Color white = java.awt.Color.WHITE;
+        
+        plot.setSeriesPaint(0, redFill);
+        plot.setSeriesOutlinePaint(0, redOutline);
+        plot.setSeriesOutlineStroke(0, new java.awt.BasicStroke(3.0f)); // Thicker outline
+        
+        // Make plot background match the page background
+        plot.setBackgroundPaint(darkBg);
+        plot.setBackgroundAlpha(1.0f);
+        
+        // Set web lines to white
+        plot.setWebFilled(true);
+        plot.setAxisLinePaint(white);
+        plot.setAxisLineStroke(new java.awt.BasicStroke(1.0f));
+        
+        // Set label paint to cream color for visibility
+        plot.setLabelPaint(java.awt.Color.decode(PASSPORT_CREAM));
+        
+        JFreeChart chart = new JFreeChart("Continent Mastery", 
+                                         JFreeChart.DEFAULT_TITLE_FONT, plot, false);
+        chart.setBackgroundPaint(darkBg); // Match page background
+        chart.getTitle().setPaint(java.awt.Color.decode(PASSPORT_CREAM));
+        chart.setBorderVisible(false);
+        chart.setPadding(new org.jfree.chart.ui.RectangleInsets(0, 0, 0, 0));
+
+        // Embed in JavaFX with matching background
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+        chartPanel.setBackground(darkBg); // Match page background
+        chartPanel.setBorder(null); // Remove border
+        chartPanel.setOpaque(true); // Make opaque to show the dark background
+        
+        SwingNode swingNode = new SwingNode();
+        SwingUtilities.invokeLater(() -> swingNode.setContent(chartPanel));
+        
+        spiderChartContainer.getChildren().add(swingNode);
+    }
+
+    /**
+     * Creates and loads the progression line chart
+     * Now shows match-by-match progression instead of date-based
+     */
+    private void loadProgressionChart() {
+        List<Map<String, Object>> progressionData = userStatsDAO.getOverallMatchProgression();
+        
+        if (progressionData.isEmpty()) {
+            Label noDataLabel = new Label("No progression data yet. Keep playing!");
+            noDataLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 14px;");
+            progressionChartContainer.getChildren().add(noDataLabel);
+            return;
+        }
+
+        // Create axes
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Match Number");
+        xAxis.setAutoRanging(true);
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        xAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
+        
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Mastery Score");
+        yAxis.setAutoRanging(true);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        yAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
+
+        // Create line chart
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Mastery Progression by Match");
+        lineChart.setLegendVisible(true);
+        
+        // Create series for mastery score (goes up and down)
+        XYChart.Series<Number, Number> masteredSeries = new XYChart.Series<>();
+        masteredSeries.setName("Mastery Score");
+        
+        // Sample every nth point if there are too many matches (for performance)
+        int sampleRate = Math.max(1, progressionData.size() / 100);
+        
+        for (int i = 0; i < progressionData.size(); i += sampleRate) {
+            Map<String, Object> dataPoint = progressionData.get(i);
+            Integer matchNumber = (Integer) dataPoint.get("matchNumber");
+            Integer masteryScore = (Integer) dataPoint.get("totalMasteryScore");
+            String result = (String) dataPoint.get("result");
+            
+            XYChart.Data<Number, Number> point = new XYChart.Data<>(matchNumber, masteryScore);
+            masteredSeries.getData().add(point);
+            
+            // Add tooltip to show win/loss for this match
+            if (point.getNode() != null) {
+                String resultSymbol = "win".equals(result) ? "✓" : "✗";
+                javafx.scene.control.Tooltip tooltip = new javafx.scene.control.Tooltip(
+                    "Match " + matchNumber + ": " + resultSymbol + " " + result.toUpperCase() + "\nScore: " + masteryScore
+                );
+                javafx.scene.control.Tooltip.install(point.getNode(), tooltip);
+            }
+        }
+        
+        // Add the last point to ensure we show the final state
+        if (sampleRate > 1 && progressionData.size() > 0) {
+            Map<String, Object> lastPoint = progressionData.get(progressionData.size() - 1);
+            Integer matchNumber = (Integer) lastPoint.get("matchNumber");
+            Integer masteryScore = (Integer) lastPoint.get("totalMasteryScore");
+            masteredSeries.getData().add(new XYChart.Data<>(matchNumber, masteryScore));
+        }
+        
+        lineChart.getData().add(masteredSeries);
+        
+        // Style the chart with transparent background
+        lineChart.setStyle("-fx-background-color: transparent;");
+        if (lineChart.lookup(".chart-plot-background") != null) {
+            lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
+        }
+        
+        // Apply passport red color to the line series
+        lineChart.applyCss();
+        lineChart.layout();
+        masteredSeries.getNode().setStyle("-fx-stroke: " + PASSPORT_RED + "; -fx-stroke-width: 3px;");
+        
+        // Add information label
+        int totalMatches = progressionData.size();
+        Map<String, Object> lastData = progressionData.get(totalMatches - 1);
+        int finalScore = (Integer) lastData.get("totalMasteryScore");
+        int finalMastered = (Integer) lastData.get("countriesMastered");
+        
+        Label infoLabel = new Label(String.format(
+            "Showing progression over %d matches • Score: %d • Countries Mastered: %d", 
+            totalMatches, finalScore, finalMastered
+        ));
+        infoLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 12px; -fx-padding: 5 0 10 0;");
+        
+        progressionChartContainer.getChildren().addAll(infoLabel, lineChart);
+    }
+
+    /**
+     * Creates and loads the continent bar chart
+     */
+    private void loadContinentBarChart() {
+        Map<String, Double> continentStats = userStatsDAO.getContinentMasteryStats();
+        
+        if (continentStats.isEmpty()) {
+            Label noDataLabel = new Label("No continent data yet. Start exploring!");
+            noDataLabel.setStyle("-fx-text-fill: " + PASSPORT_CREAM + "; -fx-font-size: 14px;");
+            continentBarChartContainer.getChildren().add(noDataLabel);
+            return;
+        }
+
+        // Create axes
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Continent");
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        xAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
+        
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Mastery Percentage");
+        yAxis.setUpperBound(100);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.web(PASSPORT_CREAM));
+        yAxis.setStyle("-fx-font-size: 14px; -fx-tick-label-fill: " + PASSPORT_CREAM + ";");
+
+        // Create bar chart
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Mastery by Continent");
+        barChart.setLegendVisible(false);
+        
+        // Create series
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        
+        for (Map.Entry<String, Double> entry : continentStats.entrySet()) {
+            // Ensure region labels shown in the JavaFX chart are plain text (no HTML)
+            String regionLabel = utils.TextUtils.stripHtmlTags(entry.getKey());
+            series.getData().add(new XYChart.Data<>(regionLabel, entry.getValue()));
+        }
+        
+        barChart.getData().add(series);
+        
+        // Style the chart with passport red
+        barChart.setStyle("-fx-background-color: transparent;");
+        barChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
+        
+        // Apply passport red color to bars
+        barChart.applyCss();
+        barChart.layout();
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            if (data.getNode() != null) {
+                data.getNode().setStyle("-fx-bar-fill: " + PASSPORT_RED + ";");
+            }
+        }
+        
+        continentBarChartContainer.getChildren().add(barChart);
+    }
+
+    // Navigation handlers
+    @FXML
+    private void handleGameModes() {
+        // Open the main game view instead of landing page
+        Stage stage = (Stage) stampsEarnedNumber.getScene().getWindow();
+        PageLoader.openGameView("Geofarer - Geography Game", stage);
+    }
+
+    @FXML
+    private void handleExplore() {
+        PageLoader.openGameView("Geofarer - Explore", 
+                               (Stage) stampsEarnedNumber.getScene().getWindow());
+    }
+
+    @FXML
+    private void handleLeaders() {
+        // Navigate to leaderboard (not yet implemented)
+        System.out.println("Navigate to Leaders - Not yet implemented");
+    }
+
+    @FXML
+    private void handleMyPassport() {
+        PageLoader.openPassportView("My Passport", 
+                                   (Stage) stampsEarnedNumber.getScene().getWindow());
+    }
+
+    @FXML
+    private void handleMyStats() {
+        // Already on stats page, refresh data
+        PageLoader.openUserStatsView("My Stats - Geofarer", 
+                                    (Stage) stampsEarnedNumber.getScene().getWindow());
+    }
+
+    @FXML
+    private void handleLoginButton() {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            utils.UIUtils.showAccountMenu(loginButton);
+        } else {
+            PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Login", 
+                              (Stage) loginButton.getScene().getWindow());
+        }
+    }
+}

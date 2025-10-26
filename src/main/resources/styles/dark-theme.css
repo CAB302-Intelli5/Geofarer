@@ -1,0 +1,86 @@
+/* ACCESSIBILITY STYLE - DARK THEME */
+.theme {
+    -fx-background-color: #001122;
+    -fx-text-fill: white;
+}
+
+.header-bar {
+    -fx-background-color: #001122;
+    -fx-padding: 10;
+}
+
+.border-pane {
+    -fx-border-color: #0D1A26;
+    -fx-border-width: 20;
+}
+
+.nav-bar-bg {
+    -fx-background-color: #001122;
+    -fx-border-color: #A6A186;
+}
+
+.title-banner {
+    -fx-background-color: #731A12;
+    -fx-padding: 20;
+}
+
+.nav-bar-text,
+.hyperlink-text,
+.geofarer-heading,
+.welcome-label,
+.secondary-label,
+.subheading-label,
+.details-label,
+.user-next-text,
+.country-label-text,
+.country-name,
+.country-continent,
+.section-title {
+    -fx-text-fill: white;
+}
+
+.hints-box {
+    -fx-background-color: white;
+}
+
+/* Page-level background used by FXML pages (root nodes) */
+.page-bg {
+    -fx-background-color: #001122;
+}
+
+/* Content areas inside pages */
+.page-content {
+    -fx-background-color: #001122;
+}
+
+/* Control bar used on pages like Passport */
+.control-bar {
+    -fx-background-color: #001122;
+}
+
+/* Footer background */
+.footer-bg {
+    -fx-background-color: #A6A186;
+}
+
+.locked-hint-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 16;
+    -fx-opacity: 0.7;
+}
+
+/* Country detail specific */
+.country-detail-root .hint-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 16;
+    -fx-border-color: #731A12;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
+}
+
+.hint-status {
+    -fx-text-fill: #2E8B57;
+}

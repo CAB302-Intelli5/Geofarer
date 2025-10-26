@@ -14,6 +14,7 @@ public class SuccessPopupController {
 
     // Flag to communicate the result back to the GameController
     private boolean playAgainClicked = false;
+    private boolean passportClicked = false;
 
     public void setStatsMessage(String message) {
         statsLabel.setText(message);
@@ -27,10 +28,18 @@ public class SuccessPopupController {
         return playAgainClicked;
     }
 
+    /**
+     * Public method for the GameController to check if "View My Passport" was clicked.
+     * @return true if the passport button was clicked, false otherwise.
+     */
+    public boolean isPassportClicked() {
+        return passportClicked;
+    }
+
     @FXML
     private void handlePassportButton() {
-        System.out.println("Passport button clicked! Closing popup.");
-        // 'playAgainClicked' remains false
+        System.out.println("Passport button clicked!");
+        this.passportClicked = true; // Set the flag to true
         closeWindow();
     }
 

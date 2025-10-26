@@ -111,6 +111,9 @@ class GameControllerTest {
         List<MapService.FeatureInfo> featureInfos = Arrays.asList(germany, france);
         controller.setFeatureInfos(featureInfos);
         String initialTarget = controller.getTargetCountry();
+        
+        // Initialize stats tracking to set up userStatsDAO
+        controller.initializeStatsTracking();
 
         // When
         controller.selectNewTarget();

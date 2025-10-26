@@ -1,5 +1,10 @@
 package utils;
 
+/**
+ * A publicly defined area for all constants in the project.
+ * This allows data that will be accessed in multiple places such as map data or raster and shapefile paths to
+ * be changed throughout the project without refactoring any code
+ */
 public class Constants {
     // Map data paths
     public static final String RASTER_PATH = "src/main/resources/naturalearth/NE1_50M_SR_W/NE1_50M_SR_W.tif";

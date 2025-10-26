@@ -5,7 +5,7 @@
     -fx-border-color: rgba(255, 255, 255, 0.7);
     -fx-border-width: 2px;
     -fx-border-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 20, 0, 0, 0);
+    -fx-effect: dropshadow (gaussian, rgba(0,0,0,0.7), 20, 0, 0, 0);
 }
 
 /* Style for the 'X' close button */

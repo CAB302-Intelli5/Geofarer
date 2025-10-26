@@ -4,8 +4,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.image.Image?>
+<?import java.net.URL?>
 
 <StackPane fx:id="root"
            xmlns="http://javafx.com/javafx"
@@ -14,52 +14,55 @@
            maxWidth="Infinity"
            maxHeight="Infinity">
 
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+        <URL value="@../styles/dark-theme.css"/>
+        <URL value="@../styles/default-text.css"/>
+    </stylesheets>
+
     <!-- Background map -->
     <children>
         <ImageView fx:id="backgroundMap"
                    preserveRatio="false"
                    fitWidth="${root.width}"
-                   fitHeight="${root.height}" />
+                   fitHeight="${root.height}">
+                <image>
+                    <Image url="/images/Map.png"/>
+                </image>
+        </ImageView>
 
         <!-- Overlay -->
         <VBox fx:id="overlay"
               alignment="CENTER"
               spacing="20"
-              style="-fx-background-color: rgba(0,0,0,0.5);"
-              StackPane.alignment="CENTER">
+              styleClass="overlay"
+              StackPane.alignment="TOP_CENTER">
             <children>
                 <Label fx:id="welcomeLabel"
-                       text="Welcome to Geofarer"
-                       textFill="WHITE">
-                    <font>
-                        <Font name="System Bold" size="48"/>
-                    </font>
-                </Label>
+                       text="Welcome to"
+                       styleClass="welcome-label" />
+
+                <Label fx:id="GeofarerLabel"
+                       text="Geofarer"
+                       styleClass="welcome-label" />
 
                 <Button fx:id="playButton"
-                        text="PLAY NOW"
-                        onAction="#startGame">
-                    <font>
-                        <Font name="System Bold" size="24"/>
-                    </font>
-                </Button>
+                        text="PLAY NOW!"
+                        onAction="#startGame"
+                        styleClass="play-button" />
             </children>
         </VBox>
-        
+
         <!-- Login Icon Button -->
         <Button fx:id="loginButton"
                 onAction="#onLoginButtonClick"
+                styleClass="login-icon-button"
                 StackPane.alignment="TOP_RIGHT">
-            <graphic>
-                <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                    <image>
-                        <Image url="/images/login_icon.png" />
-                    </image>
-                </ImageView>
-            </graphic>
             <StackPane.margin>
-                <Insets top="10" right="10"/>
+                <Insets top="30" right="30"/>
             </StackPane.margin>
         </Button>
+        <Pane styleClass="border-pane"
+              pickOnBounds="false"/>
     </children>
 </StackPane>

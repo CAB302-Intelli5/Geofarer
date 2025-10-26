@@ -1,67 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.String?>
+<?import java.net.URL?>
 
 <!-- Border around the outside -->
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controllers.LoginController"
-            prefWidth="800" prefHeight="500"
-            style="-fx-background-color: #E4F2F1; -fx-border-color: #0D1A26; -fx-border-width: 20;">
+<BorderPane prefHeight="500" prefWidth="800"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.LoginController">
+
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+    </stylesheets>
+
+    <styleClass>
+        <String fx:value="background-map"/>
+        <String fx:value="border-pane"/>
+    </styleClass>
 
     <top>
-        <!-- User icon in top right corner -->
-        <HBox alignment="TOP_RIGHT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <StackPane fx:id="userCirclePane" onMouseClicked="#onUserCircleClick">
-                <Circle fx:id="userCircle" radius="20" fill="lightgray" stroke="white" strokeWidth="2"/>
+        <HBox prefHeight="70" spacing="10" styleClass="header-bar">
+            <!-- top left corner: logo -->
+            <StackPane alignment="CENTER">
+                <Circle radius="20" fill="white" />
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#onGoBackClick" style="-fx-cursor: hand">
+                    <image>
+                        <Image url="@../images/Logo.png" />
+                    </image>
+                </ImageView>
             </StackPane>
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Top centre: Website name -->
+            <Label text="Geofarer" alignment="CENTER" onMouseClicked="#onGoBackClick" styleClass="geofarer-heading"/>
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Top right corner: User icon (for profile) -->
+            <StackPane fx:id="userCirclePane" alignment="CENTER_RIGHT" onMouseClicked="#onUserCircleClick">
+                <Circle fill="white" radius="20" stroke="white" strokeWidth="2" style="-fx-cursor: hand" />
+                <ImageView fx:id="userImageView" fitHeight="40" fitWidth="40" />
+            </StackPane>
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
         </HBox>
     </top>
 
     <center>
         <StackPane>
             <VBox alignment="TOP_CENTER" spacing="20">
-                <!-- GEOFARER title -->
-                <Label text="GEOFARER"
-                       style="-fx-font-family: 'Inika'; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #0D1A26;"/>
+                <!-- Login title -->
+                <Label text="Login" styleClass="secondary-label" />
                 <!-- Inner box that contains logging in details for user to enter -->
-                <VBox alignment="CENTER" spacing="15"
-                      maxWidth="400" prefWidth="400"
-                      style="-fx-background-color: #731A12BF; -fx-padding: 20; -fx-border-color: #FFFFFF; -fx-border-width: 2;">
+                <VBox alignment="CENTER" maxWidth="400" prefWidth="400" spacing="15" styleClass="user-shadow-box">
                     <!-- Label for logging into their account -->
-                    <Label text="Please enter your email and password to login and continue your journey!"
-                           wrapText="true" maxWidth="360" textAlignment="CENTER"
-                           style="-fx-font-family: 'TASA Explorer'; -fx-font-size: 16px; -fx-text-fill: #FFFFFF;"/>
+                    <Label maxWidth="360" styleClass="details-label" text="Please enter your email and password to login and continue your journey!" textAlignment="CENTER" wrapText="true" />
                     <!-- Enter email text box -->
-                    <TextField fx:id="emailField" promptText="Enter your email here..." maxWidth="Infinity"/>
+                    <TextField fx:id="emailField" maxWidth="Infinity" promptText="Enter your email here..." />
                     <StackPane maxWidth="Infinity">
                         <!-- Enter password text box (with hidden and viewable) -->
-                        <PasswordField fx:id="passwordField" promptText="Enter your password here..." maxWidth="Infinity"/>
-                        <TextField fx:id="passwordVisibleField" promptText="Enter your password here..." maxWidth="Infinity" visible="false"/>
+                        <PasswordField fx:id="passwordField" maxWidth="Infinity" promptText="Enter your password here..." />
+                        <TextField fx:id="passwordVisibleField" maxWidth="Infinity" promptText="Enter your password here..." visible="false" />
                     </StackPane>
+
+                    <!-- Incorrect Password -->
+                    <Label fx:id="incorrectPasswordLabel"
+                           text="Invalid email and/or password"
+                           wrapText="true"
+                           maxWidth="360"
+                           style="-fx-font-family: 'TASA Explorer'; -fx-font-size: 12px; -fx-text-fill: white;"
+                           textAlignment="LEFT"
+                           alignment="TOP_LEFT"
+                           visible="false"
+                           managed="false">
+                        <VBox.margin>
+                            <Insets top="5" bottom="5"/>
+                        </VBox.margin>
+                    </Label>
+
                     <!-- Show/Hide password checkbox; Save details checkbox -->
-                    <HBox alignment="CENTER_LEFT" spacing="10" maxWidth="Infinity">
-                        <CheckBox text="Save Details" style="-fx-text-fill: white;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <CheckBox fx:id="showPasswordCheckBox" text="👁" onAction="#onTogglePassword" style="-fx-text-fill: white;"/>
+                    <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
+                        <CheckBox style="-fx-text-fill: white;" text="Remember me" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <CheckBox fx:id="showPasswordCheckBox" onAction="#onTogglePassword" styleClass="details-label" text="👁" />
                     </HBox>
                     <!-- Buttons for logging in and going back -->
-                    <HBox alignment="CENTER" spacing="20" maxWidth="Infinity">
-                        <Button fx:id="goBackButton" text="Go Back" onAction="#onGoBackClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
-                        <Button fx:id="loginButton" text="Login" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';"/>
+                    <HBox alignment="CENTER" maxWidth="Infinity" spacing="20">
+                        <Button fx:id="loginButton" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';" text="Login" />
                     </HBox>
-
-                    <Label text="Don't have an account? Sign up here."
-                           onMouseClicked="#onSignUpLinkClick"
-                           style="-fx-text-fill: white; -fx-underline: true; -fx-cursor: hand;"
-                           wrapText="true">
+                    <Label onMouseClicked="#onSignUpLinkClick" styleClass="user-next-text" text="Don't have an account? Sign up here." wrapText="true">
                         <VBox.margin>
-                            <Insets top="10"/>
+                            <Insets top="10" />
                         </VBox.margin>
                     </Label>
 
