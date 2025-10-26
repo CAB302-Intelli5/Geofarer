@@ -1,0 +1,31 @@
+/* ACCESSIBILITY STYLE - LIGHT THEME */
+.theme {
+    -fx-background-color: #E4F2F1;
+    -fx-text-fill: black;
+}
+
+.header-bar {
+    -fx-background-color: #E4F2F1;
+    -fx-padding: 10;
+}
+
+.border-pane {
+    -fx-border-color: #E4F2F1;
+    -fx-border-width: 20;
+}
+
+.nav-bar-bg {
+    -fx-background-color: #E4F2F;
+    -fx-border-color: #A6A186;
+}
+
+.nav-bar-text,
+.geofarer-heading,
+.welcome-label,
+.secondary-label,
+.subheading-label,
+.details-label,
+.user-next-text,
+.country-label-text {
+    -fx-text-fill: black;
+}

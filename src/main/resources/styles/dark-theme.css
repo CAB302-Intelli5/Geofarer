@@ -1,0 +1,32 @@
+/* ACCESSIBILITY STYLE - DARK THEME */
+.theme {
+    -fx-background-color: #0D1A26;
+    -fx-text-fill: white;
+}
+
+.header-bar {
+    -fx-background-color: #0D1A26;
+    -fx-padding: 10;
+}
+
+.border-pane {
+    -fx-border-color: #0D1A26;
+    -fx-border-width: 20;
+}
+
+.nav-bar-bg {
+    -fx-background-color: #0D1A26;
+    -fx-border-color: #A6A186;
+}
+
+.nav-bar-text,
+.hyperlink-text,
+.geofarer-heading,
+.welcome-label,
+.secondary-label,
+.subheading-label,
+.details-label,
+.user-next-text,
+.country-label-text {
+    -fx-text-fill: white;
+}

@@ -9,84 +9,96 @@
 <?import java.net.URL?>
 
 <!-- Border around the outside -->
-<BorderPane prefHeight="500" prefWidth="800"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.LoginController">
+<StackPane maxWidth="Infinity"
+           maxHeight="Infinity"
+           xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.LoginController">
 
     <stylesheets>
         <URL value="@../styles/base.css"/>
+        <URL value="@../styles/dark-theme.css"/>
+        <URL value="@../styles/default-text.css"/>
     </stylesheets>
 
-    <styleClass>
-        <String fx:value="background-map"/>
-        <String fx:value="border-pane"/>
-    </styleClass>
+    <BorderPane prefHeight="500" prefWidth="800">
+        <styleClass>
+            <String fx:value="background-map"/>
+            <String fx:value="border-pane"/>
+        </styleClass>
+    </BorderPane>
 
-    <top>
+    <StackPane fx:id="overlay"
+               styleClass="overlay"
+               StackPane.alignment="TOP_CENTER"/>
+
+    <VBox>
         <HBox prefHeight="70" spacing="10" styleClass="header-bar">
             <!-- top left corner: logo -->
             <StackPane alignment="CENTER">
-                <Circle radius="20" fill="white" />
-                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#onGoBackClick" style="-fx-cursor: hand">
+                <Circle radius="20" fill="white"/>
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true"
+                           onMouseClicked="#onGoBackClick" style="-fx-cursor: hand">
                     <image>
-                        <Image url="@../images/Logo.png" />
+                        <Image url="@../images/Logo.png"/>
                     </image>
                 </ImageView>
             </StackPane>
-            <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS"/>
 
             <!-- Top centre: Website name -->
             <Label text="Geofarer" alignment="CENTER" onMouseClicked="#onGoBackClick" styleClass="geofarer-heading"/>
-            <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS"/>
 
             <!-- Top right corner: User icon (for profile) -->
             <StackPane fx:id="userCirclePane" alignment="CENTER_RIGHT" onMouseClicked="#onUserCircleClick">
-                <Circle fill="white" radius="20" stroke="white" strokeWidth="2" style="-fx-cursor: hand" />
-                <ImageView fx:id="userImageView" fitHeight="40" fitWidth="40" />
+                <Circle fill="white" radius="20" stroke="white" strokeWidth="2" style="-fx-cursor: hand"/>
+                <ImageView fx:id="userImageView" fitHeight="40" fitWidth="40"/>
             </StackPane>
             <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
+                <Insets bottom="10" left="10" right="10" top="10"/>
             </padding>
         </HBox>
-    </top>
 
-    <center>
-        <StackPane>
-            <VBox alignment="TOP_CENTER" spacing="20">
-                <padding>
-                    <Insets bottom="10" left="10" right="10" top="10" />
-                </padding>
-                <!-- Login title -->
-                <Label text="Login" styleClass="secondary-label" />
-                <!-- Inner box that contains logging in details for user to enter -->
-                <VBox alignment="CENTER" maxWidth="400" prefWidth="400" spacing="15" styleClass="user-shadow-box">
-                    <!-- Label for logging into their account -->
-                    <Label maxWidth="360" styleClass="details-label" text="Please enter your email and password to login and continue your journey!" textAlignment="CENTER" wrapText="true" />
-                    <!-- Enter email text box -->
-                    <TextField fx:id="emailField" maxWidth="Infinity" promptText="Enter your email here..." />
-                    <StackPane maxWidth="Infinity">
-                        <!-- Enter password text box (with hidden and viewable) -->
-                        <PasswordField fx:id="passwordField" maxWidth="Infinity" promptText="Enter your password here..." />
-                        <TextField fx:id="passwordVisibleField" maxWidth="Infinity" promptText="Enter your password here..." visible="false" />
-                    </StackPane>
-                    <!-- Show/Hide password checkbox; Save details checkbox -->
-                    <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
-                        <CheckBox style="-fx-text-fill: white;" text="Remember me" />
-                        <Region HBox.hgrow="ALWAYS" />
-                        <CheckBox fx:id="showPasswordCheckBox" onAction="#onTogglePassword" styleClass="details-label" text="👁" />
-                    </HBox>
-                    <!-- Buttons for logging in and going back -->
-                    <HBox alignment="CENTER" maxWidth="Infinity" spacing="20">
-                        <Button fx:id="loginButton" onAction="#onLoginClick" prefWidth="120" style="-fx-font-family: 'TASA Explorer';" text="Login" />
-                    </HBox>
-                    <Label onMouseClicked="#onSignUpLinkClick" styleClass="user-next-text" text="Don't have an account? Sign up here." wrapText="true">
-                        <VBox.margin>
-                            <Insets top="10" />
-                        </VBox.margin>
-                    </Label>
-                </VBox>
+        <VBox alignment="TOP_CENTER" spacing="20">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="30"/>
+            </padding>
+            <!-- Login title -->
+            <Label text="Login" styleClass="secondary-label"/>
+            <!-- Inner box that contains logging in details for user to enter -->
+            <VBox alignment="CENTER" maxWidth="400" prefWidth="400" spacing="15" styleClass="user-shadow-box">
+                <!-- Label for logging into their account -->
+                <Label maxWidth="360" styleClass="details-label"
+                       text="Please enter your email and password to login and continue your journey!"
+                       textAlignment="CENTER" wrapText="true"/>
+                <!-- Enter email text box -->
+                <TextField fx:id="emailField" maxWidth="Infinity" promptText="Enter your email here..."/>
+                <StackPane maxWidth="Infinity">
+                    <!-- Enter password text box (with hidden and viewable) -->
+                    <PasswordField fx:id="passwordField" maxWidth="Infinity" promptText="Enter your password here..."/>
+                    <TextField fx:id="passwordVisibleField" maxWidth="Infinity" promptText="Enter your password here..."
+                               visible="false"/>
+                </StackPane>
+                <!-- Show/Hide password checkbox; Save details checkbox -->
+                <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
+                    <CheckBox style="-fx-text-fill: white;" text="Remember me"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <CheckBox fx:id="showPasswordCheckBox" onAction="#onTogglePassword" styleClass="details-label"
+                              text="👁"/>
+                </HBox>
+                <!-- Buttons for logging in and going back -->
+                <HBox alignment="CENTER" maxWidth="Infinity" spacing="20">
+                    <Button fx:id="loginButton" onAction="#onLoginClick" prefWidth="120"
+                            style="-fx-font-family: 'TASA Explorer';" text="Login"/>
+                </HBox>
+                <Label onMouseClicked="#onSignUpLinkClick" styleClass="hyperlink-text"
+                       text="Don't have an account? Sign up here." wrapText="true">
+                    <VBox.margin>
+                        <Insets top="10"/>
+                    </VBox.margin>
+                </Label>
             </VBox>
-        </StackPane>
-    </center>
-</BorderPane>
+        </VBox>
+    </VBox>
+</StackPane>

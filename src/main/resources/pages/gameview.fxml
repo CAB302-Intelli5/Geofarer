@@ -19,7 +19,7 @@
 <?import java.net.URL?>
 
 
-<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" styleClass="dark-theme" >
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" styleClass="theme" >
     <stylesheets>
         <URL value="@../styles/base.css"/>
     </stylesheets>
