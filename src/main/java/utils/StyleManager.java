@@ -49,29 +49,55 @@ public class StyleManager {
             SettingsService settings = SettingsService.getInstance();
 
             scene.getStylesheets().clear();
-            scene.getStylesheets().add("@../styles/base.css");
+            // Use resource URLs for CSS so they are found both in IDE and packaged jars
+            String baseCss = resourceToExternalForm("/styles/base.css");
+            if (baseCss != null) scene.getStylesheets().add(baseCss);
 
             switch (settings.getTheme()) {
-                case DARK -> scene.getStylesheets().add("@../styles/dark-theme.css");
-                case LIGHT -> scene.getStylesheets().add("@../styles/light-theme.css");
+                case DARK -> {
+                    String dark = resourceToExternalForm("/styles/dark-theme.css");
+                    if (dark != null) scene.getStylesheets().add(dark);
+                }
+                case LIGHT -> {
+                    String light = resourceToExternalForm("/styles/light-theme.css");
+                    if (light != null) scene.getStylesheets().add(light);
+                }
             }
 
             if (settings.isLargeText()) {
-                scene.getStylesheets().add("@../styles/large-text.css");
+                String large = resourceToExternalForm("/styles/large-text.css");
+                if (large != null) scene.getStylesheets().add(large);
                 System.out.println("StyleManager: large text stylesheet called.");
             }
 
             if (settings.isDysFont()) {
-                scene.getStylesheets().add("@../styles/dys-font.css");
+                String dys = resourceToExternalForm("/styles/dys-font.css");
+                if (dys != null) scene.getStylesheets().add(dys);
                 System.out.println("StyleManager: dyslexia-friendly font stylesheet called.");
             }
 
             if (settings.isCVDMode()) {
-                scene.getStylesheets().add("@../styles/cvd-mode.css");
+                String cvd = resourceToExternalForm("/styles/cvd-mode.css");
+                if (cvd != null) scene.getStylesheets().add(cvd);
                 System.out.println("StyleManager: colour vision mode stylesheet called.");
             }
         } else {
             System.err.println("StyleManager: scene is null!");
+        }
+    }
+
+    // Helper to convert a resource path (starting with '/') to an external form usable by Scene.getStylesheets().add
+    private String resourceToExternalForm(String resourcePath) {
+        try {
+            var url = StyleManager.class.getResource(resourcePath);
+            if (url == null) {
+                System.err.println("StyleManager: resource not found: " + resourcePath);
+                return null;
+            }
+            return url.toExternalForm();
+        } catch (Exception e) {
+            System.err.println("StyleManager: error loading resource " + resourcePath + " -> " + e);
+            return null;
         }
     }
 }

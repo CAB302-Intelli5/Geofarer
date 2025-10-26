@@ -30,7 +30,8 @@ public class SettingsController extends BaseController {
 
     private final SettingsService settings = SettingsService.getInstance();
 
-    public void init() {
+    @FXML
+    public void initialize() {
         // toggling button updating theme with Observer pattern
         themeToggled.selectedProperty().addListener((obs, oldTheme, newTheme) -> {
             if (newTheme) {
@@ -49,10 +50,11 @@ public class SettingsController extends BaseController {
 
         // initialising Theme state and text
         themeToggled.setSelected(settings.getTheme() == SettingsService.ThemeType.LIGHT);
+        // Set button label to reflect the action that will occur when clicked
         if (settings.getTheme() == SettingsService.ThemeType.LIGHT) {
-            themeToggled.setText("Switch to Light Mode");
-        } else {
             themeToggled.setText("Switch to Dark Mode");
+        } else {
+            themeToggled.setText("Switch to Light Mode");
         }
     }
 

@@ -19,6 +19,11 @@
     -fx-border-color: #A6A186;
 }
 
+.title-banner {
+    -fx-background-color: #731A12;
+    -fx-padding: 20;
+}
+
 .nav-bar-text,
 .hyperlink-text,
 .geofarer-heading,

@@ -15,8 +15,13 @@
 }
 
 .nav-bar-bg {
-    -fx-background-color: #E4F2F;
+    -fx-background-color: #E4F2F1;
     -fx-border-color: #A6A186;
+}
+
+.title-banner {
+    -fx-background-color: #F2C3A7;
+    -fx-padding: 20;
 }
 
 .nav-bar-text,
