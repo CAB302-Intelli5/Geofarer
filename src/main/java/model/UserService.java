@@ -6,12 +6,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class for managing users and all user features. This includes creating accounts, login proceses,
  * deleting users for the database. Essentially CRUD related services that relate to the user
  */
 public class UserService {
+
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     private static String hashPassword(String salt, String password) {
         try {
@@ -60,7 +64,7 @@ public class UserService {
             }
             return true;
         } catch (SQLException e) {
-            System.out.println("Adding user error: " + e.getMessage());
+                logger.log(Level.WARNING, "Adding user error: {0}", e.getMessage());
             return false;
         }
     }
@@ -74,7 +78,7 @@ public class UserService {
      */
     public static Integer getUserId(String email, String password) {
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            System.out.println("Email or password field is empty");
+                logger.fine("Email or password field is empty");
             return null;
         }
         // First get the user_id for the given email so we can use it as the salt.
@@ -97,7 +101,7 @@ public class UserService {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Get user ID error: " + e.getMessage());
+                logger.log(Level.WARNING, "Get user ID error: {0}", e.getMessage());
         }
         return null;
     }
@@ -111,7 +115,7 @@ public class UserService {
      */
     public static boolean validateLogin(String email, String password) {
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            System.out.println("Email or password field is empty");
+                logger.fine("Email or password field is empty");
             return false;
         }
        String getIdSql = "SELECT user_id FROM users WHERE email = ?";
@@ -132,7 +136,7 @@ public class UserService {
 
            return false;
        } catch (SQLException e) {
-           System.out.println("Login validation error: " + e.getMessage());
+               logger.log(Level.WARNING, "Login validation error: {0}", e.getMessage());
            return false;
        }
 

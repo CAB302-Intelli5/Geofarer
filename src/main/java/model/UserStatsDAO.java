@@ -3,9 +3,13 @@ package model;
 
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserStatsDAO {
     private int currentUserId = 1; // This is just a deafult user should be set on login
+
+    private static final Logger logger = Logger.getLogger(UserStatsDAO.class.getName());
 
     //There is no need for a init of DBConnection.getInstance() as already dne
 
@@ -47,13 +51,13 @@ public class UserStatsDAO {
 
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            System.out.println("DAO: Executing query for user ID: " + currentUserId);
+            logger.fine("DAO: Executing query for user ID: " + currentUserId);
             stmt.setInt(1, currentUserId);
             ResultSet rs = stmt.executeQuery();
 
             //Check if the ResultSet has any data at all.
             if (!rs.isBeforeFirst()) {
-                System.out.println("DAO: The query returned no rows.");
+                logger.fine("DAO: The query returned no rows.");
             }
 
             while (rs.next()) {
@@ -69,7 +73,7 @@ public class UserStatsDAO {
 
                 // We can use a boolean flag to ensure it only prints once.
                 if (result.isEmpty()) { // Only print for the first country found
-                    System.out.println("DAO: Processing first row -> Country: " + countryName +
+                    logger.fine("DAO: Processing first row -> Country: " + countryName +
                             ", Region: " + region + ", Mastery: " + masteryLevel);
                 }
 
@@ -90,8 +94,8 @@ public class UserStatsDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error loading country stats: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error loading country stats: {0}", e.getMessage());
+            logger.log(Level.FINE, "", e);
         }
 
         return result;
@@ -279,9 +283,9 @@ public class UserStatsDAO {
                     upsertStmt.executeUpdate();
                 }
 
-                conn.commit();
-                System.out.println("Updated mastery for " + countryCode + ": " + newMastery +
-                        " (hints used: " + usedHints + ")");
+        conn.commit();
+        logger.info("Updated mastery for " + countryCode + ": " + newMastery +
+            " (hints used: " + usedHints + ")");
 
             } catch (SQLException e) {
                 conn.rollback();
@@ -289,8 +293,8 @@ public class UserStatsDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error recording correct guess: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error recording correct guess: {0}", e.getMessage());
+            logger.log(Level.FINE, "", e);
         }
     }
 
@@ -605,7 +609,7 @@ public class UserStatsDAO {
             stmt.setInt(4, usedHints ? 1 : 0);
             stmt.executeUpdate();
 
-            System.out.println("Recorded match result for " + countryCode + ": " + 
+            logger.info("Recorded match result for " + countryCode + ": " + 
                              (isWin ? "WIN" : "LOSS") + 
                              (usedHints ? " (with hints)" : " (no hints)"));
 

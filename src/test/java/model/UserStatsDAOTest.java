@@ -32,8 +32,14 @@ public class UserStatsDAOTest {
         // Clean up any existing test data
         cleanupTestData();
 
+        // Ensure test user does not exist before adding
+        UserService.deleteUser(TEST_EMAIL);
+
         // Add test user
         UserService.addUser(TEST_EMAIL, TEST_PASSWORD);
+
+        // Add test countries
+        addTestCountries();
     }
 
     @AfterEach
@@ -52,6 +58,95 @@ public class UserStatsDAOTest {
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error cleaning up test data: " + e.getMessage());
+        }
+
+        // Delete test unlocked hints
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "DELETE FROM unlocked_hints WHERE user_id = ?")) {
+            stmt.setInt(1, TEST_USER_ID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error cleaning up unlocked hints: " + e.getMessage());
+        }
+    }
+
+    private void addTestCountries() {
+        // Add some test countries to the database
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT OR IGNORE INTO countries (country_id, name, region) VALUES (?, ?, ?)")) {
+            // Add a few test countries
+            stmt.setString(1, "US");
+            stmt.setString(2, "United States");
+            stmt.setString(3, "North America");
+            stmt.executeUpdate();
+
+            stmt.setString(1, "CA");
+            stmt.setString(2, "Canada");
+            stmt.setString(3, "North America");
+            stmt.executeUpdate();
+
+            stmt.setString(1, "AU");
+            stmt.setString(2, "Australia");
+            stmt.setString(3, "Australia");
+            stmt.executeUpdate();
+
+            stmt.setString(1, "FR");
+            stmt.setString(2, "France");
+            stmt.setString(3, "Europe");
+            stmt.executeUpdate();
+
+            stmt.setString(1, "DE");
+            stmt.setString(2, "Germany");
+            stmt.setString(3, "Europe");
+            stmt.executeUpdate();
+
+            // Add hints for these countries
+            addTestHints();
+
+            // Unlock hints for test user
+            unlockTestHints();
+        } catch (SQLException e) {
+            System.err.println("Error adding test countries: " + e.getMessage());
+        }
+    }
+
+    private void addTestHints() {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT OR IGNORE INTO hints (hint_id, hint_type, hint_text, date_retrieved, country_id) VALUES (?, ?, ?, ?, ?)")) {
+            String[] countries = {"US", "CA", "AU", "FR", "DE"};
+            for (String country : countries) {
+                for (int i = 0; i < 3; i++) {  // Add 3 hints per country
+                    stmt.setString(1, country + i);
+                    stmt.setString(2, "Test Hint Type " + i);
+                    stmt.setString(3, "Test hint text " + i);
+                    stmt.setString(4, "2023-01-01");
+                    stmt.setString(5, country);
+                    stmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error adding test hints: " + e.getMessage());
+        }
+    }
+
+    private void unlockTestHints() {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT OR IGNORE INTO unlocked_hints (hint_id, user_id, seen_date) VALUES (?, ?, ?)")) {
+            String[] countries = {"US", "CA", "AU", "FR", "DE"};
+            for (String country : countries) {
+                for (int i = 0; i < 3; i++) {
+                    stmt.setString(1, country + i);
+                    stmt.setInt(2, TEST_USER_ID);
+                    stmt.setString(3, "2023-01-01");
+                    stmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error unlocking test hints: " + e.getMessage());
         }
     }
 

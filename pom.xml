@@ -96,13 +96,6 @@
             <version>1.19.0</version>
         </dependency>
 
-        <!-- SQLite JDBC -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.45.2.0</version>
-        </dependency>
-
         <!-- JFreeChart for charting -->
         <dependency>
             <groupId>org.jfree</groupId>
