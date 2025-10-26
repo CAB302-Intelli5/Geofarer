@@ -143,11 +143,11 @@ public class UserStatsController {
         content.setMaxWidth(120);
         
         // Country code (e.g., "USA", "AUS", "JPN")
-        Label countryCode = new Label(country.getCountryCode());
+    Label countryCode = new Label(utils.TextUtils.stripHtmlTags(country.getCountryCode()));
         countryCode.getStyleClass().add("stamp-country-code");
         
         // Country name (wrapped if needed)
-        Label countryName = new Label(country.getCountryName());
+    Label countryName = new Label(utils.TextUtils.stripHtmlTags(country.getCountryName()));
         countryName.getStyleClass().add("stamp-country-label");
         countryName.setWrapText(true);
         countryName.setMaxWidth(110);
@@ -172,11 +172,11 @@ public class UserStatsController {
      */
     private void loadRank() {
         String rank = userStatsDAO.getUserRank();
-        rankNameLabel.setText(rank);
+        rankNameLabel.setText(utils.TextUtils.stripHtmlTags(rank));
         
         // Set description based on rank
         String description = getRankDescription(rank);
-        rankDescriptionLabel.setText(description);
+    rankDescriptionLabel.setText(utils.TextUtils.stripHtmlTags(description));
     }
 
     /**
@@ -219,7 +219,9 @@ public class UserStatsController {
         // Create dataset for spider chart
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (Map.Entry<String, Double> entry : continentStats.entrySet()) {
-            dataset.addValue(entry.getValue(), "Mastery %", entry.getKey());
+            // Strip any HTML that might have been stored in the database for region names
+            String regionLabel = utils.TextUtils.stripHtmlTags(entry.getKey());
+            dataset.addValue(entry.getValue(), "Mastery %", regionLabel);
         }
 
         // Create spider web plot
@@ -396,7 +398,9 @@ public class UserStatsController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         
         for (Map.Entry<String, Double> entry : continentStats.entrySet()) {
-            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+            // Ensure region labels shown in the JavaFX chart are plain text (no HTML)
+            String regionLabel = utils.TextUtils.stripHtmlTags(entry.getKey());
+            series.getData().add(new XYChart.Data<>(regionLabel, entry.getValue()));
         }
         
         barChart.getData().add(series);
@@ -420,8 +424,9 @@ public class UserStatsController {
     // Navigation handlers
     @FXML
     private void handleGameModes() {
-        PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Game Modes", 
-                           (Stage) stampsEarnedNumber.getScene().getWindow());
+        // Open the main game view instead of landing page
+        Stage stage = (Stage) stampsEarnedNumber.getScene().getWindow();
+        PageLoader.openGameView("Geofarer - Geography Game", stage);
     }
 
     @FXML
@@ -452,8 +457,7 @@ public class UserStatsController {
     @FXML
     private void handleLoginButton() {
         if (SessionManager.getInstance().isLoggedIn()) {
-            // Show user menu or logout
-            System.out.println("User is logged in");
+            utils.UIUtils.showAccountMenu(loginButton);
         } else {
             PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Login", 
                               (Stage) loginButton.getScene().getWindow());

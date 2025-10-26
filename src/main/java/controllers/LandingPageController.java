@@ -37,11 +37,17 @@ public class LandingPageController {
      * Navigates the user to the login page.
      */
     public void onLoginButtonClick() {
-        if (loginButton != null && loginButton.getScene() != null && loginButton.getScene().getWindow() != null) {
+        if (loginButton == null || loginButton.getScene() == null || loginButton.getScene().getWindow() == null) {
+            System.err.println("Could not get the stage from the login button.");
+            return;
+        }
+
+        // If logged in show account menu, otherwise open login page
+        if (utils.SessionManager.getInstance().isLoggedIn()) {
+            utils.UIUtils.showAccountMenu(loginButton);
+        } else {
             Stage stage = (Stage) loginButton.getScene().getWindow();
             PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
-        } else {
-            System.err.println("Could not get the stage from the login button.");
         }
     }
 

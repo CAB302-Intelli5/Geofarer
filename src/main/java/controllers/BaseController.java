@@ -50,6 +50,27 @@ public class BaseController {
         MenuItem profile = new MenuItem("Profile");
         MenuItem settings = new MenuItem("Settings");
         MenuItem logout = new MenuItem("Log Out");
+        // Profile navigates to user stats view
+        profile.setOnAction(e -> {
+            if (loginButton != null && loginButton.getScene() != null) {
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                if (stage != null) PageLoader.openUserStatsView("My Stats - Geofarer", stage);
+            }
+        });
+
+        // Settings - placeholder for future
+        settings.setOnAction(e -> {
+            System.out.println("Settings clicked - not implemented");
+        });
+
+        // Logout - clear session and return to landing page
+        logout.setOnAction(e -> {
+            utils.SessionManager.getInstance().logout();
+            if (loginButton != null && loginButton.getScene() != null) {
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                if (stage != null) PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", stage);
+            }
+        });
 
         userMenu.getItems().addAll(profile, settings, logout);
     }
@@ -60,10 +81,16 @@ public class BaseController {
      */
     @FXML
     protected void onUserCircleClick(MouseEvent event) {
-        if (userMenu.isShowing()) {
-            userMenu.hide();
+        // Only show the dropdown menu if a user is logged in.
+        if (utils.SessionManager.getInstance().isLoggedIn()) {
+            if (userMenu.isShowing()) {
+                userMenu.hide();
+            } else {
+                userMenu.show(userCirclePane, Side.BOTTOM, 0, 0);
+            }
         } else {
-            userMenu.show(userCirclePane, Side.BOTTOM, 0, 0);
+            // Not logged in -> navigate to login page
+            openLoginPage();
         }
     }
 

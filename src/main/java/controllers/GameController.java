@@ -534,20 +534,15 @@ public class GameController {
             return;
         }
 
-        Scene scene = button.getScene();
-        if (scene == null) {
-            System.out.println("Scene is null");
+        // If user is logged in -> show account menu (profile/logout).
+        if (SessionManager.getInstance().isLoggedIn()) {
+            utils.UIUtils.showAccountMenu(button);
             return;
         }
 
-        System.out.println("Login button clicked");
-
-        // Clear any existing session
-        SessionManager.getInstance().logout();
-
+        // Otherwise open login page
         Stage stage = (Stage) button.getScene().getWindow();
-        // Use the PageLoader to open the SignUpPage
-        PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
+        PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Login", stage);
     }
 
     public void showGameModes() {

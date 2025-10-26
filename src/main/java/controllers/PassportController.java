@@ -189,7 +189,7 @@ public class PassportController {
         Label arrow = new Label("▼");
         arrow.setStyle("-fx-font-size: 16px; -fx-text-fill: " + PASSPORT_RED + ";");
 
-        Label continentLabel = new Label(continentName);
+    Label continentLabel = new Label(utils.TextUtils.stripHtmlTags(continentName));
         continentLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; " +
                 "-fx-text-fill: " + PASSPORT_DARK + ";");
 
@@ -287,7 +287,7 @@ public class PassportController {
         VBox infoBox = new VBox(3);
         infoBox.setMinWidth(200);
 
-        Label countryName = new Label(country.getCountryName());
+    Label countryName = new Label(utils.TextUtils.stripHtmlTags(country.getCountryName()));
         countryName.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + PASSPORT_DARK + ";");
 
         // Mastery level indicator (stars)
@@ -427,11 +427,11 @@ public class PassportController {
     @FXML
     public void handleLoginButton() {
         if (loginButton == null) return;
-        // Check if already logged in - offer logout
+
         if (SessionManager.getInstance().isLoggedIn()) {
-            String email = SessionManager.getInstance().getCurrentUserEmail();
-            System.out.println("User " + email + " logged out");
-            SessionManager.getInstance().logout();
+            // Show account menu with logout/profile
+            utils.UIUtils.showAccountMenu(loginButton);
+            return;
         }
 
         Stage stage = (Stage) loginButton.getScene().getWindow();
@@ -440,7 +440,13 @@ public class PassportController {
 
     @FXML
     public void handleGameModes() {
-        System.out.println("Game Modes clicked!");
+        // Navigate back to the main game view
+        if (statsContainer == null || statsContainer.getScene() == null) {
+            System.out.println("Cannot open game view: scene/statsContainer is null");
+            return;
+        }
+        Stage stage = (Stage) statsContainer.getScene().getWindow();
+        PageLoader.openGameView("Geofarer - Geography Game", stage);
     }
 
     @FXML

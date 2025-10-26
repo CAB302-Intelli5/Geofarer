@@ -12,45 +12,60 @@
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.Separator?>
+<?import java.net.URL?>
 <?import javafx.scene.text.Font?>
 
 <fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" fx:controller="controllers.PassportController">
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+    </stylesheets>
 
     <!-- Top Header Bar -->
-    <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #E4F2F1; -fx-padding: 10;">
-        <Region HBox.hgrow="ALWAYS" />
-        <Label text="My Passport - Geography Stats">
-            <font>
-                <Font size="24.0" />
-            </font>
-        </Label>
-        <Region HBox.hgrow="ALWAYS" />
-        <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../images/logo_placeholder.png" />
-            </image>
-        </ImageView>
-        <Button fx:id="loginButton" onAction="#handleLoginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
-            <graphic>
-                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" styleClass="header-bar">
+            <StackPane alignment="CENTER">
+                <Circle radius="20" fill="white" />
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../images/logo_placeholder.png" />
+                        <Image url="@../images/Logo.png" />
                     </image>
                 </ImageView>
-            </graphic>
-        </Button>
-        <padding>
-            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-        </padding>
-    </HBox>
+            </StackPane>
+
+
+            <Label text="Geofarer" styleClass="geofarer-heading"/>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+            <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
+                <Button fx:id="loginButton" onAction="#handleLoginButton" styleClass="login-icon-button">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+        </HBox>
 
     <!-- Navigation Menu -->
-    <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
-        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Game Modes" onAction="#handleGameModes" />
-        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Explore" onAction="#handleExplore" />
-        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Leaders" onAction="#handleLeaders" />
-        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26; -fx-font-weight: bold;" text="My Passport" onAction="#handleMyPassport" />
-        <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="My Stats" onAction="#handleMyStats" />
+    <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" styleClass="nav-bar-bg">
+        <Button styleClass="nav-bar-text" text="Game Modes" onAction="#handleGameModes"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+        <Button styleClass="nav-bar-text" text="Explore" onAction="#handleExplore"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+        <Button styleClass="nav-bar-text" text="Leaders" onAction="#handleLeaders"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+        <Button styleClass="nav-bar-text" text="My Passport" onAction="#handleMyPassport"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
     </HBox>
 
     <!-- Control Bar with Filters and View Toggle -->
