@@ -41,6 +41,7 @@ public class UserStatsController {
     @FXML private VBox progressionChartContainer;
     @FXML private VBox continentBarChartContainer;
     @FXML private Button loginButton;
+    @FXML private Label userLabel;
 
     private UserStatsDAO userStatsDAO;
 
@@ -58,10 +59,13 @@ public class UserStatsController {
         // Set current user ID from session
         if (SessionManager.getInstance().isLoggedIn()) {
             Integer userId = SessionManager.getInstance().getCurrentUserId();
+            this.userLabel.setText(SessionManager.getInstance().getCurrentUserEmail());
             if (userId != null) {
                 userStatsDAO.setCurrentUserId(userId);
                 System.out.println("UserStatsController: Loaded for user ID: " + userId);
             }
+        } else{
+            this.userLabel.setText("Login");
         }
 
         loadUserStats();

@@ -39,12 +39,15 @@
 
                 <Region HBox.hgrow="ALWAYS" />
 
-            <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
+            <HBox alignment="CENTER_RIGHT" spacing="8">
+                <Label fx:id="userLabel" text="Login" styleClass="user-label"/>
+                <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
                 <Button fx:id="loginButton" onAction="#handleLoginButton" styleClass="login-icon-button">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
                     </graphic>
                 </Button>
+            </HBox>
             <padding>
                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
             </padding>
