@@ -35,3 +35,27 @@
 .country-label-text {
     -fx-text-fill: white;
 }
+
+.hints-box {
+    -fx-background-color: white;
+}
+
+/* Page-level background used by FXML pages (root nodes) */
+.page-bg {
+    -fx-background-color: #0D1A26;
+}
+
+/* Content areas inside pages */
+.page-content {
+    -fx-background-color: #0D1A26;
+}
+
+/* Control bar used on pages like Passport */
+.control-bar {
+    -fx-background-color: #0D1A26;
+}
+
+/* Footer background */
+.footer-bg {
+    -fx-background-color: #A6A186;
+}

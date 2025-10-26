@@ -39,16 +39,18 @@
 .country-name {
     -fx-font-size: 46px;
     -fx-font-weight: 800;
-    -fx-text-fill: #E4F2F1;
-    -fx-effect: dropshadow(gaussian, rgba(13, 26, 38, 0.55), 16, 0.2, 0, 6);
+    /* Country title should be rendered in dark (black) text per request */
+    -fx-text-fill: #0D1A26;
+    -fx-effect: dropshadow(gaussian, rgba(13, 26, 38, 0.12), 8, 0.1, 0, 2);
     -fx-letter-spacing: 2px;
 }
 
 .country-continent {
-    -fx-text-fill: #F2C3A7;
+    /* Region/continent label should also be dark text */
+    -fx-text-fill: #0D1A26;
     -fx-font-size: 18px;
     -fx-font-style: italic;
-    -fx-opacity: 0.85;
+    -fx-opacity: 0.95;
 }
 
 .progress-section {
@@ -166,7 +168,8 @@
 }
 
 .locked-hint-header {
-    -fx-text-fill: #E4F2F1;
+    /* Locked hint headers should use dark text to match the requested style */
+    -fx-text-fill: #0D1A26;
     -fx-font-size: 16px;
     -fx-font-weight: 700;
     -fx-text-transform: uppercase;

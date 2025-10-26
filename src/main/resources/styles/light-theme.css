@@ -30,7 +30,48 @@
 .secondary-label,
 .subheading-label,
 .details-label,
-.user-next-text,
-.country-label-text {
+.user-next-text {
     -fx-text-fill: black;
+}
+
+/* In light theme we want the country label text to be white (per design request). */
+.country-label-text {
+    -fx-text-fill: white;
+}
+
+/* Hints box background should be white in light theme to override the dark default in the FXML */
+.hints-box {
+    background-color: white; /* standard property for compatibility */
+    -fx-background-color: white;
+}
+
+/* More specific selectors to ensure the light theme wins over other rules */
+VBox.hints-box,
+.theme .hints-box {
+    background-color: white;
+    -fx-background-color: white;
+}
+
+/* Page-level background used by FXML pages (root nodes) */
+.page-bg {
+    background-color: #E4F2F1;
+    -fx-background-color: #E4F2F1;
+}
+
+/* Content areas inside pages */
+.page-content {
+    background-color: #E4F2F1;
+    -fx-background-color: #E4F2F1;
+}
+
+/* Control bar used on pages like Passport */
+.control-bar {
+    background-color: #E4F2F1;
+    -fx-background-color: #E4F2F1;
+}
+
+/* Footer background */
+.footer-bg {
+    background-color: #A6A186;
+    -fx-background-color: #A6A186;
 }

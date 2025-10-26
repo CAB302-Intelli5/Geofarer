@@ -17,12 +17,12 @@
             fx:controller="controllers.CountryDetailController"
             prefWidth="960" prefHeight="600"
             stylesheets="@../styles/country-detail.css"
-            style="-fx-background-color: #0D1A26;">
+            styleClass="page-bg">
 
     <top>
         <VBox spacing="0">
             <!-- Top Header Bar -->
-            <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #E4F2F1; -fx-padding: 10;">
+            <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-padding: 10;" styleClass="header-bar">
                 <Region HBox.hgrow="ALWAYS" />
                 <Label text="My Passport - Country Details">
                     <font>
@@ -50,7 +50,7 @@
             </HBox>
 
             <!-- Navigation Menu -->
-            <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
+            <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-padding: 10;" styleClass="nav-bar-bg">
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Game Modes" />
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Explore" />
                 <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Leaders" />
@@ -58,7 +58,7 @@
             </HBox>
 
             <!-- Country Title Banner with Progress Badge and Back Button -->
-            <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="20.0" style="-fx-background-color: #731A12; -fx-padding: 20;">
+            <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="20.0" style="-fx-padding: 20;" styleClass="title-banner">
                 <Button fx:id="backButton" onAction="#handleBackAction" 
                         text="← Back" 
                         style="-fx-background-color: #0D1A26; -fx-text-fill: #E4F2F1; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5; -fx-padding: 10 20;" />
@@ -78,12 +78,12 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
                     BorderPane.alignment="CENTER"
-                    style="-fx-background: #0D1A26; -fx-background-color: #0D1A26; -fx-border-color: transparent;"
-                    styleClass="detail-scroll">
+                    style="-fx-border-color: transparent;"
+                    styleClass="detail-scroll page-content">
             <content>
-                <VBox alignment="TOP_CENTER" spacing="32" styleClass="detail-content" style="-fx-background-color: #0D1A26; -fx-padding: 40 20;">
+                <VBox alignment="TOP_CENTER" spacing="32" styleClass="detail-content page-content" style="-fx-padding: 40 20;">
                     
                     <!-- Progress Section -->
                     <VBox spacing="16" styleClass="progress-section" alignment="CENTER" maxWidth="600">
@@ -111,7 +111,7 @@
 
     <bottom>
         <!-- Footer -->
-        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
+        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-padding: 10;" styleClass="footer-bg">
             <Label text="Complete hints to master this country!" style="-fx-font-size: 12px; -fx-text-fill: #0D1A26; -fx-font-style: italic;" />
         </HBox>
     </bottom>

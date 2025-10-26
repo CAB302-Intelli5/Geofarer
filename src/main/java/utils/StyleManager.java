@@ -81,12 +81,117 @@ public class StyleManager {
                 if (cvd != null) scene.getStylesheets().add(cvd);
                 System.out.println("StyleManager: colour vision mode stylesheet called.");
             }
+
+            try {
+                var root = scene.getRoot();
+                if (root != null) {
+                    if (!root.getStyleClass().contains("theme")) {
+                        root.getStyleClass().add("theme");
+                        System.out.println("StyleManager: added 'theme' styleClass to scene root.");
+                    }
+                    System.out.println("StyleManager: root style classes = " + root.getStyleClass());
+                }
+            } catch (Exception e) {
+                System.err.println("StyleManager: error adding theme styleClass to root -> " + e);
+            }
+
+            System.out.println("StyleManager: applied stylesheets: " + scene.getStylesheets());
+            // If light theme is active, ensure the hints area is forced to a white background.
+            try {
+                if (settings.getTheme() == model.SettingsService.ThemeType.LIGHT) {
+                    var ta = scene.lookup("#hintsTextArea");
+                    if (ta != null) {
+                        javafx.scene.Parent p = ta.getParent();
+                        javafx.scene.layout.Pane targetPane = null;
+                        while (p != null) {
+                            if (p instanceof javafx.scene.layout.Pane pane) {
+                                if (pane.getStyleClass().contains("hints-box")) {
+                                    targetPane = pane;
+                                    break;
+                                }
+                                targetPane = pane;
+                            }
+                            p = p.getParent();
+                        }
+                        if (targetPane != null) {
+                            // Remove inline background declarations
+                            javafx.scene.Parent p2 = ta.getParent();
+                            while (p2 != null) {
+                                if (p2 instanceof javafx.scene.Node) {
+                                    javafx.scene.Node node = (javafx.scene.Node) p2;
+                                    String old = node.getStyle();
+                                    if (old != null && (old.contains("-fx-background-color") || old.contains("background-color"))) {
+                                        String cleaned = old.replaceAll("(?i)(-fx-background-color\\\s*:[^;]+;?)|(background-color\\\s*:[^;]+;?)", "");
+                                        node.setStyle(cleaned);
+                                        System.out.println("StyleManager: cleared inline background on ancestor " + p2.getClass().getSimpleName() + " oldStyle='" + old + "' newStyle='" + cleaned + "'");
+                                    }
+                                }
+                                p2 = p2.getParent();
+                            }
+
+                            //set explicit white background
+                            String append = "background-color: white; -fx-background-color: white;";
+                            String prev = targetPane.getStyle();
+                            if (prev == null) prev = "";
+                            targetPane.setStyle(prev + append);
+                            System.out.println("StyleManager: forced hints-box (or nearest Pane) background to white on light theme (inline set). Target classes=" + targetPane.getStyleClass());
+                        } else {
+                            System.out.println("StyleManager: hintsTextArea found but no Pane ancestor to set style on.");
+                        }
+                    } else {
+                        System.out.println("StyleManager: hintsTextArea not found in scene lookup.");
+                    }
+                } else {
+                    // on dark theme, remove any inline override we added earlier
+                    var ta = scene.lookup("#hintsTextArea");
+                    if (ta != null) {
+                        javafx.scene.Parent p = ta.getParent();
+                        while (p != null && !(p instanceof javafx.scene.layout.Pane)) {
+                            p = p.getParent();
+                        }
+                        if (p instanceof javafx.scene.layout.Pane pane) {
+                            // clear inline style so stylesheet can control appearance
+                            pane.setStyle("");
+                            System.out.println("StyleManager: cleared inline hints container style for dark theme.");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("StyleManager: error forcing hints background -> " + e);
+            }
+
+            try {
+                var node = scene.lookup("#hintsTextArea");
+                if (node != null) {
+                    System.out.println("StyleManager DEBUG: Inspecting ancestors of #hintsTextArea");
+                    javafx.scene.Parent p = node.getParent();
+                    int level = 0;
+                    while (p != null && level < 10) {
+                        String classes = p.getStyleClass().toString();
+                        String inline = (p instanceof javafx.scene.Node) ? ((javafx.scene.Node) p).getStyle() : "";
+                        String info = String.format("  ancestor[%d] type=%s classes=%s inlineStyle=%s", level, p.getClass().getSimpleName(), classes, inline);
+                        System.out.println(info);
+                        if (p instanceof javafx.scene.layout.Region r) {
+                            var bg = r.getBackground();
+                            if (bg != null && bg.getFills() != null && !bg.getFills().isEmpty()) {
+                                System.out.println("    -> Region background fills: " + bg.getFills());
+                            }
+                        }
+                        p = p.getParent();
+                        level++;
+                    }
+                } else {
+                    System.out.println("StyleManager DEBUG: #hintsTextArea not present for ancestor inspection.");
+                }
+            } catch (Exception e) {
+                System.err.println("StyleManager DEBUG: error inspecting ancestors -> " + e);
+            }
         } else {
             System.err.println("StyleManager: scene is null!");
         }
     }
 
-    // Helper to convert a resource path (starting with '/') to an external form usable by Scene.getStylesheets().add
+
     private String resourceToExternalForm(String resourcePath) {
         try {
             var url = StyleManager.class.getResource(resourcePath);
