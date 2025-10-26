@@ -43,6 +43,7 @@ import utils.SessionManager;
 public class GameController {
     @FXML
     private Label targetCountryLabel;
+    private Label userLabel;
     @FXML
     Label countryLabel;
     private Pane overlay;
@@ -95,15 +96,22 @@ public class GameController {
     }
 
     @FXML
-    public void initializeController(Label targetCountryLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer, Button viewSuccessButton) {
+    public void initializeController(Label targetCountryLabel, Label userLabel, Label countryLabel, TextArea hintsTextArea, Pane overlay, StackPane innerMapPane, StackPane mapContainer, Button viewSuccessButton) {
         // Use "this." to refer to the instance variables of the GameController class
         this.targetCountryLabel = targetCountryLabel;
         this.countryLabel = countryLabel;
+        this.userLabel = userLabel;
         this.hintsTextArea = hintsTextArea;
         this.overlay = overlay;
         this.innerMapPane = innerMapPane;
         this.mapContainer = mapContainer;
         this.viewSuccessButton = viewSuccessButton;
+
+        if (SessionManager.getInstance().isLoggedIn()) {
+            this.userLabel.setText(SessionManager.getInstance().getCurrentUserEmail());
+        } else{
+            this.userLabel.setText("Login");
+        }
 
         viewSuccessButton.setVisible(roundWin); //hide the button to view success popup if the game hasn't been won yet
 

@@ -41,6 +41,7 @@ public class GameView extends VBox {
     @FXML private TextArea hintsTextArea;
     @FXML private Label targetCountryLabel;
     @FXML private Button viewSuccessButton;
+    @FXML private Label userLabel;
 
     // Map components
     private double imgWOrig = 0;
@@ -76,7 +77,7 @@ public class GameView extends VBox {
             throw new RuntimeException("Failed to load gameview.fxml", exception);
         }
 
-        controller.initializeController(targetCountryLabel,countryLabel, hintsTextArea,overlay,innerMapPane,mapContainer,viewSuccessButton);
+        controller.initializeController(targetCountryLabel, userLabel, countryLabel, hintsTextArea,overlay,innerMapPane,mapContainer,viewSuccessButton);
 
         if (!delayInitialization) {
             loadMapData();
@@ -96,7 +97,7 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer, viewSuccessButton);
+        controller.initializeController(targetCountryLabel, userLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer, viewSuccessButton);
 
         // Load image async
         Task<Image> imgTask = new Task<>() {

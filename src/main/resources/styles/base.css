@@ -20,6 +20,15 @@
     -fx-text-fill: #FFFFFF;
 }
 
+/* Label for showing email of currently logged in user */
+.user-label {
+    -fx-font-family: 'Inika';
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
 /* LOGIN/SIGNUP USER PAGE STYLES */
 
 .user-next-text {

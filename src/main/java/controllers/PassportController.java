@@ -25,6 +25,7 @@ public class PassportController {
     @FXML private ToggleButton viewToggle;
     @FXML private ComboBox <String> continentFilter;
     @FXML private Button loginButton;
+    @FXML private Label userLabel;
     @FXML private Label overallStatsLabel;
 
     private boolean isStatsView = true;
@@ -48,11 +49,15 @@ public class PassportController {
         // Set current user ID from session
         if (SessionManager.getInstance().isLoggedIn()) {
             Integer userId = SessionManager.getInstance().getCurrentUserId();
+            this.userLabel.setText(SessionManager.getInstance().getCurrentUserEmail());
             if (userId != null) {
                 userStatsDAO.setCurrentUserId(userId);
                 System.out.println("PassportController: Loaded for user ID: " + userId);
             }
+        }else{
+            this.userLabel.setText("Login");
         }
+
         setupViewToggle();
         setupContinentFilter();
         //Set the view to have the stats showing first
@@ -134,6 +139,7 @@ public class PassportController {
                     "Countries Played: %d | Fully Unlocked: %d | Total Correct: %d",
                     countriesPlayed, fullyUnlocked, totalCorrect
             );
+
             overallStatsLabel.setText(statsText);
         }
     }
