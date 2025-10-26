@@ -1,8 +1,14 @@
 package controllers;
 
+import javafx.geometry.Side;
 import javafx.scene.control.*;
 import utils.PageLoader;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -13,13 +19,20 @@ import javafx.stage.Stage;
  */
 public class BaseController {
 
-    @FXML protected StackPane userCirclePane;
-    @FXML protected CheckBox showPasswordCheckBox;
-    @FXML protected PasswordField passwordField;
-    @FXML protected TextField passwordVisibleField;
-    @FXML protected TextField emailField;
-    @FXML protected Button loginButton;
-    @FXML protected Button settingsButton;
+    @FXML
+    protected StackPane userCirclePane;
+    @FXML
+    protected CheckBox showPasswordCheckBox;
+    @FXML
+    protected PasswordField passwordField;
+    @FXML
+    protected TextField passwordVisibleField;
+    @FXML
+    protected TextField emailField;
+    @FXML
+    protected Button loginButton;
+    @FXML
+    protected Button settingsButton;
 
     protected ContextMenu userMenu;
 
@@ -35,16 +48,31 @@ public class BaseController {
     protected void setupUserMenu() {
         userMenu = new ContextMenu();
 
-        MenuItem profile = new MenuItem("Profile");
-        MenuItem login = new MenuItem("Login");
-        login.setOnAction(e -> openLoginPage());
-        MenuItem signup = new MenuItem("Sign Up");
-        signup.setOnAction(e -> openSignUpPage());
-        MenuItem settings = new MenuItem("Settings");
-        settings.setOnAction(e -> openSettingsPage());
-        MenuItem logout = new MenuItem("Log Out");
+    MenuItem profile = new MenuItem("Profile");
+    MenuItem settings = new MenuItem("Settings");
+    // Open settings when clicked
+    settings.setOnAction(e -> openSettingsPage());
+    MenuItem logout = new MenuItem("Log Out");
+        // Profile navigates to user stats view
+        profile.setOnAction(e -> {
+            if (loginButton != null && loginButton.getScene() != null) {
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                if (stage != null) PageLoader.openUserStatsView("My Stats - Geofarer", stage);
+            }
+        });
 
-        userMenu.getItems().addAll(profile, login, signup, settings, logout);
+        // (no-op) settings action already set above to open settings page
+
+        // Logout - clear session and return to landing page
+        logout.setOnAction(e -> {
+            utils.SessionManager.getInstance().logout();
+            if (loginButton != null && loginButton.getScene() != null) {
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                if (stage != null) PageLoader.openPage("/pages/LandingPage.fxml", "Geofarer - Geography Learning Game", stage);
+            }
+        });
+
+        userMenu.getItems().addAll(profile, settings, logout);
     }
 
     /**
@@ -53,16 +81,20 @@ public class BaseController {
      */
     @FXML
     protected void onUserCircleClick(MouseEvent event) {
-        if (userMenu.isShowing()) {
-            userMenu.hide();
+        // Only show the dropdown menu if a user is logged in.
+        if (utils.SessionManager.getInstance().isLoggedIn()) {
+            if (userMenu.isShowing()) {
+                userMenu.hide();
+            } else {
+                userMenu.show(userCirclePane, Side.BOTTOM, 0, 0);
+            }
         } else {
-            userMenu.show(userCirclePane, event.getScreenX(), event.getScreenY());
+            // Not logged in -> navigate to login page
+            openLoginPage();
         }
     }
 
-    /**
-     * Toggles the visibility of the password field
-     */
+    // Function for toggling the hidden password on and off
     @FXML
     protected void onTogglePassword() {
         if (showPasswordCheckBox.isSelected()) {
@@ -81,22 +113,35 @@ public class BaseController {
      */
     protected void openLoginPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("/com/example/geofarer/pages/LoginPage.fxml", "Login", stage);
+        PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
     }
 
     /**
-     * Handles the signup page in current stage
+     * Handles the sign up page in current stage
      */
     protected void openSignUpPage() {
         Stage stage = (Stage) userCirclePane.getScene().getWindow();
-        PageLoader.openPage("@..pages/SignUpPage.fxml", "Sign Up", stage);
+        PageLoader.openPage("/pages/SignUp.fxml", "Sign Up", stage);
     }
 
     /**
      * Opens the Settings page
      */
     protected void openSettingsPage() {
-        Stage stage = (Stage) settingsButton.getScene().getWindow();
-        PageLoader.openPage("@../pages/SettingsPage.fxml", "Settings", stage);
+        // Try to resolve a stage from available injected nodes in a safe order
+        Stage stage = null;
+        if (settingsButton != null && settingsButton.getScene() != null) {
+            stage = (Stage) settingsButton.getScene().getWindow();
+        } else if (loginButton != null && loginButton.getScene() != null) {
+            stage = (Stage) loginButton.getScene().getWindow();
+        } else if (userCirclePane != null && userCirclePane.getScene() != null) {
+            stage = (Stage) userCirclePane.getScene().getWindow();
+        }
+
+        if (stage != null) {
+            PageLoader.openPage("/pages/SettingsPage.fxml", "Settings", stage);
+        } else {
+            System.err.println("BaseController: could not find a Stage to open Settings page");
+        }
     }
 }

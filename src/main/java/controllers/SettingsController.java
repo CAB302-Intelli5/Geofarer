@@ -10,6 +10,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import utils.SceneManager;
 import utils.StyleManager;
+import utils.SessionManager;
+import utils.UIUtils;
 
 public class SettingsController extends BaseController {
     @FXML
@@ -32,7 +34,8 @@ public class SettingsController extends BaseController {
 
     @FXML
     public void initialize() {
-        // toggling button updating theme with Observer pattern
+        super.initialize();
+        // toggling button updating theme Observer pattern
         themeToggled.selectedProperty().addListener((obs, oldTheme, newTheme) -> {
             if (newTheme) {
                 settings.setTheme(SettingsService.ThemeType.LIGHT);
@@ -55,6 +58,23 @@ public class SettingsController extends BaseController {
             themeToggled.setText("Switch to Dark Mode");
         } else {
             themeToggled.setText("Switch to Light Mode");
+        }
+    }
+
+    @FXML
+    private Button loginButton;
+
+    /**
+     * Handle the login button click. If user is logged in, show the account menu anchored
+     * to the login button (profile/settings/logout). Otherwise open the login page.
+     */
+    @FXML
+    private void handleLoginButton() {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            UIUtils.showAccountMenu(loginButton);
+        } else {
+            // Open login page via BaseController helper
+            openLoginPage();
         }
     }
 

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.Separator?>
+<?import java.net.URL?>
+<?import javafx.scene.text.Font?>
+
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" style="-fx-background-color: #0D1A26;" fx:controller="controllers.PassportController">
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+    </stylesheets>
+
+    <!-- Top Header Bar -->
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" styleClass="header-bar">
+            <StackPane alignment="CENTER">
+                <Circle radius="20" fill="white" />
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/Logo.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
+
+
+            <Label text="Geofarer" styleClass="geofarer-heading"/>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+            <!-- clicking user icon should have drop down menu with option to log in, not immediately to login page -> will fix soon! -->
+                <Button fx:id="loginButton" onAction="#handleLoginButton" styleClass="login-icon-button">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+        </HBox>
+
+    <!-- Navigation Menu -->
+    <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" styleClass="nav-bar-bg">
+        <Button styleClass="nav-bar-text" text="Game Modes" onAction="#handleGameModes"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+        <Button styleClass="nav-bar-text" text="Explore" onAction="#handleExplore"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+        <Button styleClass="nav-bar-text" text="Leaders" onAction="#handleLeaders"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+        <Button styleClass="nav-bar-text" text="My Passport" onAction="#handleMyPassport"
+            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+
+    <!-- Control Bar with Filters and View Toggle -->
+    <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #E4F2F1; -fx-padding: 15;" prefHeight="60.0">
+        <Label text="Filter by Continent:" style="-fx-font-size: 14px; -fx-text-fill: #0D1A26; -fx-font-weight: bold;" />
+        <ComboBox fx:id="continentFilter" prefWidth="200" style="-fx-background-color: white; -fx-border-color: #731A12; -fx-border-radius: 5;" />
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Label text="View Mode:" style="-fx-font-size: 14px; -fx-text-fill: #0D1A26; -fx-font-weight: bold;" />
+        <ToggleButton fx:id="viewToggle" text="Stats View" style="-fx-background-color: #731A12; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-cursor: hand;" prefWidth="120" />
+
+        <padding>
+            <Insets left="20.0" right="20.0" />
+        </padding>
+    </HBox>
+
+    <!-- Passport Title Banner -->
+    <HBox alignment="CENTER" prefHeight="80.0" style="-fx-background-color: #731A12; -fx-padding: 20;">
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="GEOGRAPHY PASSPORT" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #E4F2F1;">
+                <font>
+                    <Font name="System Bold" size="28.0" />
+                </font>
+            </Label>
+            <Label text="Track your journey around the world" style="-fx-font-size: 14px; -fx-text-fill: #F2C3A7; -fx-font-style: italic;" />
+            <Label fx:id="overallStatsLabel" text="Loading stats..." style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #E4F2F1; -fx-padding: 10 0 0 0;" />
+        </VBox>
+    </HBox>
+
+    <!-- Main Content Area -->
+
+        <!-- Stats View -->
+        <ScrollPane fitToWidth="true" style="-fx-background: #0D1A26; -fx-background-color: #0D1A26;" HBox.hgrow="ALWAYS">
+            <VBox fx:id="statsContainer" spacing="0" style="-fx-background-color: #0D1A26;">
+            </VBox>
+        </ScrollPane>
+
+        <!-- Map View (hidden by default) -->
+        <VBox fx:id="mapViewContainer" HBox.hgrow="ALWAYS" style="-fx-background-color: #0D1A26;" visible="false" managed="false">
+            <!-- Map view content will be added here -->
+        </VBox>
+
+    <!-- Footer -->
+    <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
+        <Label text="Complete countries to earn passport stamps!" style="-fx-font-size: 12px; -fx-text-fill: #0D1A26; -fx-font-style: italic;" />
+    </HBox>
+
+</fx:root>

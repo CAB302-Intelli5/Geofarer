@@ -23,6 +23,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides methods for loading map raster images and shapefile vector data from natural earth
+ * This uses caching for better performance and supports the loading of the raster image,
+ * the extraction of necesasry data from the shape files
+ */
 public class MapService {
     private static Image cachedRasterImage = null;
     private static List<FeatureInfo> cachedFeatures = null;
@@ -34,6 +39,13 @@ public class MapService {
         public final String continent;
         public final List<Shape> shapes = new ArrayList<>();
 
+        /**
+         *  Stores the metadata for the feature on given country
+         * @param geom this is the geometry data of the shapefile
+         * @param name This is the name extracted from the shapefile
+         * @param fips10 This is the fips10 / GEC code from shape file
+         * @param continent This is the continent of the shapefile country
+         */
         public FeatureInfo(Geometry geom, String name, String fips10, String continent) {
             this.geom = geom;
             this.name = name;
@@ -42,6 +54,12 @@ public class MapService {
         }
     }
 
+
+    /**
+     * Loads the raster image from the world map. Requires git lfs as the file is quite large.
+     * The file uses a tif format and is cached for loading the image
+     * @return a JavaFX image of the world map
+     */
     public Image loadRasterImage() {
         if (cachedRasterImage != null) {
             return cachedRasterImage;
@@ -83,6 +101,12 @@ public class MapService {
         return raster;
     }
 
+    /**
+     * Loads the country features from a shapefile this simplifies the geometries and extracts teh metadata allowing
+     * for each country to be determined on click. Thus then linking the natural earth to the hints API for
+     * future use
+     * @return a list of {@link FeatureInfo} representing countries
+     */
     public List<FeatureInfo> loadShapefileData() {
         if (cachedFeatures != null && !cachedFeatures.isEmpty()) {
             return new ArrayList<>(cachedFeatures);
@@ -147,6 +171,12 @@ public class MapService {
                     Object adm0Attr = f.getAttribute("FIPS_10");
                     if (adm0Attr != null) {
                         fips10 = adm0Attr.toString();
+                    }
+
+                    // If the FIPS code is the invalid placeholder, skip this feature entirely.
+                    if ("-99".equals(fips10)) {
+                        System.out.println("Skipping feature with invalid FIPS code: " + extractName(f));
+                        continue; // Jumps to the next iteration of the loop
                     }
 
                     // Create FeatureInfo with ADM0_A3

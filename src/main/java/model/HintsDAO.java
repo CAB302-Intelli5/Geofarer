@@ -13,10 +13,14 @@ public class HintsDAO {
     private String countryData;
     private String dbPath = "src/main/resources/factbook.db"; // Path to the SQLite database
     private String query = "SELECT data FROM factbook WHERE LOWER(gec) = LOWER(?)"; // Ensure case-insensitive match
-    private String gecCode;
+    private String fips10;
 
-    public HintsDAO(String gecCode) {
-        this.gecCode = gecCode;
+    /**
+     * Constructs a HintsDAO for a specific country
+     * @param fips10 2 character code used by the US government to represent Geopolitical Entities and Codes
+     */
+    public HintsDAO(String fips10) {
+        this.fips10 = fips10;
     }
 
 
@@ -25,24 +29,37 @@ public class HintsDAO {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, gecCode); // Pass the GEC code as is
-            stmt.setString(1, gecCode.toLowerCase()); // force lower case as shape file is upper case
+            stmt.setString(1, fips10); // Pass the GEC code as is
+            stmt.setString(1, fips10.toLowerCase()); // force lower case as shape file is upper case
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) { //checks to see if there is data for the gecCode
+            if (rs.next()) { //checks to see if there is data for the fips10
                 this.countryData = rs.getString("data");
 
-                System.out.println("Data for " + gecCode);
+                System.out.println("Data for " + fips10);
             } else {
-                System.out.println("No data found for " + gecCode);
+                System.out.println("No data found for " + fips10);
             }
         } catch (SQLException e) {
             e.printStackTrace();}
     }
 
+    /**
+     * Parses the json country data and extract hints about the country
+     * Extracts location, climate, continent, areaa, coastline and land boundaries
+     * @return a list of the formatted country hints as strings
+     * @throws JsonProcessingException if the JSON parsing fails
+     */
     public List<String> getCountryHints() throws JsonProcessingException {
         List<String> countryHints = new ArrayList<>();
         queryFactbook();
+
+        // If no data was found, return an empty list to prevent a crash.
+        if (countryData == null || countryData.isEmpty()) {
+            System.err.println("Could not generate hints for " + fips10 + " as no data was found.");
+            return new ArrayList<>(); // Return an empty list
+        }
+
         ObjectMapper mapper = new ObjectMapper(); //Using Jackson to parse JSON response body
         JsonNode root = mapper.readTree(countryData); //Read JSON file tree
 

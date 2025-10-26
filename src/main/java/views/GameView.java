@@ -96,7 +96,7 @@ public class GameView extends VBox {
 
     @FXML
     private void initialize() {
-        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer,viewSuccessButton);
+        controller.initializeController(targetCountryLabel, countryLabel, hintsTextArea, overlay, innerMapPane, mapContainer, viewSuccessButton);
 
         // Load image async
         Task<Image> imgTask = new Task<>() {
@@ -113,6 +113,7 @@ public class GameView extends VBox {
                 aspectRatio = imgWOrig / imgHOrig;
                 imageView.setImage(raster);
                 imageReady.set(true);
+                checkAndRenderOverlays(); // Add this
             }
         });
         new Thread(imgTask).start();
@@ -120,17 +121,18 @@ public class GameView extends VBox {
         // Trigger shapefile loading
         loadMapData();
 
-
-        // When both ready → render overlays
-        imageReady.and(shapefileReady).addListener((obs, wasReady, nowReady) -> {
-            if (nowReady) {
-                renderOverlays();
-            }
-        });
-
         setupMapContainer();
         setupMapBindings();
         setupEventDelegation();
+    }
+
+    private void checkAndRenderOverlays() {
+        if (imageReady.get() && shapefileReady.get()) {
+            System.out.println("DEBUG: Both ready, rendering overlays");
+            renderOverlays();
+        } else {
+            System.out.println("DEBUG: Not ready yet - imageReady: " + imageReady.get() + ", shapefileReady: " + shapefileReady.get());
+        }
     }
 
     private void setupEventDelegation() {
@@ -159,6 +161,7 @@ public class GameView extends VBox {
             //Set up the game data
             controller.setFeatureInfos(featureInfos);
             controller.selectNewTarget();
+            checkAndRenderOverlays();
         });
         new Thread(loadTask).start();
     }

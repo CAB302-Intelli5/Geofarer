@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import java.net.URL?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Rectangle?>
+
+<fx:root type="javafx.scene.layout.VBox" spacing="0" xmlns="http://javafx.com/javafx/17" 
+         xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" 
+         styleClass="stats-root" stylesheets="@../styles/user-stats.css"
+         fx:controller="controllers.UserStatsController">
+
+    <stylesheets>
+        <URL value="@../styles/base.css"/>
+    </stylesheets>
+
+    <!-- Top Header Bar -->
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" styleClass="header-bar">
+            <StackPane alignment="CENTER">
+                <Circle radius="20" fill="white" />
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/Logo.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
+
+
+            <Label text="Geofarer" styleClass="geofarer-heading"/>
+
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="loginButton" onAction="#handleLoginButton" styleClass="login-icon-button">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+        </HBox>
+
+    <!-- Navigation Menu -->
+    <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" styleClass="nav-bar-bg">
+    <Button styleClass="nav-bar-text" text="Game Modes" onAction="#handleGameModes"
+        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+    <Button styleClass="nav-bar-text" text="Explore" onAction="#handleExplore"
+        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+    <Button styleClass="nav-bar-text" text="Leaders" onAction="#handleLeaders"
+        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    <Separator orientation="VERTICAL" style="-fx-background-color: #A6A186; -fx-pref-width: 2;" />
+
+    <Button styleClass="nav-bar-text" text="My Passport" onAction="#handleMyPassport"
+        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+
+    <!-- Main Content Area with ScrollPane -->
+    <ScrollPane fitToWidth="true" styleClass="stats-scroll-pane" VBox.vgrow="ALWAYS">
+        <VBox spacing="0">
+            
+            <!-- Title Section with Underline -->
+            <VBox styleClass="stats-title-container" alignment="CENTER">
+                <Label text="My Stats" styleClass="stats-title" />
+                <Region prefHeight="10" />
+                <Rectangle styleClass="stats-title-underline" />
+            </VBox>
+
+            <!-- Stats Cards Section -->
+            <VBox styleClass="stats-cards-container" alignment="CENTER">
+                <HBox spacing="40" alignment="CENTER">
+                    <!-- Stamps Earned Card -->
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label fx:id="stampsEarnedNumber" text="0" styleClass="stat-number" />
+                        <Label text="Countries Mastered" styleClass="stat-label" />
+                    </VBox>
+                    
+                    <!-- Total Wins Card -->
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label fx:id="totalWinsNumber" text="0" styleClass="stat-number" />
+                        <Label text="Total Wins" styleClass="stat-label" />
+                    </VBox>
+                    
+                    <!-- Hints Unlocked Card -->
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label fx:id="hintsUnlockedNumber" text="0" styleClass="stat-number" />
+                        <Label text="Hints Unlocked" styleClass="stat-label" />
+                    </VBox>
+                    
+                    <!-- Countries Played Card -->
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label fx:id="countriesPlayedNumber" text="0" styleClass="stat-number" />
+                        <Label text="Countries Played" styleClass="stat-label" />
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Rank Section -->
+            <VBox styleClass="stats-cards-container" alignment="CENTER">
+                <VBox styleClass="rank-container" maxWidth="600">
+                    <Label text="Your Current Rank" styleClass="rank-title" />
+                    <Label fx:id="rankNameLabel" text="Beginner" styleClass="rank-name" />
+                    <Label fx:id="rankDescriptionLabel" 
+                           text="Keep exploring to advance your rank!" 
+                           styleClass="rank-description" />
+                </VBox>
+            </VBox>
+
+            <!-- Charts Section -->
+            <VBox styleClass="charts-container" alignment="CENTER">
+                
+                <!-- Continent Mastery Spider Chart -->
+                <VBox styleClass="chart-box" alignment="CENTER">
+                    <Label text="Continent Mastery Overview" styleClass="chart-title" />
+                    <VBox fx:id="spiderChartContainer" alignment="CENTER" prefHeight="400" />
+                </VBox>
+                
+                <Region prefHeight="20" />
+                
+                <!-- Progression Line Chart -->
+                <VBox styleClass="chart-box" alignment="CENTER">
+                    <Label text="Mastery Progression by Match" styleClass="chart-title" />
+                    <VBox fx:id="progressionChartContainer" alignment="CENTER" prefHeight="400" />
+                </VBox>
+                
+                <Region prefHeight="20" />
+                
+                <!-- Continent Progress Bar Chart -->
+                <VBox styleClass="chart-box" alignment="CENTER">
+                    <Label text="Progress by Continent" styleClass="chart-title" />
+                    <VBox fx:id="continentBarChartContainer" alignment="CENTER" prefHeight="400" />
+                </VBox>
+            </VBox>
+
+            <!-- Passport Stamps Section - Mastered Countries -->
+            <VBox styleClass="stamps-section" alignment="CENTER">
+                <VBox styleClass="stamps-title-container" alignment="CENTER">
+                    <Label text="Passport Collection" styleClass="stamps-section-title" />
+                    <Label text="Countries You've Mastered" styleClass="stamps-section-subtitle" />
+                </VBox>
+                
+                <ScrollPane fitToWidth="true" prefHeight="400" maxHeight="500" 
+                           styleClass="stamps-scroll-pane">
+                    <FlowPane fx:id="masteredCountriesList" 
+                             styleClass="stamps-grid" 
+                             hgap="25" vgap="25" 
+                             alignment="CENTER" />
+                </ScrollPane>
+            </VBox>
+
+            <!-- Footer -->
+            <HBox styleClass="stats-footer" prefHeight="40.0">
+                <Label text="Keep playing to unlock more achievements and climb the ranks!" 
+                       styleClass="footer-text" />
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+</fx:root>
