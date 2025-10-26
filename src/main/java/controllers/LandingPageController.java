@@ -39,7 +39,7 @@ public class LandingPageController {
     public void onLoginButtonClick() {
         if (loginButton != null && loginButton.getScene() != null && loginButton.getScene().getWindow() != null) {
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            PageLoader.openPage("/pages/LoginPage.fxml", "Login", stage);
+            PageLoader.openPage("/pages/LoginPage.fxml", "Geofarer - Geography Learning Game", stage);
         } else {
             System.err.println("Could not get the stage from the login button.");
         }

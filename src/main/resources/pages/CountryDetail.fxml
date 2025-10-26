@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.CountryDetailController"
+            prefWidth="960" prefHeight="600"
+            stylesheets="@../styles/country-detail.css"
+            style="-fx-background-color: #0D1A26;">
+
+    <top>
+        <VBox spacing="0">
+            <!-- Top Header Bar -->
+            <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" style="-fx-background-color: #E4F2F1; -fx-padding: 10;">
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="My Passport - Country Details">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo_placeholder.png" />
+                    </image>
+                </ImageView>
+                <Button fx:id="loginButton" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Login">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/logo_placeholder.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </HBox>
+
+            <!-- Navigation Menu -->
+            <HBox alignment="CENTER" prefHeight="50.0" spacing="30.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Game Modes" />
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Explore" />
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26;" text="Leaders" />
+                <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #0D1A26; -fx-font-weight: bold;" text="My Passport" />
+            </HBox>
+
+            <!-- Country Title Banner with Progress Badge and Back Button -->
+            <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="20.0" style="-fx-background-color: #731A12; -fx-padding: 20;">
+                <Button fx:id="backButton" onAction="#handleBackAction" 
+                        text="← Back" 
+                        style="-fx-background-color: #0D1A26; -fx-text-fill: #E4F2F1; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5; -fx-padding: 10 20;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <VBox alignment="CENTER" spacing="5">
+                    <Label fx:id="countryNameLabel" text="Country Name" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #E4F2F1;">
+                        <font>
+                            <Font name="System Bold" size="32.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="continentLabel" text="Continent" style="-fx-font-size: 16px; -fx-text-fill: #F2C3A7; -fx-font-style: italic;" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="progressBadge" text="Progress" styleClass="progress-badge" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #E4F2F1; -fx-background-color: #0D1A26; -fx-padding: 8 16; -fx-background-radius: 20;" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    BorderPane.alignment="CENTER"
+                    style="-fx-background: #0D1A26; -fx-background-color: #0D1A26; -fx-border-color: transparent;"
+                    styleClass="detail-scroll">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="32" styleClass="detail-content" style="-fx-background-color: #0D1A26; -fx-padding: 40 20;">
+                    
+                    <!-- Progress Section -->
+                    <VBox spacing="16" styleClass="progress-section" alignment="CENTER" maxWidth="600">
+                        <Label text="Completion Progress" styleClass="section-title" />
+                        <ProgressBar fx:id="progressBar" prefWidth="520" prefHeight="24" progress="0.0" styleClass="progress-bar" />
+                        <Label fx:id="progressValueLabel" text="0% complete" styleClass="progress-value" />
+                    </VBox>
+
+                    <!-- Unlocked Hints Section -->
+                    <VBox spacing="20" styleClass="hints-section" alignment="TOP_CENTER" maxWidth="600">
+                        <Label text="Unlocked Hints" styleClass="section-title" />
+                        <VBox fx:id="hintsContainer" spacing="16" styleClass="hints-container" alignment="TOP_CENTER" />
+                    </VBox>
+
+                    <!-- Locked Hints Section -->
+                    <VBox spacing="20" styleClass="locked-section" alignment="TOP_CENTER" maxWidth="600">
+                        <Label text="Locked Hints" styleClass="section-title" />
+                        <VBox fx:id="lockedHintsContainer" spacing="16" styleClass="locked-hints-container" alignment="TOP_CENTER" />
+                    </VBox>
+                    
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <!-- Footer -->
+        <HBox alignment="CENTER" prefHeight="40.0" style="-fx-background-color: #A6A186; -fx-padding: 10;">
+            <Label text="Complete hints to master this country!" style="-fx-font-size: 12px; -fx-text-fill: #0D1A26; -fx-font-style: italic;" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

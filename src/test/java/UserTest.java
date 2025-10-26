@@ -25,7 +25,7 @@ public class UserTest {
     public void tearDown() {
         // Delete test user after testing is complete
         UserService.deleteUser(TEST_EMAIL);
-        try (Connection conn = DBConnection.getInstance().getConnection();
+    try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM sqlite_sequence WHERE name='users'"))    {
             stmt.executeUpdate();
         } catch (SQLException e) {

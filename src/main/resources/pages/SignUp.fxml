@@ -72,6 +72,22 @@
                         <PasswordField fx:id="passwordField" promptText="Enter your password here..." maxWidth="Infinity"/>
                         <TextField fx:id="passwordVisibleField" promptText="Enter your password here..." maxWidth="Infinity" visible="false"/>
                     </StackPane>
+
+                    <!-- Password requirements -->
+                    <Label fx:id="passwordRequirementsLabel"
+                           text="Your password must meet the following requirements: At least 1 uppercase letter, at least 1 lowercase letter, at least 1 number, at least 1 symbol (@$!&amp;%*?.), length must be between 8 and 256 characters"
+                           wrapText="true"
+                           maxWidth="360"
+                           style="-fx-font-family: 'TASA Explorer'; -fx-font-size: 12px; -fx-text-fill: white;"
+                           textAlignment="LEFT"
+                           alignment="TOP_LEFT"
+                           visible="false"
+                           managed="false">
+                        <VBox.margin>
+                            <Insets top="5" bottom="5"/>
+                        </VBox.margin>
+                    </Label>
+
                     <!-- Show/Hide password checkbox -->
                     <HBox alignment="CENTER_LEFT" spacing="10" maxWidth="Infinity">
                         <Region HBox.hgrow="ALWAYS"/>

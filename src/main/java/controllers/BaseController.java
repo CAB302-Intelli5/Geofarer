@@ -2,8 +2,14 @@ package controllers;
 
 import javafx.geometry.Side;
 import javafx.scene.control.*;
+import javafx.geometry.Side;
 import utils.PageLoader;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -28,7 +34,6 @@ public class BaseController {
     protected Button loginButton;
 
     protected ContextMenu userMenu;
-
 
     /**
      * Initializes of the controller designed for future initializations if needed
